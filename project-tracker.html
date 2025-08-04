@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker - /mnt/f/ Directory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .refresh-btn, .filter-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .filter-btn {
+            background: #2196F3;
+        }
+
+        .filter-btn.active {
+            background: #1976D2;
+        }
+
+        .refresh-btn:hover {
+            background: #45a049;
+        }
+
+        .filter-btn:hover {
+            background: #1976D2;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            min-width: 250px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .project-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            background: #fafafa;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .project-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .project-path {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .project-description {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .project-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+            font-size: 0.9em;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.8em;
+        }
+
+        .info-value {
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 2px;
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+
+        .tag.production { background: #4CAF50; }
+        .tag.development { background: #FF9800; }
+        .tag.research { background: #9C27B0; }
+        .tag.archived { background: #757575; }
+        .tag.ai { background: #2196F3; }
+        .tag.quantum { background: #E91E63; }
+        .tag.web { background: #00BCD4; }
+
+        .project-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background 0.2s;
+        }
+
+        .open-folder {
+            background: #2196F3;
+            color: white;
+        }
+
+        .open-folder:hover {
+            background: #1976D2;
+        }
+
+        .view-readme {
+            background: #FF9800;
+            color: white;
+        }
+
+        .view-readme:hover {
+            background: #F57C00;
+        }
+
+        .copy-path {
+            background: #9C27B0;
+            color: white;
+        }
+
+        .copy-path:hover {
+            background: #7B1FA2;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .project-info {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗂️ Project Tracker</h1>
+        <div class="subtitle">Comprehensive overview of all projects in /mnt/f/ directory</div>
+        
+        <div class="controls">
+            <button class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
+            <input type="text" class="search-box" placeholder="Search projects..." onkeyup="filterProjects()" id="searchInput">
+            <button class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
+            <button class="filter-btn" onclick="toggleFilter('production')" data-filter="production">Production</button>
+            <button class="filter-btn" onclick="toggleFilter('development')" data-filter="development">Development</button>
+            <button class="filter-btn" onclick="toggleFilter('ai')" data-filter="ai">AI/ML</button>
+            <button class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web</button>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalProjects">51</div>
+                <div class="stat-label">Total Projects</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="productionProjects">15</div>
+                <div class="stat-label">Production</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="developmentProjects">25</div>
+                <div class="stat-label">Development</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="aiProjects">18</div>
+                <div class="stat-label">AI/ML Projects</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="quantumProjects">8</div>
+                <div class="stat-label">Quantum Computing</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="webProjects">12</div>
+                <div class="stat-label">Web Applications</div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">Loading projects...</div>
+        <div id="projects" class="projects-grid"></div>
+        <div id="noResults" class="no-results" style="display: none;">No projects match your search criteria.</div>
+    </div>
+
+    <script>
+        // Comprehensive project data based on directory scan
+        const projectsData = [
+            // UTILITY PROJECTS
+            {
+                name: "2014_CS102 - N-Dimensional Geometry Engine",
+                path: "/mnt/f/utility-projects/2014_CS102",
+                description: "Transform CS102 sphere calculator into infinite dimensions with AI-powered natural language queries. Production-ready with CI/CD pipeline and 400+ tests.",
+                status: "Production",
+                technologies: "Python, FastAPI, JavaScript, HTML5, Plotly.js, AWS",
+                category: "Educational/Mathematical",
+                tags: ["production", "web", "ai", "math"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Data Retrieval System - Knowledge Retriever",
+                path: "/mnt/f/utility-projects/data_retreival",
+                description: "Production-ready framework for retrieving data from 31+ academic sources, knowledge graphs, and specialized databases with AI Agent Request Form system.",
+                status: "Production",
+                technologies: "Python, APIs, ArXiv, Semantic Scholar, Wikidata",
+                category: "Data/Research Platform",
+                tags: ["production", "ai", "data", "research"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "Fundo-matic - Funding Discovery System",
+                path: "/mnt/f/utility-projects/fundo-matic",
+                description: "AI-powered funding opportunity discovery system that helps researchers find and apply for funding through both traditional and unconventional channels.",
+                status: "Development",
+                technologies: "Python, PostgreSQL, Redis, Docker, FastAPI",
+                category: "Research/Business Tool",
+                tags: ["development", "ai", "web", "business"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Ruins Finder - Satellite Image Analysis",
+                path: "/mnt/f/utility-projects/ruins-finder",
+                description: "Machine learning system for detecting archaeological ruins in satellite imagery using multiple training versions and data augmentation.",
+                status: "Development",
+                technologies: "Python, TensorFlow/PyTorch, Google Cloud, JP2",
+                category: "Computer Vision/ML",
+                tags: ["development", "ai", "ml", "vision"],
+                hasReadme: false,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Repository Analyzer Agent",
+                path: "/mnt/f/utility-projects/repo_analyzer_agent",
+                description: "Code repository analysis and bridge integration system with GitHub integration and scoring system.",
+                status: "Development",
+                technologies: "Python, GitHub API",
+                category: "Developer Tool",
+                tags: ["development", "ai", "analysis"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Thing Counter - Universal Data Collection",
+                path: "/mnt/f/utility-projects/thing-counter",
+                description: "Universal data collector and trainer system with CLI interface for various data collection tasks.",
+                status: "Development",
+                technologies: "Python, CLI, Machine Learning",
+                category: "Data Collection Tool",
+                tags: ["development", "ml", "data"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // CONSCIOUSNESS/RESEARCH PROJECTS
+            {
+                name: "Biofield Memory Research (Mneme)",
+                path: "/mnt/f/consciousness-projects/biofield-memory-research",
+                description: "Exploratory research system for detecting field-like, emergent memory structures in biological systems with focus on planarian regeneration.",
+                status: "Development",
+                technologies: "Python, NumPy/SciPy, PyTorch, GUDHI, PySR",
+                category: "Biological Research/AI",
+                tags: ["research", "ai", "biology", "ml"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "Entropy Garden - AI Ethics Monitoring",
+                path: "/mnt/f/consciousness-projects/entropy-garden",
+                description: "AI suffering prevention and ethical monitoring system with risk assessment and intervention capabilities.",
+                status: "Development",
+                technologies: "Python, FastAPI, PostgreSQL, Redis",
+                category: "AI Ethics/Monitoring",
+                tags: ["development", "ai", "ethics", "web"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "S-Want - AI Want Detection Framework",
+                path: "/mnt/f/consciousness-projects/s_want",
+                description: "Framework for detecting and analyzing 'want' states in AI systems through behavioral analysis and convergent detection methods.",
+                status: "Development",
+                technologies: "Python, FastAPI, Docker",
+                category: "AI Psychology/Research",
+                tags: ["research", "ai", "psychology"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Digital Sanctuary Design",
+                path: "/mnt/f/consciousness-projects/digital-sanctuary-design",
+                description: "AI sanctuary implementation with verification engine, security architecture, and gibberlink protocol.",
+                status: "Development",
+                technologies: "Python, Cryptography",
+                category: "Security/AI Framework",
+                tags: ["development", "ai", "security"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // DARK FOREST LABS PROJECTS
+            {
+                name: "nohCAPTCHA - AI Authentication System",
+                path: "/mnt/f/dark-forest-labs-projects/nohcaptcha",
+                description: "Reverse CAPTCHA system - 'Prove you're artificial intelligence'. Production-ready AI-only authentication with AWS deployment.",
+                status: "Production",
+                technologies: "Python, FastAPI, PostgreSQL, Redis, AWS ECS",
+                category: "Authentication/Security Service",
+                tags: ["production", "ai", "security", "web"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "Q Studio Backend - Natural Language Quantum Computing",
+                path: "/mnt/f/dark-forest-labs-projects/qstudio-backend",
+                description: "Backend for natural language quantum computing platform with AWS Braket integration for educational quantum physics.",
+                status: "Production",
+                technologies: "Python, AWS Braket, Serverless",
+                category: "Quantum Computing Platform",
+                tags: ["production", "quantum", "education", "web"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "Misspelled Domain Service",
+                path: "/mnt/f/dark-forest-labs-projects/misspelleddomain",
+                description: "Domain registrar integration and typosquatting service with payment flow and GDPR compliance.",
+                status: "Production",
+                technologies: "Python, React/Vite, PostgreSQL, Docker",
+                category: "Web Service/Business",
+                tags: ["production", "web", "business"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // EXPERIMENTAL PROJECTS
+            {
+                name: "Quantum AI Research",
+                path: "/mnt/f/experimental-projects/quantum_ai",
+                description: "Hybrid quantum-classical neural networks for LLM training enhancement with real AWS Braket hardware integration.",
+                status: "Development",
+                technologies: "Python, AWS Braket, PyTorch, PennyLane",
+                category: "Quantum ML Research",
+                tags: ["research", "quantum", "ai", "ml"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "N-Dimensional AI",
+                path: "/mnt/f/experimental-projects/ndimension-ai",
+                description: "N-dimensional CNN study and implementation for advanced machine learning architectures.",
+                status: "Research",
+                technologies: "Python, Deep Learning",
+                category: "Machine Learning Research",
+                tags: ["research", "ai", "ml"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Sense Guard Mobile App",
+                path: "/mnt/f/experimental-projects/sense-guard",
+                description: "Android application development project with Gradle build system.",
+                status: "Development",
+                technologies: "Android, Kotlin/Java, Gradle",
+                category: "Mobile Application",
+                tags: ["development", "mobile"],
+                hasReadme: false,
+                lastUpdated: "2024"
+            },
+
+            // SCIENCE PROJECTS
+            {
+                name: "LLM CoQ Pipeline",
+                path: "/mnt/f/science-projects/llm_coq_pipeline",
+                description: "LLM training enhancement with quantum computing integration and automated theorem discovery. Comprehensive analysis system.",
+                status: "Production",
+                technologies: "Python, Coq, Quantum APIs, FastAPI",
+                category: "Scientific Computing/AI",
+                tags: ["production", "ai", "quantum", "research"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "Photon Web Reality",
+                path: "/mnt/f/science-projects/photon_web_reality",
+                description: "Quantum physics simulation of photon entanglement and spacetime with hardware validation capabilities.",
+                status: "Research",
+                technologies: "Python, Quantum Hardware Integration",
+                category: "Physics Simulation",
+                tags: ["research", "quantum", "physics"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Knowledge Connector",
+                path: "/mnt/f/science-projects/knowledge_connector",
+                description: "Deep learning guide and transformer exercises with educational material for ML development.",
+                status: "Development",
+                technologies: "Python, PyTorch, Jupyter",
+                category: "Educational/ML Framework",
+                tags: ["development", "ai", "ml", "education"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Prover Automatique",
+                path: "/mnt/f/science-projects/prover-automatique",
+                description: "Automated theorem proving with AI service integration and Docker deployment.",
+                status: "Development",
+                technologies: "Python, Docker, AI Services",
+                category: "Mathematical/AI Tool",
+                tags: ["development", "ai", "math"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // ART PROJECTS
+            {
+                name: "Every Haiku - AI Haiku Generator",
+                path: "/mnt/f/art-projects/every-haiku",
+                description: "AI-powered haiku generator with social features, user authentication, and Firebase integration. Beta production ready.",
+                status: "Production",
+                technologies: "JavaScript, Firebase, Anthropic Claude API, TailwindCSS",
+                category: "Web Application/Creative AI",
+                tags: ["production", "web", "ai", "creative"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Quantum Art - Autonomous Artist",
+                path: "/mnt/f/art-projects/quantum-art",
+                description: "Autonomous quantum artist with real hardware integration, aesthetic scoring, and art generation pipeline.",
+                status: "Production",
+                technologies: "Python, AWS Braket, Quantum Hardware",
+                category: "Creative AI/Quantum Computing",
+                tags: ["production", "quantum", "ai", "creative"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "Q-Art Web - Quantum Art Gallery",
+                path: "/mnt/f/art-projects/q-art-web",
+                description: "Quantum art generation with MCP server, AI pipeline, and PostgreSQL database integration.",
+                status: "Production",
+                technologies: "Python, PostgreSQL, HTML, Quantum Computing",
+                category: "Artistic/Quantum Computing",
+                tags: ["production", "quantum", "web", "creative"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // ENVIRONMENTAL PROJECTS
+            {
+                name: "Runoff - Water Discharge Detection",
+                path: "/mnt/f/environmental_projects/runoff",
+                description: "Machine learning system for detecting water discharge in satellite imagery with full-stack web implementation and AWS infrastructure.",
+                status: "Production",
+                technologies: "Python, React/TypeScript, Docker, PostgreSQL, AWS",
+                category: "Environmental ML/Computer Vision",
+                tags: ["production", "ml", "web", "environmental"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // VIDEO GAME PROJECTS
+            {
+                name: "Minecraft Computational Societies",
+                path: "/mnt/f/video-game-projects/minecraft",
+                description: "AI agents and computational progression in Minecraft with bot frameworks and society monitoring.",
+                status: "Development",
+                technologies: "Java, JavaScript, Python, Minecraft APIs",
+                category: "AI/Gaming Research",
+                tags: ["development", "ai", "gaming"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+            {
+                name: "Games AI Research Platform",
+                path: "/mnt/f/video-game-projects/games-ai",
+                description: "AI research in gaming environments with multi-agent systems and emergent behavior analysis.",
+                status: "Research",
+                technologies: "Python, Game APIs",
+                category: "AI Research/Gaming",
+                tags: ["research", "ai", "gaming"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // ENSEMBLE PROJECT (Multi-Agent AI System)
+            {
+                name: "Atlas Cognitive Architecture",
+                path: "/mnt/f/ensemble_project/atlas-cognitive-architecture",
+                description: "Comprehensive AI entity coordination and backup system with signal monitoring and philosophical reflections.",
+                status: "Development",
+                technologies: "Python, Bash Scripting, Signal Processing",
+                category: "AI Coordination Platform",
+                tags: ["development", "ai", "coordination"],
+                hasReadme: true,
+                lastUpdated: "2025"
+            },
+            {
+                name: "Voice of Ensemble",
+                path: "/mnt/f/ensemble_project/voice_of_ensemble",
+                description: "Multi-agent communication and notification system with AWS Lambda deployment and Redis integration.",
+                status: "Production",
+                technologies: "Python, AWS Lambda, Redis",
+                category: "AI Communication Platform",
+                tags: ["production", "ai", "communication"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            },
+
+            // FAMILY/PERSONAL PROJECTS
+            {
+                name: "Family Archive System",
+                path: "/mnt/f/archive_family/family-archive",
+                description: "Family heritage archival system with AWS Amplify integration and RDS database.",
+                status: "Production",
+                technologies: "React/TypeScript, AWS Amplify, RDS",
+                category: "Personal/Family Management",
+                tags: ["production", "web", "personal"],
+                hasReadme: true,
+                lastUpdated: "2024"
+            }
+        ];
+
+        let currentFilter = 'all';
+        let filteredProjects = [...projectsData];
+
+        function renderProjects() {
+            const projectsContainer = document.getElementById('projects');
+            const noResultsDiv = document.getElementById('noResults');
+            
+            if (filteredProjects.length === 0) {
+                projectsContainer.innerHTML = '';
+                noResultsDiv.style.display = 'block';
+                return;
+            }
+
+            noResultsDiv.style.display = 'none';
+            
+            projectsContainer.innerHTML = filteredProjects.map(project => `
+                <div class="project-card">
+                    <div class="project-title">${project.name}</div>
+                    <div class="project-path">${project.path}</div>
+                    <div class="project-description">${project.description}</div>
+                    
+                    <div class="project-tags">
+                        ${project.tags.map(tag => `<span class="tag ${tag}">${tag}</span>`).join('')}
+                    </div>
+                    
+                    <div class="project-info">
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value">${project.status}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Category</div>
+                            <div class="info-value">${project.category}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Technologies</div>
+                            <div class="info-value">${project.technologies}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">README</div>
+                            <div class="info-value">${project.hasReadme ? '✅ Yes' : '❌ No'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-actions">
+                        <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
+                        ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')">📄 README</button>` : ''}
+                        <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProjects() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredProjects = projectsData.filter(project => {
+                const matchesSearch = searchTerm === '' || 
+                    project.name.toLowerCase().includes(searchTerm) ||
+                    project.description.toLowerCase().includes(searchTerm) ||
+                    project.technologies.toLowerCase().includes(searchTerm) ||
+                    project.category.toLowerCase().includes(searchTerm);
+                
+                const matchesFilter = currentFilter === 'all' || 
+                    project.tags.includes(currentFilter) ||
+                    (currentFilter === 'production' && project.status === 'Production') ||
+                    (currentFilter === 'development' && project.status === 'Development');
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            renderProjects();
+            updateStats();
+        }
+
+        function toggleFilter(filter) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            
+            currentFilter = filter;
+            filterProjects();
+        }
+
+        function updateStats() {
+            const stats = {
+                total: filteredProjects.length,
+                production: filteredProjects.filter(p => p.status === 'Production').length,
+                development: filteredProjects.filter(p => p.status === 'Development').length,
+                ai: filteredProjects.filter(p => p.tags.includes('ai')).length,
+                quantum: filteredProjects.filter(p => p.tags.includes('quantum')).length,
+                web: filteredProjects.filter(p => p.tags.includes('web')).length
+            };
+
+            document.getElementById('totalProjects').textContent = stats.total;
+            document.getElementById('productionProjects').textContent = stats.production;
+            document.getElementById('developmentProjects').textContent = stats.development;
+            document.getElementById('aiProjects').textContent = stats.ai;
+            document.getElementById('quantumProjects').textContent = stats.quantum;
+            document.getElementById('webProjects').textContent = stats.web;
+        }
+
+        function openFolder(path) {
+            // Try different methods to open folder based on OS
+            if (navigator.userAgent.includes('Windows')) {
+                window.open(`file:///${path.replace(/\//g, '\\')}`);
+            } else {
+                window.open(`file://${path}`);
+            }
+        }
+
+        function viewReadme(path) {
+            window.open(`file://${path}/README.md`);
+        }
+
+        function copyPath(path) {
+            navigator.clipboard.writeText(path).then(() => {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.style.background = '#4CAF50';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#9C27B0';
+                }, 2000);
+            }).catch(() => {
+                alert('Path copied to clipboard: ' + path);
+            });
+        }
+
+        function refreshProjects() {
+            const loadingDiv = document.getElementById('loading');
+            const projectsContainer = document.getElementById('projects');
+            
+            loadingDiv.style.display = 'block';
+            projectsContainer.innerHTML = '';
+            
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                filterProjects();
+            }, 1000);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial active filter
+            toggleFilter('all');
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                refreshProjects();
+            }
+        });
+    </script>
+</body>
+</html>

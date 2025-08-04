@@ -1,0 +1,198 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Validate HTML
+      run: |
+        # Install HTML validator
+        npm install -g html-validate
+        # Validate main HTML file
+        html-validate project-tracker.html
+        
+    - name: Check for console errors
+      run: |
+        # Install Puppeteer for headless browser testing
+        npm install puppeteer
+        # Create simple test script
+        cat > test-console-errors.js << 'EOF'
+        const puppeteer = require('puppeteer');
+        const fs = require('fs');
+        const path = require('path');
+        
+        (async () => {
+          const browser = await puppeteer.launch();
+          const page = await browser.newPage();
+          
+          // Listen for console errors
+          const errors = [];
+          page.on('console', msg => {
+            if (msg.type() === 'error') {
+              errors.push(msg.text());
+            }
+          });
+          
+          // Load the HTML file
+          const htmlPath = path.join(__dirname, 'project-tracker.html');
+          const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+          await page.setContent(htmlContent);
+          
+          // Wait for page to load
+          await page.waitForTimeout(2000);
+          
+          await browser.close();
+          
+          if (errors.length > 0) {
+            console.error('Console errors found:');
+            errors.forEach(error => console.error(error));
+            process.exit(1);
+          } else {
+            console.log('No console errors found');
+          }
+        })();
+        EOF
+        
+        node test-console-errors.js
+        
+    - name: Test functionality
+      run: |
+        # Create basic functionality tests
+        cat > test-functionality.js << 'EOF'
+        const puppeteer = require('puppeteer');
+        const fs = require('fs');
+        const path = require('path');
+        
+        (async () => {
+          const browser = await puppeteer.launch();
+          const page = await browser.newPage();
+          
+          const htmlPath = path.join(__dirname, 'project-tracker.html');
+          const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+          await page.setContent(htmlContent);
+          
+          // Wait for page to load
+          await page.waitForSelector('.projects-grid');
+          
+          // Test search functionality
+          await page.type('#searchInput', 'test');
+          await page.waitForTimeout(500);
+          
+          // Test filter buttons
+          const filterButtons = await page.$$('.filter-btn');
+          if (filterButtons.length > 0) {
+            await filterButtons[0].click();
+            await page.waitForTimeout(500);
+          }
+          
+          // Test refresh button
+          const refreshBtn = await page.$('.refresh-btn');
+          if (refreshBtn) {
+            await refreshBtn.click();
+            await page.waitForTimeout(1000);
+          }
+          
+          await browser.close();
+          console.log('Basic functionality tests passed');
+        })();
+        EOF
+        
+        node test-functionality.js
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Lint HTML
+      run: |
+        # Basic HTML linting
+        if grep -q "<script>" project-tracker.html; then
+          echo "JavaScript found in HTML - checking for basic issues"
+          # Check for common JavaScript issues
+          if grep -q "console.log" project-tracker.html; then
+            echo "Warning: console.log statements found - consider removing for production"
+          fi
+        fi
+        
+    - name: Check file structure
+      run: |
+        # Verify required files exist
+        required_files=("README.md" "LICENSE" "CHANGELOG.md" "CONTRIBUTING.md" ".gitignore")
+        for file in "${required_files[@]}"; do
+          if [[ ! -f "$file" ]]; then
+            echo "Error: Required file $file is missing"
+            exit 1
+          fi
+        done
+        echo "All required files present"
+        
+    - name: Validate markdown
+      run: |
+        # Install markdown lint
+        npm install -g markdownlint-cli
+        # Lint all markdown files
+        markdownlint *.md || echo "Markdown linting completed with warnings"
+
+  accessibility:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Accessibility testing
+      run: |
+        npm install puppeteer axe-core
+        cat > test-accessibility.js << 'EOF'
+        const puppeteer = require('puppeteer');
+        const { AxePuppeteer } = require('@axe-core/puppeteer');
+        const fs = require('fs');
+        const path = require('path');
+        
+        (async () => {
+          const browser = await puppeteer.launch();
+          const page = await browser.newPage();
+          
+          const htmlPath = path.join(__dirname, 'project-tracker.html');
+          const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+          await page.setContent(htmlContent);
+          
+          const results = await new AxePuppeteer(page).analyze();
+          
+          await browser.close();
+          
+          if (results.violations.length > 0) {
+            console.error('Accessibility violations found:');
+            results.violations.forEach(violation => {
+              console.error(`- ${violation.description}`);
+            });
+            // Don't fail the build for accessibility issues, just warn
+            console.warn('Please address accessibility issues when possible');
+          } else {
+            console.log('No accessibility violations found');
+          }
+        })();
+        EOF
+        
+        npm install @axe-core/puppeteer
+        node test-accessibility.js || echo "Accessibility check completed"

@@ -1,0 +1,255 @@
+# Project Tracker .gitignore
+
+# ===========================
+# Python Virtual Environment
+# ===========================
+venv/
+env/
+ENV/
+.venv/
+.env/
+pyvenv.cfg
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ===========================
+# Claude Code Settings
+# ===========================
+.claude/
+.claude/settings.local.json
+.claude/settings.json
+.claude/*.json
+
+# ===========================
+# IDE and Editor Files
+# ===========================
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===========================
+# System Files
+# ===========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ===========================
+# Logs and Temporary Files
+# ===========================
+*.log
+*.tmp
+*.temp
+logs/
+temp/
+tmp/
+
+# ===========================
+# Node.js (for future development)
+# ===========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.npm
+.yarn/
+
+# ===========================
+# Build and Distribution
+# ===========================
+dist/
+build/
+out/
+*.tar.gz
+*.zip
+
+# ===========================
+# Environment Variables
+# ===========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ===========================
+# Database Files
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
+
+# ===========================
+# Backup Files
+# ===========================
+*.bak
+*.backup
+*.orig
+*.rej
+
+# ===========================
+# Security and Secrets
+# ===========================
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+config/secrets.json
+.secrets
+
+# ===========================
+# Testing and Coverage
+# ===========================
+.coverage
+.nyc_output
+coverage/
+test-results/
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ===========================
+# Docker (for future containerization)
+# ===========================
+.dockerignore
+docker-compose.override.yml
+
+# ===========================
+# Project-Specific Ignores
+# ===========================
+# User-specific project configurations
+project-config.local.json
+user-settings.json
+
+# Generated project data files
+project-data-cache.json
+scan-results.json
+
+# Screenshots and demo files (keep examples, ignore temp ones)
+screenshots/temp/
+demo/temp/
+
+# ===========================
+# Future Development Files
+# ===========================
+# When backend is added
+api/logs/
+api/uploads/
+api/.env
+
+# When database is added
+migrations/temp/
+schema-backup/
+
+# When tests are added
+test-output/
+e2e-results/
+
+# ===========================
+# Documentation Drafts
+# ===========================
+DRAFT_*.md
+TODO_PRIVATE.md
+NOTES_*.md
+
+# ===========================
+# Version Control
+# ===========================
+.git/
+.gitattributes
+
+# ===========================
+# Performance and Profiling
+# ===========================
+*.prof
+profile/
+benchmark-results/
+
+# ===========================
+# Local Development
+# ===========================
+local-config/
+dev-notes.txt
+scratch/
+
+# ===========================
+# Archive and Export Files
+# ===========================
+archive/
+exports/
+backups/
+*.archive
