@@ -14,12 +14,14 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## ✨ Features
 
-### Current Features (v1.0)
+### Current Features (v1.1)
 - **📊 Project Dashboard**: Visual overview of all projects with statistics
 - **🔍 Real-time Search**: Instant search across project names, descriptions, and technologies
 - **🏷️ Category Filtering**: Filter by project type (Production, Development, AI/ML, Web)
-- **📁 Quick Access**: One-click folder opening and README viewing
+- **📁 Enhanced Folder Access**: Smart folder opening with platform-specific commands
 - **📋 Path Management**: Copy project paths to clipboard
+- **🤖 CLAUDE.md Integration**: Visual indicators and one-click Claude launching for projects with CLAUDE.md
+- **🐍 Virtual Environment Support**: Detect and activate Python virtual environments
 - **📱 Responsive Design**: Works on desktop and mobile devices
 - **⌨️ Keyboard Shortcuts**: Ctrl+R to refresh, efficient navigation
 - **🎨 Modern UI**: Clean, intuitive interface with hover effects and animations
@@ -31,6 +33,8 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - Project status (Production/Development/Research)
 - Last modified information
 - README availability
+- **🤖 CLAUDE.md presence** - Shows if project has Claude integration
+- **🐍 Virtual environment status** - Shows if project has Python venv
 - Project category and type
 
 ### Supported Project Categories
@@ -74,10 +78,18 @@ start project-tracker.html
 2. **Search**: Use the search bar to find specific projects by name or technology
 3. **Filter**: Click category buttons to filter by project type
 4. **Access Projects**: 
-   - Click "📁 Open Folder" to open the project directory
-   - Click "📄 View README" to view project documentation
-   - Click "📋 Copy Path" to copy the full path to clipboard
+   - Click "📁 Open" to open the project directory in file explorer
+   - Click "📄 README" to view project documentation
+   - Click "🤖 Claude" to copy `claude --continue` command (for projects with CLAUDE.md)
+   - Click "🐍 Activate" to copy virtual environment activation commands
+   - Click "📋 Copy" to copy the full path to clipboard
 5. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to update the view
+
+### Developer Workflow Integration
+- **CLAUDE.md Projects**: Projects with 🤖 indicator have Claude integration ready
+- **Python Projects**: Projects with 🐍 indicator have virtual environments configured
+- **Smart Commands**: Action buttons copy appropriate commands to clipboard for immediate use
+- **Platform Detection**: Commands are automatically tailored for Windows, macOS, or Linux
 
 ## 📈 Project Statistics
 

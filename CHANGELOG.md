@@ -15,6 +15,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Backend API development
 - Mobile app version
 
+## [1.1.0] - 2025-08-04
+
+### Added
+- **CLAUDE.md Detection & Integration**
+  - New `hasClaude` field in project data structure
+  - Visual 🤖 indicator on project cards showing CLAUDE.md presence
+  - New "🤖 Claude" action button that copies `claude --continue` command to clipboard
+  - Conditional rendering - Claude button only appears for projects with CLAUDE.md
+
+- **Virtual Environment Management**
+  - New `hasVenv` field in project data structure
+  - Visual 🐍 indicator showing virtual environment presence
+  - New "🐍 Activate" action button that copies venv activation commands to clipboard
+  - Platform-specific command generation (Linux/Mac vs Windows)
+
+- **Enhanced Project Cards**
+  - Expanded info grid from 2 to 3 columns for better information display
+  - Added CLAUDE.md and Virtual Env status indicators
+  - New action buttons with distinct color coding and hover effects
+  - Smart conditional rendering based on project capabilities
+
+### Improved
+- **Enhanced Folder Opening**
+  - Improved `openFolder()` function with better platform detection
+  - Fallback to copying system-specific commands (`explorer`, `open`, `xdg-open`) 
+  - Better error handling and user feedback with visual button states
+  - Command copying as backup when direct folder opening fails
+
+- **User Experience**
+  - Enhanced button feedback with loading states and confirmation messages
+  - Smooth animations for button state changes
+  - Graceful handling of projects without hasClaude/hasVenv data (shows "❓ Unknown")
+  - Color-coded action buttons for better visual organization
+
+### Technical
+- Added proper handling for undefined hasClaude and hasVenv fields
+- Improved CSS grid layout for project information display
+- Enhanced JavaScript functions with better error handling
+- Added clipboard integration for command copying functionality
+
+### Project Data Updates
+- Updated key projects with hasClaude and hasVenv status:
+  - 2014_CS102 Geometry Engine: Claude ✅, Venv ✅
+  - nohCAPTCHA Authentication: Claude ✅, Venv ✅
+  - Q Studio Backend: Claude ✅, Venv ✅
+  - Fundo-matic: Claude ✅, Venv ✅
+  - Data Retrieval System: Claude ❌, Venv ✅
+  - Thing Counter: Claude ❌, Venv ✅
+
 ## [1.0.0] - 2025-08-04
 
 ### Added

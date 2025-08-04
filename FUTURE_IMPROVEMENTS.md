@@ -3,6 +3,35 @@
 ## Overview
 This document outlines planned enhancements and future development ideas for the Project Tracker system.
 
+## Recently Completed (v1.1.0)
+
+### ✅ CLAUDE.md Detection & Integration
+**Status**: COMPLETED 2025-08-04
+- [x] Detect CLAUDE.md presence in projects
+- [x] Visual indicators on project cards (🤖 icon)
+- [x] One-click Claude launching with `claude --continue` command
+- [x] Conditional rendering of Claude action buttons
+
+### ✅ Virtual Environment Management  
+**Status**: COMPLETED 2025-08-04
+- [x] Detect Python virtual environment presence
+- [x] Visual indicators on project cards (🐍 icon)
+- [x] Platform-specific activation commands (Linux/Mac/Windows)
+- [x] One-click venv activation command copying
+
+### ✅ Enhanced Project Cards
+**Status**: COMPLETED 2025-08-04
+- [x] Expanded info grid from 2 to 3 columns
+- [x] Added CLAUDE.md and Virtual Env status indicators
+- [x] New action buttons with color coding
+- [x] Smart conditional rendering based on capabilities
+
+### ✅ Improved Folder Opening
+**Status**: COMPLETED 2025-08-04
+- [x] Platform-specific folder opening commands
+- [x] Fallback to copying system commands to clipboard
+- [x] Better error handling and user feedback
+
 ## High Priority Improvements
 
 ### 1. Dynamic Project Scanning
@@ -12,6 +41,7 @@ This document outlines planned enhancements and future development ideas for the
 - [ ] Real-time filesystem monitoring for project changes
 - [ ] Configurable scan depth and exclusion patterns
 - [ ] Cache system for faster subsequent loads
+- [ ] **Auto-detection of CLAUDE.md and venv directories**
 
 ### 2. Git Integration
 **Priority**: High  
@@ -41,6 +71,7 @@ This document outlines planned enhancements and future development ideas for the
 - [ ] Bookmark/favorites system
 - [ ] Recently accessed projects tracking
 - [ ] Advanced filtering (by language, framework, size, etc.)
+- [ ] **Filter by CLAUDE.md and venv presence**
 
 ## Medium Priority Improvements
 
@@ -74,6 +105,8 @@ This document outlines planned enhancements and future development ideas for the
 - [ ] Boilerplate code generation
 - [ ] Technology stack recommendations
 - [ ] Best practices suggestions
+- [ ] **Automatic CLAUDE.md generation for new projects**
+- [ ] **Virtual environment setup automation**
 
 ## Low Priority / Future Ideas
 

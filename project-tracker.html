@@ -140,7 +140,7 @@
 
         .project-info {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
             margin-bottom: 15px;
         }
@@ -229,6 +229,20 @@
 
         .copy-path:hover {
             background: #7B1FA2;
+        }
+        .claude-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        .claude-btn:hover {
+            background: #45a049;
+        }
+        .venv-btn {
+            background: #FF5722;
+            color: white;
+        }
+        .venv-btn:hover {
+            background: #E64A19;
         }
 
         .stats {
@@ -349,6 +363,8 @@
                 category: "Educational/Mathematical",
                 tags: ["production", "web", "ai", "math"],
                 hasReadme: true,
+                hasClaude: true,
+                hasVenv: true,
                 lastUpdated: "2024"
             },
             {
@@ -360,6 +376,8 @@
                 category: "Data/Research Platform",
                 tags: ["production", "ai", "data", "research"],
                 hasReadme: true,
+                hasClaude: false,
+                hasVenv: true,
                 lastUpdated: "2025"
             },
             {
@@ -371,6 +389,8 @@
                 category: "Research/Business Tool",
                 tags: ["development", "ai", "web", "business"],
                 hasReadme: true,
+                hasClaude: true,
+                hasVenv: true,
                 lastUpdated: "2024"
             },
             {
@@ -404,6 +424,8 @@
                 category: "Data Collection Tool",
                 tags: ["development", "ml", "data"],
                 hasReadme: true,
+                hasClaude: false,
+                hasVenv: true,
                 lastUpdated: "2024"
             },
 
@@ -463,6 +485,8 @@
                 category: "Authentication/Security Service",
                 tags: ["production", "ai", "security", "web"],
                 hasReadme: true,
+                hasClaude: true,
+                hasVenv: true,
                 lastUpdated: "2025"
             },
             {
@@ -474,6 +498,8 @@
                 category: "Quantum Computing Platform",
                 tags: ["production", "quantum", "education", "web"],
                 hasReadme: true,
+                hasClaude: true,
+                hasVenv: true,
                 lastUpdated: "2025"
             },
             {
@@ -721,11 +747,21 @@
                             <div class="info-label">README</div>
                             <div class="info-value">${project.hasReadme ? '✅ Yes' : '❌ No'}</div>
                         </div>
+                        <div class="info-item">
+                            <div class="info-label">CLAUDE.md</div>
+                            <div class="info-value">${project.hasClaude === true ? '🤖 Yes' : (project.hasClaude === false ? '❌ No' : '❓ Unknown')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Virtual Env</div>
+                            <div class="info-value">${project.hasVenv === true ? '🐍 Yes' : (project.hasVenv === false ? '❌ No' : '❓ Unknown')}</div>
+                        </div>
                     </div>
                     
                     <div class="project-actions">
                         <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
                         ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')">📄 README</button>` : ''}
+                        ${project.hasClaude === true ? `<button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🤖 Claude</button>` : ''}
+                        ${project.hasVenv === true ? `<button class="action-btn venv-btn" onclick="activateVenv('${project.path}')">🐍 Activate</button>` : ''}
                         <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
                     </div>
                 </div>
@@ -784,11 +820,38 @@
         }
 
         function openFolder(path) {
-            // Try different methods to open folder based on OS
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            // Copy the path and provide instructions
+            let command;
             if (navigator.userAgent.includes('Windows')) {
-                window.open(`file:///${path.replace(/\//g, '\\')}`);
+                command = `explorer "${path.replace(/\//g, '\\')}"`;
+            } else if (navigator.userAgent.includes('Mac')) {
+                command = `open "${path}"`;
             } else {
-                window.open(`file://${path}`);
+                command = `xdg-open "${path}"`;
+            }
+            
+            // Try to open with file:// protocol first (may work in some browsers)
+            try {
+                if (navigator.userAgent.includes('Windows')) {
+                    window.open(`file:///${path.replace(/\//g, '\\')}`);
+                } else {
+                    window.open(`file://${path}`);
+                }
+            } catch (error) {
+                // If that fails, copy command to clipboard
+                navigator.clipboard.writeText(command).then(() => {
+                    button.textContent = '📋 Command Copied!';
+                    button.style.background = '#45a049';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#2196F3';
+                    }, 2000);
+                }).catch(() => {
+                    alert(`To open folder, run: ${command}`);
+                });
             }
         }
 
@@ -809,6 +872,67 @@
                 }, 2000);
             }).catch(() => {
                 alert('Path copied to clipboard: ' + path);
+            });
+        }
+
+        function launchClaude(path) {
+            // For now, show a notification with the command
+            // In the future, this will integrate with a backend service
+            const command = `cd "${path}" && claude --continue`;
+            
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '🚀 Launching...';
+            button.style.background = '#45a049';
+            
+            // Copy command to clipboard for now
+            navigator.clipboard.writeText(command).then(() => {
+                setTimeout(() => {
+                    button.textContent = '📋 Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#4CAF50';
+                    }, 1500);
+                }, 500);
+            }).catch(() => {
+                alert(`Command copied to clipboard: ${command}`);
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#4CAF50';
+                }, 2000);
+            });
+        }
+
+        function activateVenv(path) {
+            // For now, show the activation command
+            // In the future, this will integrate with a backend service
+            const commands = [
+                `cd "${path}"`,
+                `source venv/bin/activate`,  // Linux/Mac
+                `# Or on Windows: venv\\Scripts\\activate`
+            ];
+            const command = commands.join(' && ');
+            
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '🔄 Activating...';
+            button.style.background = '#E64A19';
+            
+            // Copy command to clipboard for now
+            navigator.clipboard.writeText(command).then(() => {
+                setTimeout(() => {
+                    button.textContent = '📋 Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#FF5722';
+                    }, 1500);
+                }, 500);
+            }).catch(() => {
+                alert(`Command copied to clipboard: ${command}`);
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#FF5722';
+                }, 2000);
             });
         }
 
