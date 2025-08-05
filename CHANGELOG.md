@@ -8,12 +8,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Dynamic project scanning from filesystem
 - Git integration with commit history
 - Project health dashboard
 - Dark mode toggle
 - Backend API development
 - Mobile app version
+- Manual add/remove project functionality
+
+## [1.2.0] - 2025-08-04
+
+### Added
+- **🔍 Dynamic Project Scanning**
+  - New "🔍 Scan Folders" button for real-time project discovery
+  - Browser-based folder selection using File System Access API
+  - Multi-project scanning from parent directories
+  - Hybrid system combining hardcoded projects with user-scanned projects
+
+- **🤖 Intelligent Auto-Detection**
+  - Automatic CLAUDE.md detection and marking
+  - Virtual environment detection (venv/, .venv/, requirements.txt)
+  - README file detection (README.md, readme.txt, etc.)
+  - Technology stack analysis from file extensions
+  - Smart project categorization based on structure and naming
+
+- **📊 Advanced Project Analysis**
+  - Technology mapping for 15+ languages (Python, JavaScript, TypeScript, Java, C++, Rust, Go, etc.)
+  - Framework detection (Node.js, Docker, Python packages)
+  - Category classification (Web Application, AI/ML Project, Backend Service, Mobile App)
+  - Status detection (Production vs Development based on Docker files, test files)
+  - Automatic tag generation for enhanced filtering
+
+- **🎨 Enhanced User Interface**
+  - Custom favicon with folder and project dots design
+  - Visual scanning feedback with button state changes
+  - Success notification system with toast messages
+  - Updated subtitle encouraging dynamic project discovery
+
+### Improved
+- **Enhanced Folder Opening**
+  - Fixed folder opening to copy system commands instead of opening browser tabs
+  - Better platform detection (Windows explorer, macOS open, Linux xdg-open)
+  - Improved user feedback with clipboard integration
+
+- **Project Data Management**
+  - Seamless merging of hardcoded and scanned projects
+  - Non-destructive scanning that preserves existing projects
+  - Real-time project list updates without page refresh
+
+### Technical
+- Implemented browser File System Access API integration
+- Added comprehensive file analysis engine
+- Created intelligent project categorization algorithms
+- Enhanced notification system with styled toast messages
+- Improved data persistence and project state management
 
 ## [1.1.0] - 2025-08-04
 

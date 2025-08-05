@@ -14,17 +14,18 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## ✨ Features
 
-### Current Features (v1.1)
+### Current Features (v1.2)
 - **📊 Project Dashboard**: Visual overview of all projects with statistics
-- **🔍 Real-time Search**: Instant search across project names, descriptions, and technologies
-- **🏷️ Category Filtering**: Filter by project type (Production, Development, AI/ML, Web)
+- **🔍 Dynamic Project Scanning**: Real-time project discovery from your filesystem
+- **🤖 Intelligent Auto-Detection**: Automatic detection of CLAUDE.md, virtual environments, and README files
+- **📊 Smart Project Analysis**: Technology stack detection and categorization from file structures
+- **🏷️ Advanced Filtering**: Filter by project type (Production, Development, AI/ML, Web)
 - **📁 Enhanced Folder Access**: Smart folder opening with platform-specific commands
 - **📋 Path Management**: Copy project paths to clipboard
-- **🤖 CLAUDE.md Integration**: Visual indicators and one-click Claude launching for projects with CLAUDE.md
-- **🐍 Virtual Environment Support**: Detect and activate Python virtual environments
+- **🎨 Custom Favicon**: Professional branding with folder and project dots design
 - **📱 Responsive Design**: Works on desktop and mobile devices
 - **⌨️ Keyboard Shortcuts**: Ctrl+R to refresh, efficient navigation
-- **🎨 Modern UI**: Clean, intuitive interface with hover effects and animations
+- **🎨 Modern UI**: Clean, intuitive interface with toast notifications and animations
 
 ### Project Information Displayed
 - Project name and description
@@ -75,21 +76,34 @@ start project-tracker.html
 
 ### Usage
 1. **Browse Projects**: Scroll through the grid of project cards
-2. **Search**: Use the search bar to find specific projects by name or technology
-3. **Filter**: Click category buttons to filter by project type
-4. **Access Projects**: 
+2. **Scan Your Projects**: Click "🔍 Scan Folders" to dynamically discover projects from your filesystem
+3. **Search**: Use the search bar to find specific projects by name or technology
+4. **Filter**: Click category buttons to filter by project type
+5. **Access Projects**: 
    - Click "📁 Open" to open the project directory in file explorer
    - Click "📄 README" to view project documentation
    - Click "🤖 Claude" to copy `claude --continue` command (for projects with CLAUDE.md)
    - Click "🐍 Activate" to copy virtual environment activation commands
    - Click "📋 Copy" to copy the full path to clipboard
-5. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to update the view
+6. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to update the view
 
 ### Developer Workflow Integration
-- **CLAUDE.md Projects**: Projects with 🤖 indicator have Claude integration ready
-- **Python Projects**: Projects with 🐍 indicator have virtual environments configured
+- **🔍 Dynamic Discovery**: Scan any directory to automatically discover and analyze projects
+- **🤖 CLAUDE.md Projects**: Projects with 🤖 indicator have Claude integration ready
+- **🐍 Python Projects**: Projects with 🐍 indicator have virtual environments configured
+- **📊 Smart Analysis**: Automatic detection of technologies, frameworks, and project types
 - **Smart Commands**: Action buttons copy appropriate commands to clipboard for immediate use
 - **Platform Detection**: Commands are automatically tailored for Windows, macOS, or Linux
+
+### Dynamic Project Scanning
+- **Real-time Discovery**: Click "🔍 Scan Folders" to analyze your project directories
+- **Intelligent Detection**: Automatically identifies:
+  - Programming languages and frameworks
+  - Virtual environments and dependencies
+  - Documentation and configuration files
+  - Project types and categories
+- **Seamless Integration**: Scanned projects appear immediately with full feature detection
+- **Non-destructive**: Scanning adds to existing projects without data loss
 
 ## 📈 Project Statistics
 

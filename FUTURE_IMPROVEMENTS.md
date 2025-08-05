@@ -3,45 +3,58 @@
 ## Overview
 This document outlines planned enhancements and future development ideas for the Project Tracker system.
 
-## Recently Completed (v1.1.0)
+## Recently Completed
 
-### ✅ CLAUDE.md Detection & Integration
+### ✅ Dynamic Project Scanning (v1.2.0)
+**Status**: COMPLETED 2025-08-04
+- [x] Browser-based folder selection using File System Access API
+- [x] Real-time project discovery from filesystem
+- [x] Multi-project scanning from parent directories
+- [x] Hybrid system combining hardcoded and scanned projects
+- [x] Intelligent auto-detection of CLAUDE.md, venv, README files
+- [x] Technology stack analysis from file extensions (15+ languages)
+- [x] Smart project categorization and status detection
+- [x] Custom favicon design with folder and project theme
+- [x] Toast notification system for user feedback
+
+### ✅ CLAUDE.md Detection & Integration (v1.1.0)
 **Status**: COMPLETED 2025-08-04
 - [x] Detect CLAUDE.md presence in projects
 - [x] Visual indicators on project cards (🤖 icon)
 - [x] One-click Claude launching with `claude --continue` command
 - [x] Conditional rendering of Claude action buttons
 
-### ✅ Virtual Environment Management  
+### ✅ Virtual Environment Management (v1.1.0)
 **Status**: COMPLETED 2025-08-04
 - [x] Detect Python virtual environment presence
 - [x] Visual indicators on project cards (🐍 icon)
 - [x] Platform-specific activation commands (Linux/Mac/Windows)
 - [x] One-click venv activation command copying
 
-### ✅ Enhanced Project Cards
+### ✅ Enhanced Project Cards (v1.1.0)
 **Status**: COMPLETED 2025-08-04
 - [x] Expanded info grid from 2 to 3 columns
 - [x] Added CLAUDE.md and Virtual Env status indicators
 - [x] New action buttons with color coding
 - [x] Smart conditional rendering based on capabilities
 
-### ✅ Improved Folder Opening
+### ✅ Improved Folder Opening (v1.1.0 + v1.2.0)
 **Status**: COMPLETED 2025-08-04
 - [x] Platform-specific folder opening commands
 - [x] Fallback to copying system commands to clipboard
 - [x] Better error handling and user feedback
+- [x] Fixed browser tab opening issue
 
 ## High Priority Improvements
 
-### 1. Dynamic Project Scanning
-**Current State**: Projects are hardcoded in JavaScript  
-**Target**: Automatic filesystem scanning
+### 1. Backend API Development
+**Current State**: Browser-based scanning with limitations  
+**Target**: Full backend API for advanced features
 - [ ] Implement backend API (Node.js/Python) for directory scanning
 - [ ] Real-time filesystem monitoring for project changes
 - [ ] Configurable scan depth and exclusion patterns
 - [ ] Cache system for faster subsequent loads
-- [ ] **Auto-detection of CLAUDE.md and venv directories**
+- [ ] **Bulk project operations and management**
 
 ### 2. Git Integration
 **Priority**: High  
