@@ -5,6 +5,16 @@ This document outlines planned enhancements and future development ideas for the
 
 ## Recently Completed
 
+### ✅ Backend API Development (v1.3.0)
+**Status**: COMPLETED 2025-08-05
+- [x] Node.js Express backend service for filesystem scanning
+- [x] RESTful API endpoints (/api/projects, /api/health, /api/config) 
+- [x] Automatic project discovery on page load and refresh
+- [x] Real-time filesystem analysis with comprehensive project detection
+- [x] Platform-agnostic scanning with configurable directories
+- [x] Fallback system for offline backend scenarios
+- [x] CORS support for frontend-backend communication
+
 ### ✅ Dynamic Project Scanning (v1.2.0)
 **Status**: COMPLETED 2025-08-04
 - [x] Browser-based folder selection using File System Access API
@@ -45,16 +55,33 @@ This document outlines planned enhancements and future development ideas for the
 - [x] Better error handling and user feedback
 - [x] Fixed browser tab opening issue
 
+### ✅ Dark Mode Implementation (v1.4.0)
+**Status**: COMPLETED 2025-08-07
+- [x] Dark/light theme toggle with system preference detection
+- [x] Comprehensive CSS variable system for maintainable theming
+- [x] Persistent theme preferences using localStorage
+- [x] Smooth transitions between themes
+- [x] Eye-friendly dark color palette
+- [x] Theme-aware notifications and all UI components
+
+### ✅ Enhanced Directory Management (v1.4.0)
+**Status**: COMPLETED 2025-08-07
+- [x] Individual project directory scanning (not parent directories)
+- [x] Non-disruptive project addition without automatic refreshes
+- [x] Batched operations workflow with "Finish & Refresh Projects" button
+- [x] Improved modal interface with clear action buttons
+- [x] Better user feedback and workflow guidance
+
 ## High Priority Improvements
 
-### 1. Backend API Development
-**Current State**: Browser-based scanning with limitations  
-**Target**: Full backend API for advanced features
-- [ ] Implement backend API (Node.js/Python) for directory scanning
-- [ ] Real-time filesystem monitoring for project changes
-- [ ] Configurable scan depth and exclusion patterns
-- [ ] Cache system for faster subsequent loads
+### 1. Advanced Backend Features
+**Current State**: Basic backend API implemented  
+**Target**: Enhanced backend capabilities for power users
+- [ ] Real-time filesystem monitoring for project changes (file watchers)
+- [ ] Configurable scan depth and exclusion patterns via API
+- [ ] Intelligent cache system for faster subsequent loads
 - [ ] **Bulk project operations and management**
+- [ ] Background project indexing and search optimization
 
 ### 2. Git Integration
 **Priority**: High  
@@ -97,7 +124,7 @@ This document outlines planned enhancements and future development ideas for the
 - [ ] Technology stack evolution over time
 
 ### 6. Enhanced User Interface
-- [ ] Dark/light theme toggle with system preference detection
+- [x] ~~Dark/light theme toggle with system preference detection~~ ✅ **COMPLETED v1.4.0**
 - [ ] Customizable project card layouts
 - [ ] Drag-and-drop project organization
 - [ ] Keyboard navigation shortcuts
