@@ -3,65 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Tracker - /mnt/f/ Directory</title>
+    <title>🤖 Claude Tracker - Claude Project Management</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQQSURBVFhHrZd7UFNnFMafJIRwCRAuAQJcDCgIiFoRtVrwUkfqjCPa6oxaO1M7Y2e0nXamM/3DdqY6nbGdTlu1rXWsnalap05bO2NnrJ2xM1pb66V4QUURQRBBuVmQS0IISe7vnJOwMdmd9ps5yZf3O+97nvd5v5MV7H+0/7QBT/xfOVAHfgEcCHjOaYDnQhMoTfRlbHbm5vnuzPJqbNZBDvjObAb8VoHJfivMYytmvU20D3DAvzQyN+rUunfX7Xon74SuBnKM6U8Z3bXd+2fVRJ1Kv7HgxLI3c45yk+hL2Oy8+n5V5hcEOCMzP+vHZPZx7tMvL/vdU6tLJCkZ8MRRBjjgM5fW7M3E6Ey7wKvxWWNjImOjI5AaF4/oBDkSFQokaBRISpCe5PNvb5NlcfLzk3M4xHKMOV5vZfxq+Xun55m1T2HABNiPQ7A8Yoy9nJUZmJQgPcnOzBUXycl/vFbyzLOzc7IzI1MyOHl6ZjaXcy9wFzjDkE20DuCZgCH14tfytDXOQTtsx6ANdqDNYkHwVU+HGZrWhsafWm03lBstz8lyl5K3Nny6+QXJDOeBgCdtMAQuK5DKjfFbtjFNHb5rTYk2W0Z+aW5W0qUjW7YjDe0tELhsULWmwX4zBrh4YtDELc6wOzFhz4k39vGJHoF6o3xLwGHDHaADtGQKuDHI+HCvtaFVfnRn5HMPFK3m8J58aI1xoNE8kfMhj/WwGg1gYh1/Xk/rBjzNYoGPt3y5gQNcP6JGI3hHPIJDJe3ZWUJO7Y+o62VJa4lBT3eTGf3GDqAnNdw48yTqhpz4/J1Fs58VRgPjEQ5jJjZt7mJJjEU8oYmKSZCmJAUc2l27I+eX6l8GCNN7sWXpWlkS35DzZ+dIE6nJ6FJGKPSO1AOXJ3u5a5cPBmgFLQO2sxWQzHzRjsznEXs+f2CyAG4PYDCo0apyoPLQfgxYnaioqzjKHdQNeBwGAP4WmJvA3Q5ZI6gzruzaXvMqzw5HQJBnNjuQcek43kzLgGFfI8pLt7ITPTjA5wbstwD3FHC3gi0CtBLQCrCKrYzc+z1YIGbfPBywz3E5JFMTtTt6c7/vP9TmFGFwwfgAGKsCNALQaOCBPwRF7c1l3AEdd8CAI+BWHFjVBGoJtA7QEmglUAtoKbTFkxeOFO7QnePeP9E6YB1JVHRVfJi3pexbdqgBmhTb7vS++lO8qTZfXQT4SrfP9YqCo48RgxnKuCRV5YIlH5RqKnKPn+COHwrEIjRqODTxO5W5Ry9xn3/r/wBVaZQwJK4a7AAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQQSURBVFhHrZd7UFNnFMafJIRwCRAuAQJcDCgIiFoRtVrwUkfqjCPa6oxaO1M7Y2e0nXamM/3DdqY6nbGdTlu1rXWsnalap05bO2NnrJ2xM1pb66V4QUURQRBBuVmQS0IISe7vnJOwMdmd9ps5yZf3O+97nvd5v5MV7H+0/7QBT/xfOVAHfgEcCHjOaYDnQhMoTfRlbHbm5vnuzPJqbNZBDvjObAb8VoHJfivMYytmvU20D3DAvzQyN+rUunfX7Xon74SuBnKM6U8Z3bXd+2fVRJ1Kv7HgxLI3c45yk+hL2Oy8+n5V5hcEOCMzP+vHZPZx7tMvL/vdU6tLJCkZ8MRRBjjgM5fW7M3E6Ey7wKvxWWNjImOjI5AaF4/oBDkSFQokaBRISpCe5PNvb5NlcfLzk3M4xHKMOV5vZfxq+Xun55m1T2HABNiPQ7A8Yoy9nJUZmJQgPcnOzBUXycl/vFbyzLOzc7IzI1MyOHl6ZjaXcy9wFzjDkE20DuCZgCH14tfytDXOQTtsx6ANdqDNYkHwVU+HGZrWhsafWm03lBstz8lyl5K3Nny6+QXJDOeBgCdtMAQuK5DKjfFbtjFNHb5rTYk2W0Z+aW5W0qUjW7YjDe0tELhsULWmwX4zBrh4YtDELc6wOzFhz4k39vGJHoF6o3xLwGHDHaADtGQKuDHI+HCvtaFVfnRn5HMPFK3m8J58aI1xoNE8kfMhj/WwGg1gYh1/Xk/rBjzNYoGPt3y5gQNcP6JGI3hHPIJDJe3ZWUJO7Y+o62VJa4lBT3eTGf3GDqAnNdw48yTqhpz4/J1Fs58VRgPjEQ5jJjZt7mJJjEU8oYmKSZCmJAUc2l27I+eX6l8GCNN7sWXpWlkS35DzZ+dIE6nJ6FJGKPSO1AOXJ3u5a5cPBmgFLQO2sxWQzHzRjsznEXs+f2CyAG4PYDCo0apyoPLQfgxYnaioqzjKHdQNeBwGAP4WmJvA3Q5ZI6gzruzaXvMqzw5HQJBnNjuQcek43kzLgGFfI8pLt7ITPTjA5wbstwD3FHC3gi0CtBLQCrCKrYzc+z1YIGbfPBywz3E5JFMTtTt6c7/vP9TmFGFwwfgAGKsCNALQaOCBPwRF7c1l3AEdd8CAI+BWHFjVBGoJtA7QEmglUAtoKbTFkxeOFO7QnePeP9E6YB1JVHRVfJi3pexbdqgBmhTb7vS++lO8qTZfXQT4SrfP9YqCo48RgxnKuCRV5YIlH5RqKnKPn+COHwrEIjRqODTxO5W5Ry9xn3/r/wBVaZQwJK4a7AAAAABJRU5ErkJggg==">
     <style>
-        :root {
-            /* Light mode colors */
-            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --bg-container: #ffffff;
-            --text-primary: #333333;
-            --text-secondary: #666666;
-            --text-muted: #999999;
-            --border-color: #e0e0e0;
-            --card-bg: #fafafa;
-            --card-hover-shadow: rgba(0,0,0,0.1);
-            --button-primary: #667eea;
-            --button-success: #4CAF50;
-            --button-danger: #f44336;
-            --button-warning: #FF9800;
-            --button-secondary: #f5f5f5;
-            --nav-bg: rgba(255, 255, 255, 0.95);
-            --nav-border: rgba(255, 255, 255, 0.3);
-            --modal-bg: rgba(0, 0, 0, 0.5);
-            --modal-content-bg: #ffffff;
-            --input-bg: #ffffff;
-            --input-border: #ddd;
-            --notification-info: #2196F3;
-            --notification-success: #4CAF50;
-            --notification-error: #f44336;
-        }
-
-        [data-theme="dark"] {
-            /* Dark mode colors */
-            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            --bg-container: #1f1f1f;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
-            --border-color: #444444;
-            --card-bg: #2d2d2d;
-            --card-hover-shadow: rgba(255,255,255,0.05);
-            --button-primary: #4a90e2;
-            --button-success: #5cb85c;
-            --button-danger: #e74c3c;
-            --button-warning: #f39c12;
-            --button-secondary: #404040;
-            --nav-bg: rgba(31, 31, 31, 0.95);
-            --nav-border: rgba(255, 255, 255, 0.1);
-            --modal-bg: rgba(0, 0, 0, 0.8);
-            --modal-content-bg: #2d2d2d;
-            --input-bg: #404040;
-            --input-border: #555555;
-            --notification-info: #3498db;
-            --notification-success: #27ae60;
-            --notification-error: #e74c3c;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -70,27 +18,41 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             min-height: 100vh;
             padding: 20px;
-            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Claude-specific body indicator */
+        body::before {
+            content: '🤖';
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            opacity: 0.3;
+            z-index: 1000;
+            animation: pulse-claude 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-claude {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: var(--bg-container);
-            color: var(--text-primary);
+            background: white;
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 20px 40px var(--card-hover-shadow);
-            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
         h1 {
             text-align: center;
-            color: var(--text-primary);
+            color: #333;
             margin-bottom: 10px;
             font-size: 2.5em;
             font-weight: 300;
@@ -98,7 +60,7 @@
 
         .subtitle {
             text-align: center;
-            color: var(--text-secondary);
+            color: #666;
             margin-bottom: 30px;
             font-size: 1.1em;
         }
@@ -218,43 +180,6 @@
 
         .modal-body {
             padding: 20px;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding: 20px;
-            border-top: 1px solid #eee;
-            background: #fafafa;
-            border-radius: 0 0 12px 12px;
-        }
-        .finish-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-        .finish-btn:hover {
-            background: #45a049;
-        }
-        .cancel-btn {
-            background: #f5f5f5;
-            color: #666;
-            border: 1px solid #ddd;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        .cancel-btn:hover {
-            background: #e9e9e9;
-            color: #333;
         }
 
         .directory-section {
@@ -421,80 +346,51 @@
             transition: opacity 0.5s ease-out;
         }
 
-        /* Navigation Bar */
+        /* Navigation Bar - Claude Theme */
         .navigation-bar {
-            padding: 20px 30px;
-            margin-bottom: 30px;
+            background: rgba(76, 175, 80, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 0;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
         }
 
         .nav-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             gap: 20px;
-            padding: 15px 25px;
-            background: var(--nav-bg);
-            backdrop-filter: blur(15px);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px var(--card-hover-shadow);
-            border: 1px solid var(--nav-border);
-            transition: all 0.3s ease;
+            padding: 0 20px;
         }
 
         .nav-item {
             padding: 8px 16px;
             border-radius: 6px;
             text-decoration: none;
-            color: #666;
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
 
         .nav-item:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            border-color: rgba(102, 126, 234, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .nav-item.active {
-            background: var(--button-primary);
-            color: white;
-            border-color: var(--button-primary);
-        }
-
-        .theme-toggle {
-            background: var(--button-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-left: auto;
-            font-size: 16px;
-        }
-
-        .theme-toggle:hover {
-            background: var(--button-primary);
-            color: white;
-            border-color: var(--button-primary);
-        }
-
-        .theme-icon {
-            display: inline-block;
-            transition: transform 0.3s ease;
-        }
-
-        .theme-toggle:hover .theme-icon {
-            transform: rotate(180deg);
+            background: white;
+            color: #4CAF50;
+            border-color: white;
         }
 
         .nav-item.active:hover {
-            background: #5a67d8;
-            border-color: #5a67d8;
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.9);
         }
 
         .filter-btn:hover {
@@ -504,18 +400,15 @@
         .search-box {
             flex: 1;
             padding: 12px 16px;
-            border: 2px solid var(--input-border);
-            background: var(--input-bg);
-            color: var(--text-primary);
+            border: 2px solid #ddd;
             border-radius: 6px;
             font-size: 16px;
             min-width: 250px;
-            transition: all 0.3s ease;
         }
 
         .search-box:focus {
             outline: none;
-            border-color: var(--button-primary);
+            border-color: #667eea;
         }
 
         .projects-grid {
@@ -526,17 +419,16 @@
         }
 
         .project-card {
-            border: 1px solid var(--border-color);
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
             padding: 20px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
+            background: #fafafa;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px var(--card-hover-shadow);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         .project-title {
@@ -616,6 +508,17 @@
         .tag.ai { background: #2196F3; }
         .tag.quantum { background: #E91E63; }
         .tag.web { background: #00BCD4; }
+        
+        /* Claude-specific tags */
+        .tag.active { background: #4CAF50; }
+        .tag.configured { background: #FF9800; }
+        .tag.partial-setup { background: #FF5722; }
+        .tag.directory-only { background: #757575; }
+        .tag.mathematical-computing { background: #9C27B0; }
+        .tag.web-development { background: #00BCD4; }
+        .tag.data-science { background: #2196F3; }
+        .tag.game-development { background: #E91E63; }
+        .tag.general { background: #607D8B; }
 
         .project-actions {
             display: flex;
@@ -744,41 +647,34 @@
     <!-- Navigation Bar -->
     <div class="navigation-bar">
         <div class="nav-container">
-            <a href="project-tracker.html" class="nav-item active">🗂️ Project Tracker</a>
-            <a href="claude-tracker.html" class="nav-item">🤖 Claude Tracker</a>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
-                <span class="theme-icon">🌙</span>
-            </button>
+            <a href="project-tracker.html" class="nav-item">🗂️ Project Tracker</a>
+            <a href="claude-tracker.html" class="nav-item active">🤖 Claude Tracker</a>
         </div>
     </div>
 
     <div class="container">
-        <h1>🗂️ Project Tracker</h1>
-        <div class="subtitle">Dynamic project discovery and management • Auto-refreshes from filesystem</div>
+        <h1>🤖 Claude Tracker</h1>
+        <div class="subtitle">Claude project discovery and management • Auto-refreshes from filesystem</div>
         
         <div class="controls">
             <button class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
             <button class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Manage Directories</button>
-            <input type="text" class="search-box" placeholder="Search projects..." onkeyup="filterProjects()" id="searchInput">
+            <input type="text" class="search-box" placeholder="Search Claude projects..." onkeyup="filterProjects()" id="searchInput">
             <button class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
-            <button class="filter-btn" onclick="toggleFilter('production')" data-filter="production">Production</button>
-            <button class="filter-btn" onclick="toggleFilter('development')" data-filter="development">Development</button>
-            <button class="filter-btn" onclick="toggleFilter('ai')" data-filter="ai">AI/ML</button>
-            <button class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web</button>
+            <button class="filter-btn" onclick="toggleFilter('active')" data-filter="active">Active</button>
+            <button class="filter-btn" onclick="toggleFilter('configured')" data-filter="configured">Configured</button>
+            <button class="filter-btn" onclick="toggleFilter('partial')" data-filter="partial">Partial Setup</button>
+            <button class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web Dev</button>
         </div>
         
         <!-- Directory Management Modal -->
         <div id="directoryModal" class="modal" style="display: none;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>⚙️ Manage Project Directories</h2>
-                    <button class="modal-close" onclick="toggleDirectoryManager()" title="Close without refreshing">&times;</button>
+                    <h2>⚙️ Manage Scan Directories</h2>
+                    <button class="modal-close" onclick="toggleDirectoryManager()">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p style="background: #e3f2fd; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; color: #1976d2;">
-                        💡 <strong>Tip:</strong> Add/remove projects without automatic refreshes. Click "Finish & Refresh Projects" when you're done to see changes.
-                    </p>
-                    
                     <div class="directory-section">
                         <h3>Current Directories</h3>
                         <div id="currentDirectories" class="directory-list">
@@ -787,14 +683,11 @@
                     </div>
                     
                     <div class="directory-section">
-                        <h3>Add Individual Project Directory</h3>
+                        <h3>Add New Directory</h3>
                         <div class="add-directory-form">
-                            <input type="text" id="newDirectoryPath" placeholder="/path/to/specific-project" class="directory-input">
-                            <button onclick="addDirectory()" class="add-btn">➕ Add Project</button>
+                            <input type="text" id="newDirectoryPath" placeholder="/path/to/your/projects" class="directory-input">
+                            <button onclick="addDirectory()" class="add-btn">➕ Add Directory</button>
                         </div>
-                        <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
-                            ℹ️ Add the path to a specific project directory (e.g., /home/user/my-web-app), not parent directories containing multiple projects.
-                        </p>
                     </div>
                     
                     <div class="directory-section">
@@ -805,37 +698,33 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button onclick="finishDirectoryChanges()" class="finish-btn">✅ Finish & Refresh Projects</button>
-                    <button onclick="toggleDirectoryManager()" class="cancel-btn">Cancel</button>
-                </div>
             </div>
         </div>
         
         <div class="stats" id="stats">
             <div class="stat-item">
-                <div class="stat-number" id="totalProjects">51</div>
-                <div class="stat-label">Total Projects</div>
+                <div class="stat-number" id="totalProjects">0</div>
+                <div class="stat-label">Total Claude Projects</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="productionProjects">15</div>
-                <div class="stat-label">Production</div>
+                <div class="stat-number" id="activeProjects">0</div>
+                <div class="stat-label">Active</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="developmentProjects">25</div>
-                <div class="stat-label">Development</div>
+                <div class="stat-number" id="configuredProjects">0</div>
+                <div class="stat-label">Configured</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="aiProjects">18</div>
-                <div class="stat-label">AI/ML Projects</div>
+                <div class="stat-number" id="partialProjects">0</div>
+                <div class="stat-label">Partial Setup</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="quantumProjects">8</div>
-                <div class="stat-label">Quantum Computing</div>
+                <div class="stat-number" id="permissionProjects">0</div>
+                <div class="stat-label">With Permissions</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="webProjects">12</div>
-                <div class="stat-label">Web Applications</div>
+                <div class="stat-number" id="webProjects">0</div>
+                <div class="stat-label">Web Development</div>
             </div>
         </div>
 
@@ -1216,12 +1105,13 @@
             
             projectsContainer.innerHTML = filteredProjects.map(project => `
                 <div class="project-card">
-                    <div class="project-title">${project.name}</div>
+                    <div class="project-title">🤖 ${project.name}</div>
                     <div class="project-path">${project.path}</div>
-                    <div class="project-description">${project.description}</div>
+                    <div class="project-description">${project.claudeRole || 'Claude-enabled project'}</div>
                     
                     <div class="project-tags">
-                        ${project.tags.map(tag => `<span class="tag ${tag}">${tag}</span>`).join('')}
+                        <span class="tag ${project.status.toLowerCase().replace(' ', '-')}">${project.status}</span>
+                        <span class="tag ${project.projectType.toLowerCase().replace(/[^a-z0-9]/g, '-')}">${project.projectType}</span>
                     </div>
                     
                     <div class="project-info">
@@ -1230,34 +1120,34 @@
                             <div class="info-value">${project.status}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Category</div>
-                            <div class="info-value">${project.category}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Technologies</div>
-                            <div class="info-value">${project.technologies}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">README</div>
-                            <div class="info-value">${project.hasReadme ? '✅ Yes' : '❌ No'}</div>
+                            <div class="info-label">Project Type</div>
+                            <div class="info-value">${project.projectType}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">CLAUDE.md</div>
-                            <div class="info-value">${project.hasClaude === true ? '🤖 Yes' : (project.hasClaude === false ? '❌ No' : '❓ Unknown')}</div>
+                            <div class="info-value">${project.hasClaudeFile ? '📄 Yes' : '❌ No'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Virtual Env</div>
-                            <div class="info-value">${project.hasVenv === true ? '🐍 Yes' : (project.hasVenv === false ? '❌ No' : '❓ Unknown')}</div>
+                            <div class="info-label">Claude Config</div>
+                            <div class="info-value">${project.hasClaudeDir ? '⚙️ Yes' : '❌ No'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Permissions</div>
+                            <div class="info-value">${project.permissionCount} rules</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Last Activity</div>
+                            <div class="info-value">${new Date(project.lastActivity).toLocaleDateString()}</div>
                         </div>
                     </div>
                     
                     <div class="project-actions">
                         <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
-                        ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')">📄 README</button>` : ''}
-                        ${project.hasClaude === true ? `<button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🤖 Claude</button>` : ''}
-                        ${project.hasVenv === true ? `<button class="action-btn venv-btn" onclick="activateVenv('${project.path}')">🐍 Activate</button>` : ''}
+                        ${project.hasClaudeFile ? `<button class="action-btn view-readme" onclick="viewClaudeFile('${project.path}')">📄 CLAUDE.md</button>` : ''}
+                        <button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🚀 Launch Claude</button>
+                        ${project.hasClaudeDir ? `<button class="action-btn settings-btn" onclick="viewClaudeSettings('${project.path}')">⚙️ Settings</button>` : ''}
                         <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
-                        <button class="action-btn ignore-btn" onclick="ignoreDirectory('${project.path}')" title="Remove this project from tracker">🚫 Remove</button>
+                        <button class="action-btn ignore-btn" onclick="ignoreDirectory('${project.path}')" title="Remove this directory from scan list">🚫 Ignore</button>
                     </div>
                 </div>
             `).join('');
@@ -1271,14 +1161,15 @@
             filteredProjects = projectsData.filter(project => {
                 const matchesSearch = searchTerm === '' || 
                     project.name.toLowerCase().includes(searchTerm) ||
-                    project.description.toLowerCase().includes(searchTerm) ||
-                    project.technologies.toLowerCase().includes(searchTerm) ||
-                    project.category.toLowerCase().includes(searchTerm);
+                    (project.claudeRole && project.claudeRole.toLowerCase().includes(searchTerm)) ||
+                    project.projectType.toLowerCase().includes(searchTerm) ||
+                    project.path.toLowerCase().includes(searchTerm);
                 
                 const matchesFilter = currentFilter === 'all' || 
-                    project.tags.includes(currentFilter) ||
-                    (currentFilter === 'production' && project.status === 'Production') ||
-                    (currentFilter === 'development' && project.status === 'Development');
+                    (currentFilter === 'active' && project.status === 'Active') ||
+                    (currentFilter === 'configured' && project.status === 'Configured') ||
+                    (currentFilter === 'partial' && project.status === 'Partial Setup') ||
+                    (currentFilter === 'web' && project.projectType.includes('Web'));
                 
                 return matchesSearch && matchesFilter;
             });
@@ -1303,19 +1194,19 @@
         function updateStats() {
             const stats = {
                 total: filteredProjects.length,
-                production: filteredProjects.filter(p => p.status === 'Production').length,
-                development: filteredProjects.filter(p => p.status === 'Development').length,
-                ai: filteredProjects.filter(p => p.tags.includes('ai')).length,
-                quantum: filteredProjects.filter(p => p.tags.includes('quantum')).length,
-                web: filteredProjects.filter(p => p.tags.includes('web')).length
+                active: filteredProjects.filter(p => p.status === 'Active').length,
+                configured: filteredProjects.filter(p => p.status === 'Configured').length,
+                partial: filteredProjects.filter(p => p.status === 'Partial Setup').length,
+                withPermissions: filteredProjects.filter(p => p.permissionCount > 0).length,
+                webProjects: filteredProjects.filter(p => p.projectType.includes('Web')).length
             };
 
             document.getElementById('totalProjects').textContent = stats.total;
-            document.getElementById('productionProjects').textContent = stats.production;
-            document.getElementById('developmentProjects').textContent = stats.development;
-            document.getElementById('aiProjects').textContent = stats.ai;
-            document.getElementById('quantumProjects').textContent = stats.quantum;
-            document.getElementById('webProjects').textContent = stats.web;
+            document.getElementById('activeProjects').textContent = stats.active;
+            document.getElementById('configuredProjects').textContent = stats.configured;
+            document.getElementById('partialProjects').textContent = stats.partial;
+            document.getElementById('permissionProjects').textContent = stats.withPermissions;
+            document.getElementById('webProjects').textContent = stats.webProjects;
         }
 
         function openFolder(path) {
@@ -1398,6 +1289,16 @@
             });
         }
 
+        function viewClaudeFile(projectPath) {
+            const claudePath = `${projectPath}/CLAUDE.md`;
+            window.open(`file://${claudePath}`, '_blank');
+        }
+
+        function viewClaudeSettings(projectPath) {
+            const settingsPath = `${projectPath}/.claude/settings.local.json`;
+            window.open(`file://${settingsPath}`, '_blank');
+        }
+
         function activateVenv(path) {
             // For now, show the activation command
             // In the future, this will integrate with a backend service
@@ -1454,7 +1355,7 @@
             try {
                 showNotification('🔍 Scanning filesystem...', 'info');
                 
-                const response = await fetch(`${API_BASE_URL}/projects`);
+                const response = await fetch(`${API_BASE_URL}/claude/projects`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -1632,19 +1533,16 @@
         function showNotification(message, type = 'info') {
             // Simple notification system
             const notification = document.createElement('div');
-            const bgColor = type === 'success' ? 'var(--notification-success)' : 
-                           type === 'error' ? 'var(--notification-error)' : 'var(--notification-info)';
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: ${bgColor};
+                background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
                 color: white;
                 padding: 15px 20px;
-                border-radius: 8px;
+                border-radius: 5px;
                 z-index: 1000;
-                box-shadow: 0 4px 12px var(--card-hover-shadow);
-                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
@@ -1655,36 +1553,8 @@
         }
         
 
-        // Dark Mode Functions
-        function initializeTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon(savedTheme);
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-            
-            // Show notification
-            showNotification(`✨ Switched to ${newTheme} mode`, 'info');
-        }
-
-        function updateThemeIcon(theme) {
-            const themeIcon = document.querySelector('.theme-icon');
-            if (themeIcon) {
-                themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-            }
-        }
-
         // Initialize the page
         document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize theme first
-            initializeTheme();
             console.log('Page loaded, loading projects from API...');
             
             // Backup timer to hide loader in case of issues
@@ -1724,20 +1594,6 @@
             } else {
                 modal.style.display = 'none';
             }
-        }
-
-        async function finishDirectoryChanges() {
-            // Close the modal first
-            const modal = document.getElementById('directoryModal');
-            modal.style.display = 'none';
-            
-            // Show notification that refresh is starting
-            showNotification('🔄 Refreshing projects with updated directories...', 'info');
-            
-            // Refresh the projects list
-            await refreshProjects();
-            
-            showNotification('✅ Projects refreshed successfully!', 'success');
         }
 
         async function loadDirectoryConfig() {
@@ -1788,9 +1644,11 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showNotification(`✅ Added project: ${directory}`, 'success');
+                    showNotification(`✅ Added directory: ${directory}`, 'success');
                     input.value = '';
                     loadDirectoryConfig();
+                    // Refresh projects to show new directory contents
+                    setTimeout(() => refreshProjects(), 1000);
                 } else {
                     showNotification(`❌ ${data.error}`, 'error');
                 }
@@ -1817,8 +1675,10 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showNotification(`✅ Removed project: ${directory}`, 'success');
+                    showNotification(`✅ Removed directory: ${directory}`, 'success');
                     loadDirectoryConfig();
+                    // Refresh projects to update the list
+                    setTimeout(() => refreshProjects(), 1000);
                 } else {
                     showNotification(`❌ ${data.error}`, 'error');
                 }
@@ -1851,6 +1711,8 @@
                 if (data.success) {
                     showNotification('✅ Reset to default directories', 'success');
                     loadDirectoryConfig();
+                    // Refresh projects to show updated directories
+                    setTimeout(() => refreshProjects(), 1000);
                 } else {
                     showNotification(`❌ ${data.error}`, 'error');
                 }
@@ -1877,26 +1739,42 @@
 
         async function ignoreDirectory(projectPath) {
             try {
+                // Extract the parent directory from the project path
+                // We need to find which scan directory contains this project
+                const response = await fetch(`${API_BASE_URL}/config`);
+                const configData = await response.json();
+                const scanDirectories = configData.scanDirectories || [];
+                
+                // Find the scan directory that contains this project
+                const parentDirectory = scanDirectories.find(scanDir => 
+                    projectPath.startsWith(scanDir + '/')
+                );
+                
+                if (!parentDirectory) {
+                    showNotification('❌ Could not determine parent directory to ignore', 'error');
+                    return;
+                }
+                
                 const projectName = projectPath.split('/').pop();
-                const confirmMessage = `Are you sure you want to remove "${projectName}" from the tracker?\n\nThis will stop scanning: ${projectPath}`;
+                const confirmMessage = `Are you sure you want to stop scanning "${parentDirectory}"?\n\nThis will remove ALL projects in this directory from the tracker, including "${projectName}".`;
                 
                 if (!confirm(confirmMessage)) {
                     return;
                 }
                 
-                // Remove the project directory from scan list
+                // Remove the parent directory from scan list
                 const deleteResponse = await fetch(`${API_BASE_URL}/directories`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ directory: projectPath })
+                    body: JSON.stringify({ directory: parentDirectory })
                 });
                 
                 const deleteData = await deleteResponse.json();
                 
                 if (deleteData.success) {
-                    showNotification(`✅ Removed project: ${projectName}`, 'success');
+                    showNotification(`✅ Stopped scanning: ${parentDirectory}`, 'success');
                     // Refresh projects to update the list
                     setTimeout(() => refreshProjects(), 1000);
                 } else {

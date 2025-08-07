@@ -10,10 +10,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Git integration with commit history
 - Project health dashboard
-- Dark mode toggle
-- Backend API development
+- Real-time filesystem monitoring
 - Mobile app version
-- Manual add/remove project functionality
+- Advanced caching system
+
+## [1.4.0] - 2025-08-07
+
+### Added
+- **🌙 Dark Mode Implementation**
+  - Complete dark/light theme system with CSS variables
+  - Smooth transitions between themes (0.3s ease)
+  - Persistent theme preferences using localStorage
+  - Eye-friendly dark color palette (deep blues and grays)
+  - Dynamic theme toggle button in navigation bar with animated icons
+  - Theme-aware notifications and UI components
+
+- **⚡ Enhanced Directory Management**
+  - Non-disruptive project addition (no automatic refresh interruptions)
+  - Batched operations workflow with "Finish & Refresh Projects" button
+  - Improved modal footer with clear action buttons
+  - Better user feedback and workflow guidance
+  - Informational tips for optimal usage patterns
+
+- **🎨 UI/UX Improvements**
+  - Enhanced navigation bar styling with rounded corners and improved spacing
+  - Better visual separation between banner and main content
+  - Constrained banner width to match main container
+  - Professional modal design with footer actions
+  - Improved button styling and hover effects
+
+### Changed
+- **Directory Scanning Behavior**: Now scans only individual project directories instead of all subdirectories
+- **Project Addition Workflow**: Removed automatic refresh triggers during bulk operations
+- **Modal Interface**: Added finish/cancel buttons for better control over refresh timing
+- **Theme Integration**: All UI components now use CSS variables for consistent theming
+- **Navigation Layout**: Theme toggle positioned with automatic spacing in nav bar
+
+### Fixed
+- **Directory Management**: Fixed issue where removing one project would remove entire parent directories
+- **Bulk Operations**: Eliminated jarring refresh interruptions during multiple project additions
+- **Theme Persistence**: Ensures no white flash when loading dark mode
+- **UI Consistency**: All form inputs and components now respect theme settings
+
+### Technical
+- Implemented comprehensive CSS variable system for maintainable theming
+- Added localStorage integration for cross-session preference persistence  
+- Enhanced notification system with theme-aware colors
+- Improved JavaScript architecture for theme management
+- Added transition animations for smooth theme switching
+
+## [1.3.0] - 2025-08-05
+
+### Added
+- **🚀 Backend API Service**
+  - Node.js Express server for comprehensive filesystem scanning
+  - RESTful API endpoints: `/api/projects`, `/api/health`, `/api/config`
+  - Automatic project discovery on page load and refresh
+  - Configurable scan directories in backend
+  - Fallback system for offline backend scenarios
+  - CORS support for secure frontend-backend communication
+
+- **⚡ Enhanced Project Analysis**
+  - Real-time filesystem analysis with recursive directory traversal
+  - Intelligent depth limiting to prevent infinite loops
+  - Advanced file type detection (15+ programming languages)
+  - Smart project categorization based on file patterns
+  - Production/Development status detection
+
+- **🛠️ Developer Experience**
+  - Setup script (`setup.sh`) for easy installation
+  - Updated documentation with backend setup instructions
+  - Comprehensive error handling and user feedback
+  - Toast notifications for API status updates
+
+### Changed
+- Frontend now uses backend API instead of browser-based File System Access API
+- Projects automatically refresh from filesystem on page load
+- Improved performance with server-side project analysis
+- Enhanced reliability with fallback to cached projects
+
+### Fixed
+- Eliminated browser security limitations with File System Access API
+- Improved cross-platform compatibility for project scanning
+- Better error handling for inaccessible directories
 
 ## [1.2.0] - 2025-08-04
 

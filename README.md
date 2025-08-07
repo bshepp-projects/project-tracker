@@ -14,7 +14,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## ✨ Features
 
-### Current Features (v1.2)
+### Current Features (v1.4)
 - **📊 Project Dashboard**: Visual overview of all projects with statistics
 - **🔍 Dynamic Project Scanning**: Real-time project discovery from your filesystem
 - **🤖 Intelligent Auto-Detection**: Automatic detection of CLAUDE.md, virtual environments, and README files
@@ -22,10 +22,12 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **🏷️ Advanced Filtering**: Filter by project type (Production, Development, AI/ML, Web)
 - **📁 Enhanced Folder Access**: Smart folder opening with platform-specific commands
 - **📋 Path Management**: Copy project paths to clipboard
-- **🎨 Custom Favicon**: Professional branding with folder and project dots design
-- **📱 Responsive Design**: Works on desktop and mobile devices
+- **🌙 Dark/Light Mode**: Eye-friendly themes with persistent preferences and smooth transitions
+- **⚡ Batched Operations**: Non-disruptive project management with "Finish & Refresh" workflow
+- **🎨 Professional UI**: Rounded navigation bar, improved spacing, and polished interface
+- **📱 Responsive Design**: Works on desktop and mobile devices with theme support
 - **⌨️ Keyboard Shortcuts**: Ctrl+R to refresh, efficient navigation
-- **🎨 Modern UI**: Clean, intuitive interface with toast notifications and animations
+- **🎨 Modern Theming**: Complete CSS variable system for consistent dark/light mode experience
 
 ### Project Information Displayed
 - Project name and description
@@ -51,10 +53,55 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ### Requirements
 - Any modern web browser (Chrome, Firefox, Safari, Edge)
+- Node.js 16+ (for backend API)
 - Local file system access
-- No server installation required!
 
-### Installation
+### Installation & Setup
+
+#### Option 1: With Backend API (Recommended)
+
+**Quick Setup:**
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/project-tracker.git
+cd project-tracker
+
+# Run the setup script (macOS/Linux)
+./setup.sh
+
+# Start the backend server
+cd server && npm start
+# Server will run on http://localhost:3001
+
+# Open the frontend in your browser
+open project-tracker.html  # macOS/Linux
+start project-tracker.html # Windows
+```
+
+**Manual Setup:**
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/project-tracker.git
+cd project-tracker
+
+# Install backend dependencies
+cd server
+npm install
+
+# Start the backend server
+npm start
+# Server will run on http://localhost:3001
+
+# In a new terminal, open the frontend
+cd ..
+# On macOS/Linux:
+open project-tracker.html
+# On Windows:
+start project-tracker.html
+# Or simply double-click the file
+```
+
+#### Option 2: Standalone Frontend Only
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/project-tracker.git
@@ -68,6 +115,8 @@ start project-tracker.html
 # Or simply double-click the file
 ```
 
+Note: The standalone frontend will use fallback project data when the backend is not available.
+
 ### Alternative: Download ZIP
 1. Download the ZIP file from the GitHub releases
 2. Extract to your desired location
@@ -75,23 +124,28 @@ start project-tracker.html
 4. Start exploring your projects!
 
 ### Usage
-1. **Browse Projects**: Scroll through the grid of project cards
-2. **Scan Your Projects**: Click "🔍 Scan Folders" to dynamically discover projects from your filesystem
-3. **Search**: Use the search bar to find specific projects by name or technology
-4. **Filter**: Click category buttons to filter by project type
-5. **Access Projects**: 
+1. **Automatic Discovery**: Projects are automatically scanned from your filesystem on page load
+2. **Theme Selection**: Click the 🌙/☀️ button in the navigation bar to toggle between light and dark modes
+3. **Browse Projects**: Scroll through the grid of project cards with real-time information
+4. **Search**: Use the search bar to find specific projects by name or technology
+5. **Filter**: Click category buttons to filter by project type
+6. **Access Projects**: 
    - Click "📁 Open" to open the project directory in file explorer
    - Click "📄 README" to view project documentation
    - Click "🤖 Claude" to copy `claude --continue` command (for projects with CLAUDE.md)
    - Click "🐍 Activate" to copy virtual environment activation commands
    - Click "📋 Copy" to copy the full path to clipboard
-6. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to update the view
+   - Click "🚫 Remove" to remove the project from tracking
+7. **Manage Projects**: Click "⚙️ Manage Directories" to add/remove individual project directories
+8. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to rescan and update the view
 
 ### Developer Workflow Integration
-- **🔍 Dynamic Discovery**: Scan any directory to automatically discover and analyze projects
+- **🔍 Individual Project Management**: Add specific project directories rather than parent folders
 - **🤖 CLAUDE.md Projects**: Projects with 🤖 indicator have Claude integration ready
 - **🐍 Python Projects**: Projects with 🐍 indicator have virtual environments configured
 - **📊 Smart Analysis**: Automatic detection of technologies, frameworks, and project types
+- **⚡ Batched Operations**: Add/remove multiple projects without interrupting refreshes
+- **🌙 Eye-friendly Development**: Dark mode for extended coding sessions
 - **Smart Commands**: Action buttons copy appropriate commands to clipboard for immediate use
 - **Platform Detection**: Commands are automatically tailored for Windows, macOS, or Linux
 
@@ -118,10 +172,14 @@ The current installation tracks **51+ projects** across categories:
 ```
 project-tracker/
 ├── project-tracker.html          # Main application file
+├── server/                      # Backend API service
+│   ├── server.js               # Express server with project analysis
+│   ├── package.json            # Backend dependencies
+│   └── node_modules/           # Backend node modules
 ├── README.md                     # This file
 ├── FUTURE_IMPROVEMENTS.md        # Roadmap and planned features
 ├── CHANGELOG.md                  # Version history
-└── venv/                        # Virtual environment (if needed)
+└── favicon.svg                   # Custom favicon
 ```
 
 ## 🔧 Customization
