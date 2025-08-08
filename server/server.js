@@ -93,6 +93,9 @@ class ClaudeAnalyzer {
             const stats = await fs.stat(hasClaudeFile ? claudeMdPath : claudeDirPath);
             lastActivity = stats.mtime;
             
+            // Check for local Claude Code installation
+            const hasLocalClaude = await this.detectLocalClaudeInstall(projectPath);
+            
             // Determine status
             const status = this.determineClaudeStatus(hasClaudeFile, hasClaudeDir, lastActivity);
             
@@ -102,6 +105,7 @@ class ClaudeAnalyzer {
                 claudeRole: claudeRole,
                 hasClaudeFile: hasClaudeFile,
                 hasClaudeDir: hasClaudeDir,
+                hasLocalClaude: hasLocalClaude,
                 permissions: permissions,
                 permissionCount: permissions.length,
                 lastActivity: lastActivity.toISOString(),
@@ -124,6 +128,63 @@ class ClaudeAnalyzer {
         } catch {
             return false;
         }
+    }
+    
+    static async detectLocalClaudeInstall(projectPath) {
+        // Check common virtual environment paths for Claude installation
+        const claudePaths = [
+            'venv/bin/claude',
+            'venv/Scripts/claude.exe',
+            '.venv/bin/claude', 
+            '.venv/Scripts/claude.exe',
+            'env/bin/claude',
+            'env/Scripts/claude.exe',
+            'virtualenv/bin/claude',
+            'virtualenv/Scripts/claude.exe'
+        ];
+        
+        for (const claudePath of claudePaths) {
+            const fullPath = path.join(projectPath, claudePath);
+            if (await this.fileExists(fullPath)) {
+                return true;
+            }
+        }
+        
+        // Check for pip-installed Claude packages in site-packages
+        const venvPaths = ['venv', '.venv', 'env', 'virtualenv'];
+        
+        for (const venvPath of venvPaths) {
+            const venvDir = path.join(projectPath, venvPath);
+            if (await this.fileExists(venvDir)) {
+                try {
+                    // Find Python lib directory
+                    const libPath = path.join(venvDir, 'lib');
+                    if (await this.fileExists(libPath)) {
+                        const libDirs = await fs.readdir(libPath);
+                        for (const libDir of libDirs) {
+                            if (libDir.startsWith('python')) {
+                                const sitePackagesPath = path.join(libPath, libDir, 'site-packages');
+                                if (await this.fileExists(sitePackagesPath)) {
+                                    const packages = await fs.readdir(sitePackagesPath);
+                                    // Check for Claude or Anthropic packages
+                                    const claudePackages = packages.filter(pkg => 
+                                        pkg.toLowerCase().includes('claude') || 
+                                        pkg.toLowerCase().includes('anthropic')
+                                    );
+                                    if (claudePackages.length > 0) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    // Continue to next venv path if this one fails
+                }
+            }
+        }
+        
+        return false;
     }
     
     static extractClaudeMetadata(content) {
@@ -192,6 +253,7 @@ class ProjectAnalyzer {
             const hasReadme = fileNames.some(name => name.startsWith('readme'));
             const hasClaude = fileNames.includes('claude.md');
             const hasVenv = await this.detectVirtualEnv(projectPath, files);
+            const hasLocalClaude = await ClaudeAnalyzer.detectLocalClaudeInstall(projectPath);
             
             // Detect technologies and category
             const technologies = this.detectTechnologies(extensions, fileNames);
@@ -213,6 +275,7 @@ class ProjectAnalyzer {
                 hasReadme: hasReadme,
                 hasClaude: hasClaude,
                 hasVenv: hasVenv,
+                hasLocalClaude: hasLocalClaude,
                 lastUpdated: lastModified,
                 isScanned: true,
                 dateScanned: new Date().toISOString()

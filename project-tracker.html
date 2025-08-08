@@ -665,6 +665,13 @@
         .claude-btn:hover {
             background: #45a049;
         }
+        .local-claude-btn {
+            background: #2196F3;
+            color: white;
+        }
+        .local-claude-btn:hover {
+            background: #1976D2;
+        }
         .venv-btn {
             background: #FF5722;
             color: white;
@@ -1249,12 +1256,17 @@
                             <div class="info-label">Virtual Env</div>
                             <div class="info-value">${project.hasVenv === true ? '🐍 Yes' : (project.hasVenv === false ? '❌ No' : '❓ Unknown')}</div>
                         </div>
+                        <div class="info-item">
+                            <div class="info-label">Local Claude</div>
+                            <div class="info-value">${project.hasLocalClaude === true ? '💻 Yes' : (project.hasLocalClaude === false ? '❌ No' : '❓ Unknown')}</div>
+                        </div>
                     </div>
                     
                     <div class="project-actions">
                         <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
                         ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')">📄 README</button>` : ''}
                         ${project.hasClaude === true ? `<button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🤖 Claude</button>` : ''}
+                        ${project.hasLocalClaude === true ? `<button class="action-btn local-claude-btn" onclick="launchLocalClaude('${project.path}')">💻 Local Claude</button>` : ''}
                         ${project.hasVenv === true ? `<button class="action-btn venv-btn" onclick="activateVenv('${project.path}')">🐍 Activate</button>` : ''}
                         <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
                         <button class="action-btn ignore-btn" onclick="ignoreDirectory('${project.path}')" title="Remove this project from tracker">🚫 Remove</button>
@@ -1394,6 +1406,38 @@
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.style.background = '#4CAF50';
+                }, 2000);
+            });
+        }
+
+        function launchLocalClaude(path) {
+            // Launch local Claude installation from the project's virtual environment
+            const commands = [
+                `cd "${path}"`,
+                `source venv/bin/activate || source .venv/bin/activate || source env/bin/activate`,  // Linux/Mac
+                `claude --continue`
+            ];
+            const command = commands.join(' && ');
+            
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '🚀 Launching...';
+            button.style.background = '#1976D2';
+            
+            // Copy command to clipboard for now
+            navigator.clipboard.writeText(command).then(() => {
+                setTimeout(() => {
+                    button.textContent = '📋 Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#2196F3';
+                    }, 1500);
+                }, 500);
+            }).catch(() => {
+                alert(`Command copied to clipboard: ${command}`);
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#2196F3';
                 }, 2000);
             });
         }

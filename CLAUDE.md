@@ -81,16 +81,18 @@ curl http://localhost:3001/api/claude/projects
 
 ## Project Analysis Features
 
-### ProjectAnalyzer Class (`server.js:192-391`)
+### ProjectAnalyzer Class (`server.js:240+`)
 - Recursive filesystem scanning with exclusion patterns
 - Technology stack detection from file extensions
 - Virtual environment detection for Python projects
+- **Local Claude Code detection** for venv installations
 - Automatic categorization (Web, AI/ML, Backend, etc.)
 - Project status inference (Production, Development)
 
 ### ClaudeAnalyzer Class (`server.js:61-189`)
 - Detects CLAUDE.md files and .claude directories
 - Extracts metadata from CLAUDE.md (Name, Role patterns)
+- **Local Claude Code detection** via `detectLocalClaudeInstall()` method
 - Analyzes Claude project permissions and settings
 - Determines Claude project status and activity
 
@@ -120,7 +122,16 @@ The backend scans these directories by default (configured in `server.js:14-26`)
 - Documentation: `readme.*` files
 - Claude Integration: `CLAUDE.md`, `.claude/` directory
 - Virtual Environments: `venv/`, `.venv/`, `env/` directories
+- **Local Claude Installations**: Claude packages in `venv/lib/python*/site-packages/`
 - Configuration: `package.json`, `requirements.txt`, `setup.py`
+
+## API Response Fields
+
+### New Local Claude Detection Fields
+Projects returned by `/api/projects` now include:
+- `hasLocalClaude`: Boolean indicating if Claude Code is installed locally in project's virtual environment
+- Detection covers: executable files in venv/bin and packages in site-packages
+- Works with all common venv patterns: `venv`, `.venv`, `env`, `virtualenv`
 
 ## Frontend-Backend Communication
 

@@ -38,6 +38,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - README availability
 - **🤖 CLAUDE.md presence** - Shows if project has Claude integration
 - **🐍 Virtual environment status** - Shows if project has Python venv
+- **💻 Local Claude Code installation** - Shows if project has Claude Code installed locally in venv
 - Project category and type
 
 ### Supported Project Categories
@@ -133,6 +134,7 @@ Note: The standalone frontend will use fallback project data when the backend is
    - Click "📁 Open" to open the project directory in file explorer
    - Click "📄 README" to view project documentation
    - Click "🤖 Claude" to copy `claude --continue` command (for projects with CLAUDE.md)
+   - Click "💻 Local Claude" to copy local venv Claude activation command
    - Click "🐍 Activate" to copy virtual environment activation commands
    - Click "📋 Copy" to copy the full path to clipboard
    - Click "🚫 Remove" to remove the project from tracking
@@ -143,6 +145,7 @@ Note: The standalone frontend will use fallback project data when the backend is
 - **🔍 Individual Project Management**: Add specific project directories rather than parent folders
 - **🤖 CLAUDE.md Projects**: Projects with 🤖 indicator have Claude integration ready
 - **🐍 Python Projects**: Projects with 🐍 indicator have virtual environments configured
+- **💻 Local Claude Projects**: Projects with 💻 indicator have Claude Code installed locally in their venv
 - **📊 Smart Analysis**: Automatic detection of technologies, frameworks, and project types
 - **⚡ Batched Operations**: Add/remove multiple projects without interrupting refreshes
 - **🌙 Eye-friendly Development**: Dark mode for extended coding sessions
