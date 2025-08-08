@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **💻 Local Claude Code Detection**
+  - Automatic detection of local Claude Code installations in virtual environments
+  - Smart detection of Claude packages in venv/lib/python*/site-packages
+  - New "Local Claude" indicator (💻 icon) in project cards
+  - Dedicated "💻 Local Claude" action button for local installations
+  - Commands automatically generated for venv activation and local Claude execution
+  - Blue theme styling to distinguish from global Claude installations
+  - Support for multiple venv patterns: venv, .venv, env, virtualenv
+  - Detection works for both executable and package-only installations
+
 ### Planned
 - Git integration with commit history
 - Project health dashboard
