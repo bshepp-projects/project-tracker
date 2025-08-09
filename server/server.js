@@ -431,17 +431,17 @@ class ProjectAnalyzer {
     }
     
     static generateTags(status, technologies, category) {
-        const tags = [];
+        const tags = new Set();
         
-        if (status.toLowerCase() === 'production') tags.push('production');
-        if (status.toLowerCase() === 'development') tags.push('development');
+        if (status.toLowerCase() === 'production') tags.add('production');
+        if (status.toLowerCase() === 'development') tags.add('development');
         
-        if (technologies.includes('JavaScript') || technologies.includes('HTML')) tags.push('web');
-        if (technologies.includes('Python') && (category.includes('AI') || category.includes('ML'))) tags.push('ai');
-        if (category.includes('Web')) tags.push('web');
-        if (technologies.includes('Docker')) tags.push('production');
+        if (technologies.includes('JavaScript') || technologies.includes('HTML')) tags.add('web');
+        if (technologies.includes('Python') && (category.includes('AI') || category.includes('ML'))) tags.add('ai');
+        if (category.includes('Web')) tags.add('web');
+        if (technologies.includes('Docker')) tags.add('production');
         
-        return tags;
+        return Array.from(tags);
     }
 }
 
