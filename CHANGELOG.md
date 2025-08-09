@@ -7,31 +7,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **💻 Local Claude Code Detection**
-  - Automatic detection of local Claude Code installations in virtual environments
-  - Smart detection of Claude packages in venv/lib/python*/site-packages
-  - New "Local Claude" indicator (💻 icon) in project cards
-  - Dedicated "💻 Local Claude" action button for local installations
-  - Commands automatically generated for venv activation and local Claude execution
-  - Blue theme styling to distinguish from global Claude installations
-  - Support for multiple venv patterns: venv, .venv, env
-  - Detection works for both executable and package-only installations
-
-### Fixed
-- **🔧 Local Claude Detection Accuracy**
-  - Fixed false positive detection of Anthropic Python SDK as Claude Code
-  - Improved package detection logic to only match actual Claude Code installations
-  - Removed incorrect detection of 'anthropic' packages as Claude installations
-  - Added specific filtering for claude_code, claude-code packages
-  - Eliminated duplicate tag generation using Set for uniqueness
-
 ### Planned
-- Git integration with commit history
-- Project health dashboard
+- Enhanced project health dashboard  
 - Real-time filesystem monitoring
 - Mobile app version
 - Advanced caching system
+- Team collaboration features
+
+## [1.5.0] - 2025-08-09
+
+### Added
+- **🔀 Git Repository Tracking & Management**
+  - New Git Tracker interface (`git-tracker.html`) for comprehensive repository monitoring
+  - Complete GitAnalyzer class in backend with detailed git repository analysis
+  - `/api/git/repos` endpoint for repository data retrieval
+  - Branch tracking: current branch, ahead/behind status, total branch count
+  - Working tree analysis: clean/dirty status, uncommitted changes, untracked files
+  - Last commit information: hash, message, author, relative timestamps
+  - GitHub repository detection and integration
+  - GitHub Actions workflow status monitoring via GitHub CLI integration
+  - .gitignore presence detection for repository health assessment
+
+- **🌐 Multi-Tab Navigation System**
+  - Unified navigation bar across all interfaces
+  - Three main tabs: Project Tracker, Claude Tracker, Git Tracker  
+  - Consistent theme and styling across all interfaces
+  - Seamless switching between different project management views
+
+- **⚡ Enhanced Repository Operations**
+  - Quick-copy git commands (fetch, pull, push) with clipboard integration
+  - GitHub URL copying for easy repository access
+  - Smart command generation based on repository status
+  - Platform-specific folder opening commands
+  - Repository status badges with visual indicators (ahead, behind, clean, dirty, etc.)
+
+- **🎨 Improved UI/UX & Accessibility**
+  - Enhanced dark mode text contrast for better readability
+  - Separate CSS variables for light background text (`--text-light-bg`)
+  - Improved contrast ratios across all interface elements
+  - Better visual hierarchy with status badges and color coding
+  - Responsive design improvements for repository cards
+
+### Changed
+- **Backend Architecture Enhancement**
+  - Enhanced server.js with GitAnalyzer class for comprehensive repository analysis
+  - Improved error handling for git operations and missing directories
+  - Better timeout management for git commands (10s timeout)
+  - GitHub CLI integration for Actions workflow status
+
+- **CSS Variable System Improvements**
+  - Added dedicated variables for light background text contrast
+  - Improved theme consistency across all three interfaces
+  - Better color accessibility in both light and dark modes
+
+### Fixed
+- **🎨 Text Contrast & Accessibility**
+  - Fixed dark mode text being too dark to read in previous version
+  - Resolved light background text being too light in dark mode
+  - Improved readability of info boxes and card content
+  - Better contrast ratios meeting accessibility standards
+
+- **🔧 Git Integration Reliability**
+  - Proper error handling for repositories without remotes
+  - Graceful handling of detached HEAD states
+  - Better parsing of git status output for accurate ahead/behind counts
+  - Improved detection of GitHub vs. other git hosting services
+
+### Technical
+- Added comprehensive GitAnalyzer class with methods for:
+  - Branch status analysis with ahead/behind counting
+  - Working tree status detection
+  - GitHub Actions integration via `gh run list`
+  - Multi-platform git command execution
+- Enhanced API architecture with new `/api/git/repos` endpoint
+- Improved CSS architecture with accessibility-focused variables
+- Better error handling and timeout management for external commands
 
 ## [1.4.0] - 2025-08-07
 
@@ -296,4 +346,4 @@ All changes should be documented in this changelog following the format:
 
 ---
 
-*Last updated: August 4, 2025*
+*Last updated: August 9, 2025*

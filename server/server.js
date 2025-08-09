@@ -442,6 +442,259 @@ class ProjectAnalyzer {
     }
 }
 
+// Git repository analysis functions
+class GitAnalyzer {
+    static async analyzeGitRepo(projectPath, projectName) {
+        try {
+            // Check if it's a git repository
+            const gitPath = path.join(projectPath, '.git');
+            if (!await this.fileExists(gitPath)) {
+                return null; // Not a git repository
+            }
+            
+            // Get basic git information
+            const currentBranch = await this.getCurrentBranch(projectPath);
+            const remoteUrl = await this.getRemoteUrl(projectPath);
+            const isGitHub = this.isGitHubRepo(remoteUrl);
+            const lastCommit = await this.getLastCommit(projectPath);
+            const branchStatus = await this.getBranchStatus(projectPath);
+            const workingTreeStatus = await this.getWorkingTreeStatus(projectPath);
+            const hasGitignore = await this.fileExists(path.join(projectPath, '.gitignore'));
+            const totalBranches = await this.getBranchCount(projectPath);
+            const lastActivity = await this.getLastActivity(projectPath);
+            
+            // Get GitHub-specific information if applicable
+            let githubActions = null;
+            if (isGitHub) {
+                githubActions = await this.getGitHubActions(projectPath);
+            }
+            
+            return {
+                name: projectName,
+                path: projectPath,
+                isGitRepo: true,
+                currentBranch: currentBranch,
+                remoteUrl: remoteUrl,
+                isGitHub: isGitHub,
+                hasGitignore: hasGitignore,
+                lastCommit: lastCommit,
+                branchStatus: branchStatus.description,
+                aheadCount: branchStatus.ahead,
+                behindCount: branchStatus.behind,
+                workingTreeClean: workingTreeStatus.clean,
+                uncommittedChanges: workingTreeStatus.modified,
+                untrackedFiles: workingTreeStatus.untracked,
+                totalBranches: totalBranches,
+                lastActivity: lastActivity,
+                githubActions: githubActions,
+                dateScanned: new Date().toISOString()
+            };
+        } catch (error) {
+            console.warn(`Error analyzing git repo ${projectName}:`, error.message);
+            return null;
+        }
+    }
+    
+    static async fileExists(filePath) {
+        try {
+            await fs.access(filePath);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+    
+    static async executeGitCommand(projectPath, command) {
+        return new Promise((resolve, reject) => {
+            const { exec } = require('child_process');
+            const fullCommand = `cd "${projectPath}" && git ${command}`;
+            
+            exec(fullCommand, { timeout: 10000 }, (error, stdout, stderr) => {
+                if (error) {
+                    // Git commands often return non-zero exit codes for normal conditions
+                    resolve({ stdout: stdout.trim(), stderr: stderr.trim(), error });
+                } else {
+                    resolve({ stdout: stdout.trim(), stderr: stderr.trim(), error: null });
+                }
+            });
+        });
+    }
+    
+    static async getCurrentBranch(projectPath) {
+        try {
+            const result = await this.executeGitCommand(projectPath, 'branch --show-current');
+            return result.stdout || 'detached HEAD';
+        } catch {
+            return null;
+        }
+    }
+    
+    static async getRemoteUrl(projectPath) {
+        try {
+            const result = await this.executeGitCommand(projectPath, 'remote get-url origin');
+            return result.stdout || null;
+        } catch {
+            return null;
+        }
+    }
+    
+    static isGitHubRepo(remoteUrl) {
+        if (!remoteUrl) return false;
+        return remoteUrl.includes('github.com');
+    }
+    
+    static async getLastCommit(projectPath) {
+        try {
+            const result = await this.executeGitCommand(projectPath, 'log -1 --pretty=format:"%H|%s|%an|%ar"');
+            if (!result.stdout) return null;
+            
+            const [hash, message, author, date] = result.stdout.replace(/"/g, '').split('|');
+            return {
+                hash: hash ? hash.substring(0, 8) : 'unknown',
+                message: message || 'No commit message',
+                author: author || 'Unknown',
+                date: date || 'Unknown'
+            };
+        } catch {
+            return null;
+        }
+    }
+    
+    static async getBranchStatus(projectPath) {
+        try {
+            const result = await this.executeGitCommand(projectPath, 'status -b --porcelain=v1');
+            const lines = result.stdout.split('\n');
+            const branchLine = lines[0];
+            
+            let ahead = 0;
+            let behind = 0;
+            let description = 'Unknown';
+            
+            if (branchLine) {
+                const aheadMatch = branchLine.match(/ahead (\d+)/);
+                const behindMatch = branchLine.match(/behind (\d+)/);
+                
+                if (aheadMatch) ahead = parseInt(aheadMatch[1]);
+                if (behindMatch) behind = parseInt(behindMatch[1]);
+                
+                if (ahead > 0 && behind > 0) {
+                    description = `${ahead} ahead, ${behind} behind`;
+                } else if (ahead > 0) {
+                    description = `${ahead} ahead`;
+                } else if (behind > 0) {
+                    description = `${behind} behind`;
+                } else if (branchLine.includes('...')) {
+                    description = 'Up to date';
+                } else {
+                    description = 'No upstream';
+                }
+            }
+            
+            return { ahead, behind, description };
+        } catch {
+            return { ahead: 0, behind: 0, description: 'Unknown' };
+        }
+    }
+    
+    static async getWorkingTreeStatus(projectPath) {
+        try {
+            const result = await this.executeGitCommand(projectPath, 'status --porcelain');
+            const lines = result.stdout.split('\n').filter(line => line.trim());
+            
+            let modified = 0;
+            let untracked = 0;
+            
+            for (const line of lines) {
+                if (line.startsWith('??')) {
+                    untracked++;
+                } else {
+                    modified++;
+                }
+            }
+            
+            return {
+                clean: lines.length === 0,
+                modified: modified,
+                untracked: untracked
+            };
+        } catch {
+            return { clean: null, modified: 0, untracked: 0 };
+        }
+    }
+    
+    static async getBranchCount(projectPath) {
+        try {
+            const result = await this.executeGitCommand(projectPath, 'branch -a');
+            const branches = result.stdout.split('\n').filter(line => line.trim());
+            return branches.length;
+        } catch {
+            return 0;
+        }
+    }
+    
+    static async getLastActivity(projectPath) {
+        try {
+            const result = await this.executeGitCommand(projectPath, 'log -1 --pretty=format:"%cr"');
+            return result.stdout.replace(/"/g, '') || 'Unknown';
+        } catch {
+            return 'Unknown';
+        }
+    }
+    
+    static async getGitHubActions(projectPath) {
+        try {
+            // Check if GitHub CLI is available and we can get workflow status
+            const { exec } = require('child_process');
+            return new Promise((resolve) => {
+                const command = `cd "${projectPath}" && gh run list --limit 1 --json status,workflowName,createdAt 2>/dev/null`;
+                
+                exec(command, { timeout: 5000 }, (error, stdout) => {
+                    if (error || !stdout.trim()) {
+                        resolve(null);
+                        return;
+                    }
+                    
+                    try {
+                        const runs = JSON.parse(stdout);
+                        if (runs && runs.length > 0) {
+                            const lastRun = runs[0];
+                            return resolve({
+                                status: lastRun.status === 'completed' ? 'success' : lastRun.status,
+                                workflowName: lastRun.workflowName,
+                                lastRun: this.formatDate(lastRun.createdAt)
+                            });
+                        }
+                    } catch (parseError) {
+                        // Invalid JSON response
+                    }
+                    
+                    resolve(null);
+                });
+            });
+        } catch {
+            return null;
+        }
+    }
+    
+    static formatDate(dateString) {
+        try {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+            
+            return date.toLocaleDateString();
+        } catch {
+            return 'Unknown';
+        }
+    }
+}
+
 // API Routes
 app.get('/api/projects', async (req, res) => {
     try {
@@ -707,6 +960,54 @@ app.put('/api/directories', async (req, res) => {
         
     } catch (error) {
         console.error('Error updating directories:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Git repositories endpoint
+app.get('/api/git/repos', async (req, res) => {
+    try {
+        console.log('🔀 Scanning for git repositories...');
+        const allGitRepos = [];
+        
+        for (const scanDir of scanDirectories) {
+            try {
+                // Check if the scanDir itself is a git repository
+                const stats = await fs.stat(scanDir);
+                if (stats.isDirectory()) {
+                    // Skip temp directories and other common exclusions
+                    const dirName = path.basename(scanDir);
+                    if (dirName.startsWith('$Temp') || 
+                        dirName.endsWith('.tmp') ||
+                        dirName === '$RECYCLE.BIN' || 
+                        dirName === 'System Volume Information') {
+                        continue;
+                    }
+                    
+                    const gitRepo = await GitAnalyzer.analyzeGitRepo(scanDir, dirName);
+                    
+                    if (gitRepo) {
+                        allGitRepos.push(gitRepo);
+                    }
+                }
+            } catch (error) {
+                console.warn(`Could not scan directory ${scanDir} for git repos:`, error.message);
+            }
+        }
+        
+        console.log(`🔀 Found ${allGitRepos.length} git repositories`);
+        res.json({
+            success: true,
+            repositories: allGitRepos,
+            scanTime: new Date().toISOString(),
+            scannedDirectories: scanDirectories
+        });
+        
+    } catch (error) {
+        console.error('Error scanning git repositories:', error);
         res.status(500).json({
             success: false,
             error: error.message
