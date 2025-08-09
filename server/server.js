@@ -131,55 +131,52 @@ class ClaudeAnalyzer {
     }
     
     static async detectLocalClaudeInstall(projectPath) {
-        // Check common virtual environment paths for Claude installation
-        const claudePaths = [
+        // Check for Claude Code CLI executable in virtual environment bins
+        const venvBinPaths = [
             'venv/bin/claude',
             'venv/Scripts/claude.exe',
             '.venv/bin/claude', 
             '.venv/Scripts/claude.exe',
             'env/bin/claude',
-            'env/Scripts/claude.exe',
-            'virtualenv/bin/claude',
-            'virtualenv/Scripts/claude.exe'
+            'env/Scripts/claude.exe'
         ];
         
-        for (const claudePath of claudePaths) {
+        for (const claudePath of venvBinPaths) {
             const fullPath = path.join(projectPath, claudePath);
             if (await this.fileExists(fullPath)) {
                 return true;
             }
         }
         
-        // Check for pip-installed Claude packages in site-packages
-        const venvPaths = ['venv', '.venv', 'env', 'virtualenv'];
+        // Check for Claude Code package installations in site-packages
+        const venvPaths = ['venv', '.venv', 'env'];
         
         for (const venvPath of venvPaths) {
-            const venvDir = path.join(projectPath, venvPath);
-            if (await this.fileExists(venvDir)) {
+            const libPath = path.join(projectPath, venvPath, 'lib');
+            if (await this.fileExists(libPath)) {
                 try {
-                    // Find Python lib directory
-                    const libPath = path.join(venvDir, 'lib');
-                    if (await this.fileExists(libPath)) {
-                        const libDirs = await fs.readdir(libPath);
-                        for (const libDir of libDirs) {
-                            if (libDir.startsWith('python')) {
-                                const sitePackagesPath = path.join(libPath, libDir, 'site-packages');
-                                if (await this.fileExists(sitePackagesPath)) {
-                                    const packages = await fs.readdir(sitePackagesPath);
-                                    // Check for Claude or Anthropic packages
-                                    const claudePackages = packages.filter(pkg => 
-                                        pkg.toLowerCase().includes('claude') || 
-                                        pkg.toLowerCase().includes('anthropic')
-                                    );
-                                    if (claudePackages.length > 0) {
-                                        return true;
-                                    }
+                    const libDirs = await fs.readdir(libPath);
+                    for (const libDir of libDirs) {
+                        if (libDir.startsWith('python')) {
+                            const sitePackagesPath = path.join(libPath, libDir, 'site-packages');
+                            if (await this.fileExists(sitePackagesPath)) {
+                                const packages = await fs.readdir(sitePackagesPath);
+                                // Only check for actual Claude Code packages (not Anthropic SDK)
+                                const hasClaudeCode = packages.some(pkg => {
+                                    const pkgLower = pkg.toLowerCase();
+                                    return pkgLower.includes('claude_code') || 
+                                           pkgLower.includes('claude-code') ||
+                                           (pkgLower.includes('claude') && !pkgLower.includes('anthropic'));
+                                });
+                                if (hasClaudeCode) {
+                                    return true;
                                 }
                             }
                         }
                     }
                 } catch (error) {
-                    // Continue to next venv path if this one fails
+                    // Continue to next venv path if error occurs
+                    continue;
                 }
             }
         }
