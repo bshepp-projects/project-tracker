@@ -129,9 +129,11 @@ The backend scans these directories by default (configured in `server.js:14-26`)
 
 ### New Local Claude Detection Fields
 Projects returned by `/api/projects` now include:
-- `hasLocalClaude`: Boolean indicating if Claude Code is installed locally in project's virtual environment
-- Detection covers: executable files in venv/bin and packages in site-packages
-- Works with all common venv patterns: `venv`, `.venv`, `env`, `virtualenv`
+- `hasLocalClaude`: Boolean indicating if Claude Code CLI is installed locally in project's virtual environment
+- **Accurate Detection Logic**: Only detects actual Claude Code installations, excludes Anthropic Python SDK
+- **Detection Methods**: Checks for `claude` executables in venv/bin and `claude_code`/`claude-code` packages in site-packages
+- **Supported Patterns**: Works with common venv patterns: `venv`, `.venv`, `env`
+- **False Positive Prevention**: Filters out packages containing 'anthropic' to avoid SDK confusion
 
 ## Frontend-Backend Communication
 
