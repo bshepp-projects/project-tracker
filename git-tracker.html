@@ -142,7 +142,7 @@
             padding: 8px 16px;
             border-radius: 6px;
             text-decoration: none;
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 500;
             transition: all 0.3s ease;
             border: 2px solid transparent;
@@ -233,7 +233,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
-            background: #f5f5f5;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 25px;
@@ -242,7 +242,7 @@
         .stat-item {
             text-align: center;
             padding: 10px;
-            background: white;
+            background: var(--input-bg);
             border-radius: 8px;
         }
 
@@ -310,7 +310,7 @@
         }
 
         .info-item {
-            background: white;
+            background: var(--input-bg);
             padding: 8px 12px;
             border-radius: 5px;
             border-left: 3px solid #667eea;
@@ -352,16 +352,16 @@
         .status-untracked { background: #9C27B0; color: white; }
 
         .branch-info {
-            background: #e3f2fd;
+            background: var(--input-bg);
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 15px;
-            border-left: 4px solid #2196F3;
+            border-left: 4px solid var(--button-primary);
         }
 
         .branch-name {
             font-weight: bold;
-            color: #1976D2;
+            color: var(--button-primary);
             margin-bottom: 5px;
         }
 
@@ -371,7 +371,7 @@
         }
 
         .commit-info {
-            background: #f3e5f5;
+            background: var(--input-bg);
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 15px;
@@ -447,7 +447,7 @@
         }
 
         .actions-status {
-            background: #e8f5e8;
+            background: var(--input-bg);
             padding: 8px;
             border-radius: 4px;
             margin-bottom: 10px;
@@ -455,12 +455,12 @@
         }
 
         .actions-failed {
-            background: #ffebee;
+            background: var(--input-bg);
             border-left-color: #f44336;
         }
 
         .actions-pending {
-            background: #fff3e0;
+            background: var(--input-bg);
             border-left-color: #FF9800;
         }
 
@@ -693,7 +693,7 @@
             return `
                 <div class="${className}">
                     <div style="font-weight: 500;">${icon} ${text}</div>
-                    <div style="font-size: 0.85em; color: #666; margin-top: 2px;">
+                    <div style="font-size: 0.85em; color: var(--text-secondary); margin-top: 2px;">
                         ${repo.githubActions.workflowName || 'GitHub Actions'} • ${repo.githubActions.lastRun || 'Recently'}
                     </div>
                 </div>
