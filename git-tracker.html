@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Tracker - Repository Status Dashboard</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQQSURBVFhHrZd7UFNnFMafJIRwCRAuAQJcDCgIiFoRtVrwUkfqjCPa6oxaO1M7Y2e0nXamM/3DdqY6nbGdTlu1rXWsnalap05bO2NnrJ2xM1pb66V4QUURQRBBuVmQS0IISe7vnJOwMdmd9ps5yZf3O+97nvd5v5MV7H+0/7QBT/xfOVAHfgEcCHjOaYDnQhMoTfRlbHbm5vnuzPJqbNZBDvjObAb8VoHJfivMYytmvU20D3DAvzQyN+rUunfX7Xon74SuBnKM6U8Z3bXd+2fVRJ1Kv7HgxLI3c45yk+hL2Oy8+n5V5hcEOCMzP+vHZPZx7tMvL/vdU6tLJCkZ8MRRBjjgM5fW7M3E6Ey7wKvxWWNjImOjI5AaF4/oBDkSFQokaBRISpCe5PNvb5NlcfLzk3M4xHKMOV5vZfxq+Xun55m1T2HABNiPQ7A8Yoy9nJUZmJQgPcnOzBUXycl/vFbyzLOzc7IzI1MyOHl6ZjaXcy9wFzjDkE20DuCZgCH14tfytDXOQTtsx6ANdqDNYkHwVU+HGZrWhsafWm03lBstz8lyl5K3Nny6+QXJDOeBgCdtMAQuK5DKjfFbtjFNHb5rTYk2W0Z+aW5W0qUjW7YjDe0tELhsULWmwX4zBrh4YtDELc6wOzFhz4k39vGJHoF6o3xLwGHDHaADtGQKuDHI+HCvtaFVfnRn5HMPFK3m8J58aI1xoNE8kfMhj/WwGg1gYh1/Xk/rBjzNYoGPt3y5gQNcP6JGI3hHPIJDJe3ZWUJO7Y+o62VJa4lBT3eTGf3GDqAnNdw48yTqhpz4/J1Fs58VRgPjEQ5jJjZt7mJJjEU8oYmKSZCmJAUc2l27I+eX6l8GCNN7sWXpWlkS35DzZ+dIE6nJ6FJGKPSO1AOXJ3u5a5cPBmgFLQO2sxWQzHzRjsznEXs+f2CyAG4PYDCo0apyoPLQfgxYnaioqzjKHdQNeBwGAP4WmJvA3Q5ZI6gzruzaXvMqzw5HQJBnNjuQcek43kzLgGFfI8pLt7ITPTjA5wbstwD3FHC3gi0CtBLQCrCKrYzc+z1YIGbfPBywz3E5JFMTtTt6c7/vP9TmFGFwwfgAGKsCNALQaOCBPwRF7c1l3AEdd8CAI+BWHFjVBGoJtA7QEmglUAtoKbTFkxeOFO7QnePeP9E6YB1JVHRVfJi3pexbdqgBmhTb7vS++lO8qTZfXQT4SrfP9YqCo48RgxnKuCRV5YIlH5RqKnKPn+COHwrEIjRqODTxO5W5Ry9xn3/r/wBVaZQwJK4a7AAAAABJRU5ErkJggg==">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQQSURBVFhHrZd7UFNnFMafJIRwCRAuAQJcDCgIiFoRtVrwUkfqjCPa6oxaO1M7Y2e0nXamM/3DdqY6nbGdTlu1rXWsnalap05bO2NnrJ2xM1pb66V4QUURQRBBuVmQS0IISe7vnJOwMdmd9ps5yZf3O+97nvd5v5MV7H+0/7QBT/xfOVAHfgEcCHjOaYDnQhMoTfRlbHbm5vnuzPJqbNZBDvjObAb8VoHJfivMYytmvU20D3DAvzQyN+rUunfX7Xon74SuBnKM6U8Z3bXd+2fVRJ1Kv7HgxLI3c45yk+hL2Oy8+n5V5hcEOCMzP+vHZPZx7tMvL/vdU6tLJCkZ8MRRBjjgM5fW7M3E6Ey7wKvxWWNjImOjI5AaF4/oBDkSFQokaBRISpCe5PNvb5NlcfLzk3M4xHKMOV5vZfxq+Xun55m1T2HABNiPQ7A8Yoy9nJUZmJQgPcnOzBUXycl/vFbyzLOzc7IzI1MyOHl6ZjaXcy9wFzjDkE20DuCZgCH14tfytDXOQTtsx6ANdqDNYkHwVU+HGZrWhsafWm03lBstz8lyl5K3Nny6+QXJDOeBgCdtMAQuK5DKjfFbtjFNHb5rTYk2W0Z+aW5W0qUjW7YjDe0tELhsULWmwX4zBrh4YtDELc6wOzFhz4k39vGJHoF6o3xLwGHDHaADtGQKuDHI+HCvtaFVfnRn5HMPFK3m8J58aI1xoNE8kfMhj/WwGg1gYh1/Xk/rBjzNYoGPt3y5gQNcP6JGI3hHPIJDJe3ZWUJO7Y+o62VJa4lBT3eTGf3GDqAnNdw48yTqhpz4/J1Fs58VRgPjEQ5jJjZt7mJJjEU8oYmKSZCmJAUc2l27I+eX6l8GCNN7sWXpWlkS35DzZ+dIE6nJ6FJGKPSO1AOXJ3u5a5cPBmgFLQO2sxWQzHzRjsznEXs+f2CyAG4PYDCo0apyoPLQfgxYnaioqzjKHdQNeBwGAP4WmJvA3Q5ZI6gzruzaXvMqzw5HQJBnNjuQcek43kzLgGFfI8pLt7ITPTjA5wbstwD3FHC3gi0CtBLQCrCKrYzc+z1YIGbfPBywz3E5JFMTtTt6c7/vP9TmFGFwwfgAGKsCNALQaOCBPwRF7c1l3AEdd8CAI+BWHFjVBGoJtA7QEmglUAtoKbTFkxeOFO7QnePeP9E6YB1JVHRVfJi3pexbdqgBmhTb7vS++lO8qTZfXQT4SrfP9YqCo48RgxnKuCRV5YIlH5RqKnKPn+COHwrEIjRqODTxO5W5Ry9xn3/r/wBVaZQwJK4a7AAAAABJRU5ErkJggg==">
+    <style>
+        :root {
+            /* Light mode colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-container: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --text-light-bg: #333333;
+            --text-light-bg-secondary: #666666;
+            --border-color: #e0e0e0;
+            --card-bg: #fafafa;
+            --card-hover-shadow: rgba(0,0,0,0.1);
+            --button-primary: #667eea;
+            --button-success: #4CAF50;
+            --button-danger: #f44336;
+            --button-warning: #FF9800;
+            --button-secondary: #f5f5f5;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --nav-border: rgba(255, 255, 255, 0.3);
+            --modal-bg: rgba(0, 0, 0, 0.5);
+            --modal-content-bg: #ffffff;
+            --input-bg: #ffffff;
+            --input-border: #ddd;
+            --notification-info: #2196F3;
+            --notification-success: #4CAF50;
+            --notification-error: #f44336;
+            --git-ahead: #4CAF50;
+            --git-behind: #FF9800;
+            --git-diverged: #f44336;
+            --git-uptodate: #2196F3;
+        }
+
+        [data-theme="dark"] {
+            /* Dark mode colors */
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-container: #1f1f1f;
+            --text-primary: #f0f0f0;
+            --text-secondary: #d0d0d0;
+            --text-muted: #a0a0a0;
+            --text-light-bg: #f0f0f0;
+            --text-light-bg-secondary: #d0d0d0;
+            --border-color: #444444;
+            --card-bg: #2d2d2d;
+            --card-hover-shadow: rgba(255,255,255,0.05);
+            --button-primary: #4a90e2;
+            --button-success: #5cb85c;
+            --button-danger: #e74c3c;
+            --button-warning: #f39c12;
+            --button-secondary: #404040;
+            --nav-bg: rgba(31, 31, 31, 0.95);
+            --nav-border: rgba(255, 255, 255, 0.1);
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --modal-content-bg: #2d2d2d;
+            --input-bg: #404040;
+            --input-border: #555555;
+            --notification-info: #3498db;
+            --notification-success: #27ae60;
+            --notification-error: #e74c3c;
+            --git-ahead: #5cb85c;
+            --git-behind: #f39c12;
+            --git-diverged: #e74c3c;
+            --git-uptodate: #3498db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-container);
+            color: var(--text-primary);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px var(--card-hover-shadow);
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* Navigation Bar */
+        .navigation-bar {
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            padding: 15px 25px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px var(--card-hover-shadow);
+            border: 1px solid var(--nav-border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .nav-item.active {
+            background: var(--button-primary);
+            color: white;
+            border-color: var(--button-primary);
+        }
+
+        .theme-toggle {
+            background: var(--button-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: auto;
+            font-size: 16px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--button-primary);
+            color: white;
+            border-color: var(--button-primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .refresh-btn, .filter-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .filter-btn {
+            background: #2196F3;
+        }
+
+        .filter-btn.active {
+            background: #1976D2;
+        }
+
+        .refresh-btn:hover {
+            background: #45a049;
+        }
+
+        .filter-btn:hover {
+            background: #1976D2;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 16px;
+            min-width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--button-primary);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .repos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .repo-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--card-hover-shadow);
+        }
+
+        .repo-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .repo-path {
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            background: var(--button-secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .repo-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+            font-size: 0.9em;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: var(--text-light-bg);
+            font-size: 0.8em;
+        }
+
+        .info-value {
+            color: var(--text-light-bg-secondary);
+            font-size: 0.85em;
+            margin-top: 2px;
+        }
+
+        .git-status {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+
+        .status-ahead { background: var(--git-ahead); color: white; }
+        .status-behind { background: var(--git-behind); color: white; }
+        .status-diverged { background: var(--git-diverged); color: white; }
+        .status-uptodate { background: var(--git-uptodate); color: white; }
+        .status-clean { background: #4CAF50; color: white; }
+        .status-dirty { background: #FF9800; color: white; }
+        .status-untracked { background: #9C27B0; color: white; }
+
+        .branch-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .branch-name {
+            font-weight: bold;
+            color: #1976D2;
+            margin-bottom: 5px;
+        }
+
+        .branch-details {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .commit-info {
+            background: #f3e5f5;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #9C27B0;
+        }
+
+        .commit-hash {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+        }
+
+        .commit-message {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 5px 0;
+        }
+
+        .commit-details {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        .repo-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background 0.2s;
+        }
+
+        .open-github {
+            background: #333;
+            color: white;
+        }
+
+        .open-github:hover {
+            background: #555;
+        }
+
+        .pull-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .pull-btn:hover {
+            background: #45a049;
+        }
+
+        .push-btn {
+            background: #FF9800;
+            color: white;
+        }
+
+        .push-btn:hover {
+            background: #F57C00;
+        }
+
+        .fetch-btn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .fetch-btn:hover {
+            background: #1976D2;
+        }
+
+        .actions-status {
+            background: #e8f5e8;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .actions-failed {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+
+        .actions-pending {
+            background: #fff3e0;
+            border-left-color: #FF9800;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .github-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .repos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .repo-info {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navigation-bar">
+        <div class="nav-container">
+            <a href="project-tracker.html" class="nav-item">🗂️ Project Tracker</a>
+            <a href="claude-tracker.html" class="nav-item">🤖 Claude Tracker</a>
+            <a href="git-tracker.html" class="nav-item active">🔀 Git Tracker</a>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>🔀 Git Tracker</h1>
+        <div class="subtitle">Repository status dashboard • Branch tracking • GitHub integration</div>
+        
+        <div class="controls">
+            <button class="refresh-btn" onclick="refreshRepos()">🔄 Refresh</button>
+            <input type="text" class="search-box" placeholder="Search repositories..." onkeyup="filterRepos()" id="searchInput">
+            <button class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
+            <button class="filter-btn" onclick="toggleFilter('ahead')" data-filter="ahead">Ahead</button>
+            <button class="filter-btn" onclick="toggleFilter('behind')" data-filter="behind">Behind</button>
+            <button class="filter-btn" onclick="toggleFilter('dirty')" data-filter="dirty">Uncommitted</button>
+            <button class="filter-btn" onclick="toggleFilter('github')" data-filter="github">GitHub</button>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalRepos">0</div>
+                <div class="stat-label">Total Repos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="aheadRepos">0</div>
+                <div class="stat-label">Ahead</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="behindRepos">0</div>
+                <div class="stat-label">Behind</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="dirtyRepos">0</div>
+                <div class="stat-label">Uncommitted</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="githubRepos">0</div>
+                <div class="stat-label">GitHub Repos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="actionsPassedRepos">0</div>
+                <div class="stat-label">Actions Passed</div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">Loading repositories...</div>
+        <div id="repos" class="repos-grid"></div>
+        <div id="noResults" class="no-results" style="display: none;">No repositories match your search criteria.</div>
+    </div>
+
+    <script>
+        // Repository data will be loaded from backend API
+        let reposData = [];
+        let filteredRepos = [];
+        let currentFilter = 'all';
+
+        // Backend API configuration
+        const API_BASE_URL = 'http://localhost:3001/api';
+
+        function renderRepos() {
+            const reposContainer = document.getElementById('repos');
+            const noResultsDiv = document.getElementById('noResults');
+            
+            if (filteredRepos.length === 0) {
+                reposContainer.innerHTML = '';
+                noResultsDiv.style.display = 'block';
+                return;
+            }
+
+            noResultsDiv.style.display = 'none';
+            
+            reposContainer.innerHTML = filteredRepos.map(repo => {
+                const statusBadges = generateStatusBadges(repo);
+                const actionsStatus = generateActionsStatus(repo);
+                
+                return `
+                <div class="repo-card">
+                    <div class="repo-title">
+                        ${repo.isGitHub ? '<svg class="github-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>' : '📁'} 
+                        ${repo.name}
+                    </div>
+                    <div class="repo-path">${repo.path}</div>
+                    
+                    <div class="git-status">
+                        ${statusBadges}
+                    </div>
+
+                    ${repo.currentBranch ? `
+                    <div class="branch-info">
+                        <div class="branch-name">🌿 ${repo.currentBranch}</div>
+                        <div class="branch-details">
+                            ${repo.branchStatus || 'Status unknown'}
+                            ${repo.totalBranches ? ` • ${repo.totalBranches} total branches` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${repo.lastCommit ? `
+                    <div class="commit-info">
+                        <div class="commit-hash">📝 ${repo.lastCommit.hash}</div>
+                        <div class="commit-message">${repo.lastCommit.message}</div>
+                        <div class="commit-details">
+                            ${repo.lastCommit.author} • ${repo.lastCommit.date}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${actionsStatus}
+                    
+                    <div class="repo-info">
+                        <div class="info-item">
+                            <div class="info-label">Remote</div>
+                            <div class="info-value">${repo.remoteUrl ? (repo.isGitHub ? 'GitHub' : 'Other') : 'Local Only'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Last Activity</div>
+                            <div class="info-value">${repo.lastActivity || 'Unknown'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">.gitignore</div>
+                            <div class="info-value">${repo.hasGitignore ? '✅ Yes' : '❌ No'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="repo-actions">
+                        <button class="action-btn open-github" onclick="openFolder('${repo.path}')">📁 Open</button>
+                        ${repo.isGitHub ? `<button class="action-btn open-github" onclick="openGitHub('${repo.remoteUrl}')">🔗 GitHub</button>` : ''}
+                        <button class="action-btn fetch-btn" onclick="gitFetch('${repo.path}')">📥 Fetch</button>
+                        ${repo.aheadCount > 0 ? `<button class="action-btn push-btn" onclick="gitPush('${repo.path}')">📤 Push</button>` : ''}
+                        ${repo.behindCount > 0 ? `<button class="action-btn pull-btn" onclick="gitPull('${repo.path}')">📥 Pull</button>` : ''}
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function generateStatusBadges(repo) {
+            const badges = [];
+            
+            if (repo.aheadCount > 0) {
+                badges.push(`<span class="status-badge status-ahead">↑ ${repo.aheadCount} ahead</span>`);
+            }
+            if (repo.behindCount > 0) {
+                badges.push(`<span class="status-badge status-behind">↓ ${repo.behindCount} behind</span>`);
+            }
+            if (repo.aheadCount > 0 && repo.behindCount > 0) {
+                badges.push(`<span class="status-badge status-diverged">⚡ diverged</span>`);
+            }
+            if (repo.aheadCount === 0 && repo.behindCount === 0 && repo.remoteUrl) {
+                badges.push(`<span class="status-badge status-uptodate">✓ up to date</span>`);
+            }
+            if (repo.workingTreeClean === false) {
+                badges.push(`<span class="status-badge status-dirty">${repo.uncommittedChanges || 0} uncommitted</span>`);
+            }
+            if (repo.untrackedFiles > 0) {
+                badges.push(`<span class="status-badge status-untracked">${repo.untrackedFiles} untracked</span>`);
+            }
+            if (repo.workingTreeClean === true && repo.aheadCount === 0) {
+                badges.push(`<span class="status-badge status-clean">✓ clean</span>`);
+            }
+            
+            return badges.join('');
+        }
+
+        function generateActionsStatus(repo) {
+            if (!repo.githubActions) return '';
+            
+            const status = repo.githubActions.status;
+            let className = 'actions-status';
+            let icon = '✅';
+            let text = 'Actions Passed';
+            
+            if (status === 'failure') {
+                className = 'actions-status actions-failed';
+                icon = '❌';
+                text = 'Actions Failed';
+            } else if (status === 'pending') {
+                className = 'actions-status actions-pending';
+                icon = '⏳';
+                text = 'Actions Pending';
+            }
+            
+            return `
+                <div class="${className}">
+                    <div style="font-weight: 500;">${icon} ${text}</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 2px;">
+                        ${repo.githubActions.workflowName || 'GitHub Actions'} • ${repo.githubActions.lastRun || 'Recently'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterRepos() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredRepos = reposData.filter(repo => {
+                const matchesSearch = searchTerm === '' || 
+                    repo.name.toLowerCase().includes(searchTerm) ||
+                    repo.path.toLowerCase().includes(searchTerm) ||
+                    (repo.currentBranch && repo.currentBranch.toLowerCase().includes(searchTerm));
+                
+                const matchesFilter = currentFilter === 'all' || 
+                    (currentFilter === 'ahead' && repo.aheadCount > 0) ||
+                    (currentFilter === 'behind' && repo.behindCount > 0) ||
+                    (currentFilter === 'dirty' && repo.workingTreeClean === false) ||
+                    (currentFilter === 'github' && repo.isGitHub);
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            renderRepos();
+            updateStats();
+        }
+
+        function toggleFilter(filter) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            
+            currentFilter = filter;
+            filterRepos();
+        }
+
+        function updateStats() {
+            const stats = {
+                total: filteredRepos.length,
+                ahead: filteredRepos.filter(r => r.aheadCount > 0).length,
+                behind: filteredRepos.filter(r => r.behindCount > 0).length,
+                dirty: filteredRepos.filter(r => r.workingTreeClean === false).length,
+                github: filteredRepos.filter(r => r.isGitHub).length,
+                actionsPassed: filteredRepos.filter(r => r.githubActions?.status === 'success').length
+            };
+
+            document.getElementById('totalRepos').textContent = stats.total;
+            document.getElementById('aheadRepos').textContent = stats.ahead;
+            document.getElementById('behindRepos').textContent = stats.behind;
+            document.getElementById('dirtyRepos').textContent = stats.dirty;
+            document.getElementById('githubRepos').textContent = stats.github;
+            document.getElementById('actionsPassedRepos').textContent = stats.actionsPassed;
+        }
+
+        // Load repositories from backend API
+        async function loadReposFromAPI() {
+            try {
+                showNotification('🔍 Scanning git repositories...', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/git/repos`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    reposData = data.repositories;
+                    
+                    console.log(`Loaded ${reposData.length} repositories from API`);
+                    
+                    // Update display
+                    filterRepos();
+                    updateStats();
+                    
+                    showNotification(`✅ Found ${reposData.length} git repositories!`, 'success');
+                } else {
+                    throw new Error(data.error || 'Unknown API error');
+                }
+                
+            } catch (error) {
+                console.warn('Failed to load repositories from API:', error.message);
+                showNotification(`⚠️ Backend offline - ${error.message}`, 'error');
+                
+                // Show empty state
+                reposData = [];
+                filterRepos();
+                updateStats();
+            }
+        }
+
+        async function refreshRepos() {
+            const loadingDiv = document.getElementById('loading');
+            const reposContainer = document.getElementById('repos');
+            
+            loadingDiv.style.display = 'block';
+            reposContainer.innerHTML = '';
+            
+            await loadReposFromAPI();
+            loadingDiv.style.display = 'none';
+        }
+
+        // Action functions
+        function openFolder(path) {
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            // Generate platform-specific command
+            let command;
+            if (navigator.userAgent.includes('Windows')) {
+                command = `explorer "${path.replace(/\//g, '\\')}"`;
+            } else if (navigator.userAgent.includes('Mac')) {
+                command = `open "${path}"`;
+            } else {
+                command = `xdg-open "${path}"`;
+            }
+            
+            // Copy command to clipboard
+            navigator.clipboard.writeText(command).then(() => {
+                button.textContent = '📋 Copied!';
+                button.style.background = '#45a049';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#333';
+                }, 2000);
+            });
+        }
+
+        function openGitHub(remoteUrl) {
+            if (remoteUrl) {
+                // Convert git URL to web URL
+                let webUrl = remoteUrl
+                    .replace('git@github.com:', 'https://github.com/')
+                    .replace('.git', '');
+                
+                const command = `# Open in browser: ${webUrl}`;
+                navigator.clipboard.writeText(webUrl).then(() => {
+                    showNotification('🔗 GitHub URL copied to clipboard', 'success');
+                });
+            }
+        }
+
+        function gitFetch(path) {
+            const command = `cd "${path}" && git fetch`;
+            navigator.clipboard.writeText(command).then(() => {
+                showNotification('📥 Git fetch command copied', 'info');
+            });
+        }
+
+        function gitPull(path) {
+            const command = `cd "${path}" && git pull`;
+            navigator.clipboard.writeText(command).then(() => {
+                showNotification('📥 Git pull command copied', 'info');
+            });
+        }
+
+        function gitPush(path) {
+            const command = `cd "${path}" && git push`;
+            navigator.clipboard.writeText(command).then(() => {
+                showNotification('📤 Git push command copied', 'info');
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const bgColor = type === 'success' ? 'var(--notification-success)' : 
+                           type === 'error' ? 'var(--notification-error)' : 'var(--notification-info)';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${bgColor};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                box-shadow: 0 4px 12px var(--card-hover-shadow);
+                font-weight: 500;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Dark Mode Functions
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            showNotification(`✨ Switched to ${newTheme} mode`, 'info');
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.querySelector('.theme-icon');
+            if (themeIcon) {
+                themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async () => {
+            initializeTheme();
+            console.log('Git Tracker page loaded, loading repositories...');
+            
+            await loadReposFromAPI();
+            toggleFilter('all');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                refreshRepos();
+            }
+        });
+    </script>
+</body>
+</html>

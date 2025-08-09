@@ -14,7 +14,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## ✨ Features
 
-### Current Features (v1.4)
+### Current Features (v1.5)
 - **📊 Project Dashboard**: Visual overview of all projects with statistics
 - **🔍 Dynamic Project Scanning**: Real-time project discovery from your filesystem
 - **🤖 Intelligent Auto-Detection**: Automatic detection of CLAUDE.md, virtual environments, and README files
@@ -27,7 +27,11 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **🎨 Professional UI**: Rounded navigation bar, improved spacing, and polished interface
 - **📱 Responsive Design**: Works on desktop and mobile devices with theme support
 - **⌨️ Keyboard Shortcuts**: Ctrl+R to refresh, efficient navigation
-- **🎨 Modern Theming**: Complete CSS variable system for consistent dark/light mode experience
+- **🎨 Modern Theming**: Complete CSS variable system with improved text contrast for accessibility
+- **🔀 Git Integration**: Comprehensive repository status tracking and GitHub integration
+- **🌿 Branch Management**: Current branch, ahead/behind status, working tree analysis
+- **⚡ GitHub Actions**: Workflow status and last run information
+- **📊 Multi-Tab Interface**: Project Tracker, Claude Tracker, and Git Tracker in unified navigation
 
 ### Project Information Displayed
 - Project name and description
@@ -55,6 +59,8 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 ### Requirements
 - Any modern web browser (Chrome, Firefox, Safari, Edge)
 - Node.js 16+ (for backend API)
+- Git CLI (for repository status tracking)
+- GitHub CLI `gh` (optional, for GitHub Actions integration)
 - Local file system access
 
 ### Installation & Setup
@@ -125,21 +131,32 @@ Note: The standalone frontend will use fallback project data when the backend is
 4. Start exploring your projects!
 
 ### Usage
-1. **Automatic Discovery**: Projects are automatically scanned from your filesystem on page load
-2. **Theme Selection**: Click the 🌙/☀️ button in the navigation bar to toggle between light and dark modes
-3. **Browse Projects**: Scroll through the grid of project cards with real-time information
-4. **Search**: Use the search bar to find specific projects by name or technology
-5. **Filter**: Click category buttons to filter by project type
-6. **Access Projects**: 
+1. **Navigation**: Choose between three main interfaces:
+   - **🗂️ Project Tracker**: General project discovery and management
+   - **🤖 Claude Tracker**: Projects with Claude integration (CLAUDE.md files)
+   - **🔀 Git Tracker**: Repository status, branch tracking, and GitHub integration
+2. **Automatic Discovery**: Projects are automatically scanned from your filesystem on page load
+3. **Theme Selection**: Click the 🌙/☀️ button in the navigation bar to toggle between light and dark modes
+4. **Browse Projects**: Scroll through the grid of project cards with real-time information
+5. **Search**: Use the search bar to find specific projects by name, path, or technology
+6. **Filter**: Click category buttons to filter by project type or status
+7. **Git Operations**: In Git Tracker, monitor repository health with:
+   - Branch status (ahead/behind remote)
+   - Working tree status (clean/dirty, uncommitted changes)
+   - Last commit information and activity
+   - GitHub Actions workflow status
+   - Quick git command copying (fetch, pull, push)
+8. **Access Projects**: 
    - Click "📁 Open" to open the project directory in file explorer
    - Click "📄 README" to view project documentation
    - Click "🤖 Claude" to copy `claude --continue` command (for projects with CLAUDE.md)
    - Click "💻 Local Claude" to copy local venv Claude activation command
    - Click "🐍 Activate" to copy virtual environment activation commands
+   - Click "🔗 GitHub" to copy GitHub repository URL
    - Click "📋 Copy" to copy the full path to clipboard
    - Click "🚫 Remove" to remove the project from tracking
-7. **Manage Projects**: Click "⚙️ Manage Directories" to add/remove individual project directories
-8. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to rescan and update the view
+9. **Manage Projects**: Click "⚙️ Manage Directories" to add/remove individual project directories
+10. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to rescan and update the view
 
 ### Developer Workflow Integration
 - **🔍 Individual Project Management**: Add specific project directories rather than parent folders
@@ -174,11 +191,14 @@ The current installation tracks **51+ projects** across categories:
 
 ```
 project-tracker/
-├── project-tracker.html          # Main application file
-├── server/                      # Backend API service
-│   ├── server.js               # Express server with project analysis
-│   ├── package.json            # Backend dependencies
-│   └── node_modules/           # Backend node modules
+├── project-tracker.html          # Main Project Tracker application
+├── claude-tracker.html           # Claude project tracking interface
+├── git-tracker.html              # Git repository status dashboard
+├── server/                       # Backend API service
+│   ├── server.js                # Express server with GitAnalyzer, ClaudeAnalyzer, ProjectAnalyzer
+│   ├── package.json             # Backend dependencies
+│   ├── directories.json         # Persistent directory configuration
+│   └── node_modules/            # Backend node modules
 ├── README.md                     # This file
 ├── FUTURE_IMPROVEMENTS.md        # Roadmap and planned features
 ├── CHANGELOG.md                  # Version history

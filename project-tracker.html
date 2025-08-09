@@ -17,6 +17,8 @@
             --text-primary: #333333;
             --text-secondary: #666666;
             --text-muted: #999999;
+            --text-light-bg: #333333;
+            --text-light-bg-secondary: #666666;
             --border-color: #e0e0e0;
             --card-bg: #fafafa;
             --card-hover-shadow: rgba(0,0,0,0.1);
@@ -40,9 +42,11 @@
             /* Dark mode colors */
             --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             --bg-container: #1f1f1f;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
+            --text-primary: #f0f0f0;
+            --text-secondary: #d0d0d0;
+            --text-muted: #a0a0a0;
+            --text-light-bg: #f0f0f0;
+            --text-light-bg-secondary: #d0d0d0;
             --border-color: #444444;
             --card-bg: #2d2d2d;
             --card-hover-shadow: rgba(255,255,255,0.05);
@@ -542,25 +546,25 @@
         .project-title {
             font-size: 1.4em;
             font-weight: bold;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 5px;
             border-bottom: 2px solid #667eea;
             padding-bottom: 5px;
         }
 
         .project-path {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 0.85em;
             margin-bottom: 10px;
             word-break: break-all;
             font-family: 'Courier New', monospace;
-            background: #f0f0f0;
+            background: var(--button-secondary);
             padding: 4px 8px;
             border-radius: 4px;
         }
 
         .project-description {
-            color: #555;
+            color: var(--text-secondary);
             margin-bottom: 15px;
             line-height: 1.4;
             font-size: 0.95em;
@@ -583,12 +587,12 @@
 
         .info-label {
             font-weight: bold;
-            color: #333;
+            color: var(--text-light-bg);
             font-size: 0.8em;
         }
 
         .info-value {
-            color: #666;
+            color: var(--text-light-bg-secondary);
             font-size: 0.85em;
             margin-top: 2px;
         }
@@ -704,7 +708,7 @@
         }
 
         .stat-label {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 0.9em;
             margin-top: 5px;
         }
@@ -712,13 +716,13 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .no-results {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: var(--text-secondary);
             font-style: italic;
         }
 
@@ -753,6 +757,7 @@
         <div class="nav-container">
             <a href="project-tracker.html" class="nav-item active">🗂️ Project Tracker</a>
             <a href="claude-tracker.html" class="nav-item">🤖 Claude Tracker</a>
+            <a href="git-tracker.html" class="nav-item">🔀 Git Tracker</a>
             <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
                 <span class="theme-icon">🌙</span>
             </button>
