@@ -15,8 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Dedicated "💻 Local Claude" action button for local installations
   - Commands automatically generated for venv activation and local Claude execution
   - Blue theme styling to distinguish from global Claude installations
-  - Support for multiple venv patterns: venv, .venv, env, virtualenv
+  - Support for multiple venv patterns: venv, .venv, env
   - Detection works for both executable and package-only installations
+
+### Fixed
+- **🔧 Local Claude Detection Accuracy**
+  - Fixed false positive detection of Anthropic Python SDK as Claude Code
+  - Improved package detection logic to only match actual Claude Code installations
+  - Removed incorrect detection of 'anthropic' packages as Claude installations
+  - Added specific filtering for claude_code, claude-code packages
+  - Eliminated duplicate tag generation using Set for uniqueness
 
 ### Planned
 - Git integration with commit history
