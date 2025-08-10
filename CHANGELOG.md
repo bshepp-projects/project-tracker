@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **🌙 Dark Mode Improvements**
+  - Fixed popup windows (manage directories modal) not following dark/light mode theme switching
+  - Added complete dark mode support to Claude Tracker with theme toggle functionality
+  - Modal backgrounds and borders now properly use CSS variables for consistent theming
+
+- **📐 Navigation Banner Consistency**
+  - Standardized navigation banner dimensions, padding, and positioning across all tracker pages
+  - Fixed Claude Tracker banner shape and location to match Project Tracker and Git Tracker
+  - Ensured consistent nav-container styling with proper alignment and visual effects
+  - All navigation bars now have identical responsive behavior and professional appearance
+
 ### Planned
 - Enhanced project health dashboard  
 - Real-time filesystem monitoring
