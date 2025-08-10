@@ -186,7 +186,7 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--bg-container);
             border-radius: 12px;
             width: 90%;
             max-width: 600px;
@@ -200,7 +200,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .modal-header h2 {
@@ -398,22 +398,26 @@
 
         /* Navigation Bar - Claude Theme */
         .navigation-bar {
-            background: rgba(76, 175, 80, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 10px 0;
+            padding: 20px 30px;
+            margin-bottom: 30px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             gap: 20px;
-            padding: 0 20px;
+            padding: 15px 25px;
+            align-items: center;
+            background: var(--nav-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px var(--card-hover-shadow);
+            border: 1px solid var(--nav-border);
+            transition: all 0.3s ease;
         }
 
         .nav-item {
@@ -441,6 +445,32 @@
         .nav-item.active:hover {
             background: rgba(255, 255, 255, 0.9);
             border-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .theme-toggle {
+            background: var(--button-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: auto;
+            font-size: 16px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--button-primary);
+            color: white;
+            border-color: var(--button-primary);
+        }
+
+        .theme-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
         }
 
         .filter-btn:hover {
@@ -700,6 +730,9 @@
             <a href="project-tracker.html" class="nav-item">🗂️ Project Tracker</a>
             <a href="claude-tracker.html" class="nav-item active">🤖 Claude Tracker</a>
             <a href="git-tracker.html" class="nav-item">🔀 Git Tracker</a>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+                <span class="theme-icon">🌙</span>
+            </button>
         </div>
     </div>
 
@@ -1606,6 +1639,8 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize theme first
+            initializeTheme();
             console.log('Page loaded, loading projects from API...');
             
             // Backup timer to hide loader in case of issues
@@ -1849,6 +1884,32 @@
                 });
             }
         });
+
+        // Theme Management Functions
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            // Show notification
+            showNotification(`✨ Switched to ${newTheme} mode`, 'info');
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.querySelector('.theme-icon');
+            if (themeIcon) {
+                themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            }
+        }
     </script>
 </body>
 </html>
