@@ -42,7 +42,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - README availability
 - **🤖 CLAUDE.md presence** - Shows if project has Claude integration
 - **🐍 Virtual environment status** - Shows if project has Python venv
-- **💻 Local Claude Code installation** - Accurately detects if project has Claude Code CLI installed locally in venv
+- **💻 Claude Code installation** - Detects both local (npm/project-specific) and global (system-wide) Claude Code CLI installations
 - Project category and type
 
 ### Supported Project Categories

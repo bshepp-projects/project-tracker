@@ -19,6 +19,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ensured consistent nav-container styling with proper alignment and visual effects
   - All navigation bars now have identical responsive behavior and professional appearance
 
+- **🔍 Claude Code Detection Major Bug Fix**
+  - Fixed fundamental bug where detection was looking for Python packages instead of npm packages
+  - Claude Code CLI is installed via npm (`@anthropic-ai/claude-code`), not pip
+  - Removed incorrect Python site-packages detection logic
+  - Added proper npm package detection in `node_modules/@anthropic-ai/claude-code`
+  - Added detection for Claude executables in `node_modules/.bin/`
+  - Added package.json dependency checking for claude-code packages
+
+### Added
+- **🌐 Enhanced Claude Detection Capabilities**
+  - New ability to distinguish between local and system-wide Claude Code installations
+  - Added `hasGlobalClaude` field to detect system-wide installations
+  - Added `claudeLocation` field showing "none", "local", "global", or "both"
+  - Enhanced `detectClaudeInstallations()` method returning detailed installation information
+  - Maintains backward compatibility with existing `hasLocalClaude` field
+  - Proper detection of global installations via `which claude` command
+  - Smart filtering to exclude global paths from local detection
+
 ### Planned
 - Enhanced project health dashboard  
 - Real-time filesystem monitoring
