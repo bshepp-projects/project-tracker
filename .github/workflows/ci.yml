@@ -55,7 +55,7 @@ jobs:
           await page.setContent(htmlContent);
           
           // Wait for page to load
-          await page.waitForTimeout(2000);
+          await new Promise(resolve => setTimeout(resolve, 2000));
           
           await browser.close();
           
@@ -94,20 +94,20 @@ jobs:
           
           // Test search functionality
           await page.type('#searchInput', 'test');
-          await page.waitForTimeout(500);
+          await new Promise(resolve => setTimeout(resolve, 500));
           
           // Test filter buttons
           const filterButtons = await page.$$('.filter-btn');
           if (filterButtons.length > 0) {
             await filterButtons[0].click();
-            await page.waitForTimeout(500);
+            await new Promise(resolve => setTimeout(resolve, 500));
           }
           
           // Test refresh button
           const refreshBtn = await page.$('.refresh-btn');
           if (refreshBtn) {
             await refreshBtn.click();
-            await page.waitForTimeout(1000);
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
           
           await browser.close();
