@@ -66,6 +66,24 @@ curl http://localhost:3001/api/projects
 curl http://localhost:3001/api/claude/projects
 ```
 
+### GitHub Actions CI/CD Pipeline
+The project includes comprehensive automated testing via GitHub Actions:
+
+```yaml
+# Workflow runs on push to main/develop and pull requests
+- HTML Validation: html-validate for markup standards compliance
+- Console Error Detection: Puppeteer headless browser testing
+- Functionality Testing: Automated UI interaction testing
+- Accessibility Testing: axe-core WCAG compliance scanning  
+- Lint Checks: File structure and markdown validation
+```
+
+**CI/CD Configuration**: `.github/workflows/ci.yml`
+- **Chrome Sandbox**: Uses `--no-sandbox` flags for containerized CI environment
+- **Modern APIs**: Replaces deprecated Puppeteer methods with Promise-based timeouts
+- **Parallel Jobs**: Runs test, lint, and accessibility jobs concurrently
+- **Quality Gates**: All tests must pass for successful builds
+
 ## API Endpoints
 
 ### Core Endpoints

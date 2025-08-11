@@ -273,7 +273,25 @@ Contributions are welcome! Here's how to get involved:
 1. Clone the repository
 2. Open `project-tracker.html` in your browser
 3. Make changes and test locally
-4. Submit a pull request with your improvements
+4. Run tests: GitHub Actions CI will validate HTML, check for console errors, and test functionality
+5. Submit a pull request with your improvements
+
+## 🧪 Quality Assurance
+
+Project Tracker includes a comprehensive **GitHub Actions CI/CD pipeline** that ensures code quality and functionality:
+
+### Automated Testing Suite
+- **HTML Validation**: Ensures markup validity and web standards compliance
+- **Console Error Detection**: Headless browser testing with Puppeteer to catch JavaScript runtime errors
+- **Functionality Testing**: Automated UI interaction testing (search, filters, refresh buttons)
+- **Accessibility Testing**: axe-core integration for WCAG compliance and accessibility violations
+- **Lint Checks**: File structure validation and markdown linting
+
+### CI/CD Features
+- **Multi-job Pipeline**: Runs tests in parallel for fast feedback
+- **Browser Testing**: Real Chrome browser testing in containerized environment
+- **Quality Gates**: All tests must pass before code can be merged
+- **Automated Validation**: Catches issues before they reach users
 
 ## 📊 Performance
 
