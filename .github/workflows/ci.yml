@@ -36,7 +36,9 @@ jobs:
         const path = require('path');
         
         (async () => {
-          const browser = await puppeteer.launch();
+          const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+          });
           const page = await browser.newPage();
           
           // Listen for console errors
@@ -78,7 +80,9 @@ jobs:
         const path = require('path');
         
         (async () => {
-          const browser = await puppeteer.launch();
+          const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+          });
           const page = await browser.newPage();
           
           const htmlPath = path.join(__dirname, 'project-tracker.html');
@@ -170,7 +174,9 @@ jobs:
         const path = require('path');
         
         (async () => {
-          const browser = await puppeteer.launch();
+          const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+          });
           const page = await browser.newPage();
           
           const htmlPath = path.join(__dirname, 'project-tracker.html');
