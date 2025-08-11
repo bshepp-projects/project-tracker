@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Tracker - /mnt/f/ Directory</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQQSURBVFhHrZd7UFNnFMafJIRwCRAuAQJcDCgIiFoRtVrwUkfqjCPa6oxaO1M7Y2e0nXamM/3DdqY6nbGdTlu1rXWsnalap05bO2NnrJ2xM1pb66V4QUURQRBBuVmQS0IISe7vnJOwMdmd9ps5yZf3O+97nvd5v5MV7H+0/7QBT/xfOVAHfgEcCHjOaYDnQhMoTfRlbHbm5vnuzPJqbNZBDvjObAb8VoHJfivMYytmvU20D3DAvzQyN+rUunfX7Xon74SuBnKM6U8Z3bXd+2fVRJ1Kv7HgxLI3c45yk+hL2Oy8+n5V5hcEOCMzP+vHZPZx7tMvL/vdU6tLJCkZ8MRRBjjgM5fW7M3E6Ey7wKvxWWNjImOjI5AaF4/oBDkSFQokaBRISpCe5PNvb5NlcfLzk3M4xHKMOV5vZfxq+Xun55m1T2HABNiPQ7A8Yoy9nJUZmJQgPcnOzBUXycl/vFbyzLOzc7IzI1MyOHl6ZjaXcy9wFzjDkE20DuCZgCH14tfytDXOQTtsx6ANdqDNYkHwVU+HGZrWhsafWm03lBstz8lyl5K3Nny6+QXJDOeBgCdtMAQuK5DKjfFbtjFNHb5rTYk2W0Z+aW5W0qUjW7YjDe0tELhsULWmwX4zBrh4YtDELc6wOzFhz4k39vGJHoF6o3xLwGHDHaADtGQKuDHI+HCvtaFVfnRn5HMPFK3m8J58aI1xoNE8kfMhj/WwGg1gYh1/Xk/rBjzNYoGPt3y5gQNcP6JGI3hHPIJDJe3ZWUJO7Y+o62VJa4lBT3eTGf3GDqAnNdw48yTqhpz4/J1Fs58VRgPjEQ5jJjZt7mJJjEU8oYmKSZCmJAUc2l27I+eX6l8GCNN7sWXpWlkS35DzZ+dIE6nJ6FJGKPSO1AOXJ3u5a5cPBmgFLQO2sxWQzHzRjsznEXs+f2CyAG4PYDCo0apyoPLQfgxYnaioqzjKHdQNeBwGAP4WmJvA3Q5ZI6gzruzaXvMqzw5HQJBnNjuQcek43kzLgGFfI8pLt7ITPTjA5wbstwD3FHC3gi0CtBLQCrCKrYzc+z1YIGbfPBywz3E5JFMTtTt6c7/vP9TmFGFwwfgAGKsCNALQaOCBPwRF7c1l3AEdd8CAI+BWHFjVBGoJtA7QEmglUAtoKbTFkxeOFO7QnePeP9E6YB1JVHRVfJi3pexbdqgBmhTb7vS++lO8qTZfXQT4SrfP9YqCo48RgxnKuCRV5YIlH5RqKnKPn+COHwrEIjRqODTxO5W5Ry9xn3/r/wBVaZQwJK4a7AAAAABJRU5ErkJggg==">
@@ -125,11 +125,11 @@
             font-size: 16px;
             transition: background 0.3s;
         }
-        
+
         .scan-btn {
             background: #FF9800;
         }
-        
+
         .scan-btn:hover {
             background: #F57C00;
         }
@@ -750,7 +750,7 @@
             .projects-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .project-info {
                 grid-template-columns: 1fr;
             }
@@ -797,7 +797,7 @@
             <button type="button" class="filter-btn" onclick="toggleFilter('ai')" data-filter="ai">AI/ML</button>
             <button type="button" class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web</button>
         </div>
-        
+
         <!-- Directory Management Modal -->
         <div id="directoryModal" class="modal modal-hidden">
             <div class="modal-content">
@@ -809,14 +809,14 @@
                     <p class="tip-box">
                         💡 <strong>Tip:</strong> Add/remove projects without automatic refreshes. Click "Finish &amp; Refresh Projects" when you're done to see changes.
                     </p>
-                    
+
                     <div class="directory-section">
                         <h3>Current Directories</h3>
                         <div id="currentDirectories" class="directory-list">
                             <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
-                    
+
                     <div class="directory-section">
                         <h3>Add Individual Project Directory</h3>
                         <div class="add-directory-form">
@@ -827,7 +827,7 @@
                             ℹ️ Add the path to a specific project directory (e.g., /home/user/my-web-app), not parent directories containing multiple projects.
                         </p>
                     </div>
-                    
+
                     <div class="directory-section">
                         <h3>Quick Actions</h3>
                         <div class="quick-actions">
@@ -842,7 +842,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="stats" id="stats">
             <div class="stat-item">
                 <div class="stat-number" id="totalProjects">51</div>
@@ -1236,7 +1236,7 @@
         function renderProjects() {
             const projectsContainer = document.getElementById('projects');
             const noResultsDiv = document.getElementById('noResults');
-            
+
             if (filteredProjects.length === 0) {
                 projectsContainer.innerHTML = '';
                 noResultsDiv.style.display = 'block';
@@ -1244,17 +1244,17 @@
             }
 
             noResultsDiv.style.display = 'none';
-            
+
             projectsContainer.innerHTML = filteredProjects.map(project => `
                 <div class="project-card">
                     <div class="project-title">${project.name}</div>
                     <div class="project-path">${project.path}</div>
                     <div class="project-description">${project.description}</div>
-                    
+
                     <div class="project-tags">
                         ${project.tags.map(tag => `<span class="tag ${tag}">${tag}</span>`).join('')}
                     </div>
-                    
+
                     <div class="project-info">
                         <div class="info-item">
                             <div class="info-label">Status</div>
@@ -1285,7 +1285,7 @@
                             <div class="info-value">${project.hasLocalClaude === true ? '💻 Yes' : (project.hasLocalClaude === false ? '❌ No' : '❓ Unknown')}</div>
                         </div>
                     </div>
-                    
+
                     <div class="project-actions">
                         <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
                         ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')">📄 README</button>` : ''}
@@ -1301,26 +1301,26 @@
 
         function filterProjects() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
+
             console.log(`Filtering projects: ${projectsData.length} total, currentFilter: ${currentFilter}`);
-            
+
             filteredProjects = projectsData.filter(project => {
-                const matchesSearch = searchTerm === '' || 
+                const matchesSearch = searchTerm === '' ||
                     project.name.toLowerCase().includes(searchTerm) ||
                     project.description.toLowerCase().includes(searchTerm) ||
                     project.technologies.toLowerCase().includes(searchTerm) ||
                     project.category.toLowerCase().includes(searchTerm);
-                
-                const matchesFilter = currentFilter === 'all' || 
+
+                const matchesFilter = currentFilter === 'all' ||
                     project.tags.includes(currentFilter) ||
                     (currentFilter === 'production' && project.status === 'Production') ||
                     (currentFilter === 'development' && project.status === 'Development');
-                
+
                 return matchesSearch && matchesFilter;
             });
-            
+
             console.log(`After filtering: ${filteredProjects.length} projects match`);
-            
+
             renderProjects();
             updateStats();
         }
@@ -1331,7 +1331,7 @@
                 btn.classList.remove('active');
             });
             document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-            
+
             currentFilter = filter;
             filterProjects();
         }
@@ -1357,7 +1357,7 @@
         function openFolder(path) {
             const button = event.target;
             const originalText = button.textContent;
-            
+
             // Generate platform-specific command
             let command;
             if (navigator.userAgent.includes('Windows')) {
@@ -1367,7 +1367,7 @@
             } else {
                 command = `xdg-open "${path}"`;
             }
-            
+
             // Copy command to clipboard (primary action)
             navigator.clipboard.writeText(command).then(() => {
                 button.textContent = '📋 Command Copied!';
@@ -1396,7 +1396,7 @@
                 const originalText = button.textContent;
                 button.textContent = '✅ Copied!';
                 button.style.background = '#4CAF50';
-                
+
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.style.background = '#9C27B0';
@@ -1410,12 +1410,12 @@
             // For now, show a notification with the command
             // In the future, this will integrate with a backend service
             const command = `cd "${path}" && claude --continue`;
-            
+
             const button = event.target;
             const originalText = button.textContent;
             button.textContent = '🚀 Launching...';
             button.style.background = '#45a049';
-            
+
             // Copy command to clipboard for now
             navigator.clipboard.writeText(command).then(() => {
                 setTimeout(() => {
@@ -1442,12 +1442,12 @@
                 `claude --continue`
             ];
             const command = commands.join(' && ');
-            
+
             const button = event.target;
             const originalText = button.textContent;
             button.textContent = '🚀 Launching...';
             button.style.background = '#1976D2';
-            
+
             // Copy command to clipboard for now
             navigator.clipboard.writeText(command).then(() => {
                 setTimeout(() => {
@@ -1475,12 +1475,12 @@
                 `# Or on Windows: venv\\Scripts\\activate`
             ];
             const command = commands.join(' && ');
-            
+
             const button = event.target;
             const originalText = button.textContent;
             button.textContent = '🔄 Activating...';
             button.style.background = '#E64A19';
-            
+
             // Copy command to clipboard for now
             navigator.clipboard.writeText(command).then(() => {
                 setTimeout(() => {
@@ -1502,87 +1502,87 @@
         async function refreshProjects() {
             const loadingDiv = document.getElementById('loading');
             const projectsContainer = document.getElementById('projects');
-            
+
             loadingDiv.style.display = 'block';
             projectsContainer.innerHTML = '';
-            
+
             await loadProjectsFromAPI();
             loadingDiv.style.display = 'none';
         }
 
         // Backend API configuration
         const API_BASE_URL = 'http://localhost:3001/api';
-        
+
         // Project data will be loaded from backend
         let apiProjects = [];
         let fallbackProjects = [...projectsData]; // Keep original as fallback
-        
+
         // Load projects from backend API
         async function loadProjectsFromAPI() {
             try {
                 showNotification('🔍 Scanning filesystem...', 'info');
-                
+
                 const response = await fetch(`${API_BASE_URL}/projects`);
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     apiProjects = data.projects;
                     projectsData = apiProjects;
-                    
+
                     console.log(`Loaded ${apiProjects.length} projects from API`);
                     console.log(`First project:`, apiProjects[0]);
-                    
+
                     // Update display
                     filterProjects();
                     updateStats();
-                    
+
                     // Hide initial loading animation
                     hideInitialLoader();
-                    
+
                     showNotification(`✅ Found ${apiProjects.length} projects!`, 'success');
                 } else {
                     throw new Error(data.error || 'Unknown API error');
                 }
-                
+
             } catch (error) {
                 console.warn('Failed to load projects from API:', error.message);
-                
+
                 // Fallback to hardcoded projects
                 projectsData = fallbackProjects;
                 filterProjects();
                 updateStats();
-                
+
                 // Hide initial loading animation even on error
                 hideInitialLoader();
-                
+
                 showNotification(`⚠️ Using cached projects (${fallbackProjects.length}) - Backend may be offline`, 'warning');
             }
         }
-        
+
         function analyzeProjectFolder(folder) {
             const files = folder.files;
             const fileNames = files.map(f => f.name.toLowerCase());
             const extensions = files.map(f => f.name.split('.').pop().toLowerCase());
-            
+
             // Auto-detect features
             const hasReadme = fileNames.some(name => name.startsWith('readme'));
             const hasClaude = fileNames.includes('claude.md');
-            const hasVenv = files.some(f => f.webkitRelativePath.includes('/venv/') || 
+            const hasVenv = files.some(f => f.webkitRelativePath.includes('/venv/') ||
                                             f.webkitRelativePath.includes('/.venv/') ||
                                             fileNames.includes('requirements.txt'));
-            
+
             // Auto-detect technologies
             const technologies = detectTechnologies(extensions, fileNames);
-            
+
             // Auto-detect category and status
             const category = detectCategory(extensions, fileNames, folder.name);
             const status = detectStatus(fileNames, extensions);
-            
+
             return {
                 name: folder.name,
                 path: `/${folder.path}`, // Add leading slash for consistency
@@ -1598,11 +1598,11 @@
                 isScanned: true
             };
         }
-        
+
         function detectTechnologies(extensions, fileNames) {
             const techMap = {
                 'py': 'Python',
-                'js': 'JavaScript', 
+                'js': 'JavaScript',
                 'ts': 'TypeScript',
                 'html': 'HTML',
                 'css': 'CSS',
@@ -1616,28 +1616,28 @@
                 'swift': 'Swift',
                 'kt': 'Kotlin'
             };
-            
+
             const detected = new Set();
-            
+
             extensions.forEach(ext => {
                 if (techMap[ext]) {
                     detected.add(techMap[ext]);
                 }
             });
-            
+
             // Special cases
             if (fileNames.includes('package.json')) detected.add('Node.js');
             if (fileNames.includes('cargo.toml')) detected.add('Rust');
             if (fileNames.includes('requirements.txt') || fileNames.includes('setup.py')) detected.add('Python');
             if (fileNames.includes('dockerfile')) detected.add('Docker');
             if (fileNames.includes('docker-compose.yml')) detected.add('Docker');
-            
+
             return Array.from(detected).join(', ') || 'Mixed';
         }
-        
+
         function detectCategory(extensions, fileNames, projectName) {
             const name = projectName.toLowerCase();
-            
+
             // Check for specific patterns
             if (name.includes('web') || name.includes('site') || fileNames.includes('index.html')) {
                 return 'Web Application';
@@ -1657,50 +1657,50 @@
             if (fileNames.includes('package.json')) {
                 return 'Node.js Project';
             }
-            
+
             return 'General Project';
         }
-        
+
         function detectStatus(fileNames, extensions) {
             // Look for production indicators
-            if (fileNames.includes('dockerfile') || 
+            if (fileNames.includes('dockerfile') ||
                 fileNames.includes('docker-compose.yml') ||
                 fileNames.some(name => name.includes('prod'))) {
                 return 'Production';
             }
-            
-            // Look for development indicators  
-            if (fileNames.includes('dev') || 
+
+            // Look for development indicators
+            if (fileNames.includes('dev') ||
                 fileNames.includes('test') ||
                 fileNames.some(name => name.includes('dev'))) {
                 return 'Development';
             }
-            
+
             return 'Development'; // Default
         }
-        
+
         function generateTags(status, technologies, category) {
             const tags = [];
-            
+
             if (status.toLowerCase() === 'production') tags.push('production');
             if (status.toLowerCase() === 'development') tags.push('development');
-            
+
             if (technologies.includes('JavaScript') || technologies.includes('HTML')) tags.push('web');
             if (technologies.includes('Python') && (category.includes('AI') || category.includes('ML'))) tags.push('ai');
             if (category.includes('Web')) tags.push('web');
-            
+
             return tags;
         }
-        
+
         function getHardcodedProjects() {
             // Return the original hardcoded projects
             return originalProjectsData || [];
         }
-        
+
         function showNotification(message, type = 'info') {
             // Simple notification system
             const notification = document.createElement('div');
-            const bgColor = type === 'success' ? 'var(--notification-success)' : 
+            const bgColor = type === 'success' ? 'var(--notification-success)' :
                            type === 'error' ? 'var(--notification-error)' : 'var(--notification-info)';
             notification.style.cssText = `
                 position: fixed;
@@ -1716,12 +1716,12 @@
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 3000);
         }
-        
+
 
         // Dark Mode Functions
         function initializeTheme() {
@@ -1733,11 +1733,11 @@
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
+
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateThemeIcon(newTheme);
-            
+
             // Show notification
             showNotification(`✨ Switched to ${newTheme} mode`, 'info');
         }
@@ -1754,12 +1754,12 @@
             // Initialize theme first
             initializeTheme();
             console.log('Page loaded, loading projects from API...');
-            
+
             // Backup timer to hide loader in case of issues
             setTimeout(() => {
                 hideInitialLoader();
             }, 10000); // Hide after 10 seconds max
-            
+
             // Load projects from API on page load
             await loadProjectsFromAPI();
             // Set initial active filter
@@ -1798,13 +1798,13 @@
             // Close the modal first
             const modal = document.getElementById('directoryModal');
             modal.style.display = 'none';
-            
+
             // Show notification that refresh is starting
             showNotification('🔄 Refreshing projects with updated directories...', 'info');
-            
+
             // Refresh the projects list
             await refreshProjects();
-            
+
             showNotification('✅ Projects refreshed successfully!', 'success');
         }
 
@@ -1838,7 +1838,7 @@
         async function addDirectory() {
             const input = document.getElementById('newDirectoryPath');
             const directory = input.value.trim();
-            
+
             if (!directory) {
                 showNotification('❌ Please enter a directory path', 'error');
                 return;
@@ -1854,7 +1854,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showNotification(`✅ Added project: ${directory}`, 'success');
                     input.value = '';
@@ -1883,7 +1883,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showNotification(`✅ Removed project: ${directory}`, 'success');
                     loadDirectoryConfig();
@@ -1915,7 +1915,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showNotification('✅ Reset to default directories', 'success');
                     loadDirectoryConfig();
@@ -1947,11 +1947,11 @@
             try {
                 const projectName = projectPath.split('/').pop();
                 const confirmMessage = `Are you sure you want to remove "${projectName}" from the tracker?\n\nThis will stop scanning: ${projectPath}`;
-                
+
                 if (!confirm(confirmMessage)) {
                     return;
                 }
-                
+
                 // Remove the project directory from scan list
                 const deleteResponse = await fetch(`${API_BASE_URL}/directories`, {
                     method: 'DELETE',
@@ -1960,9 +1960,9 @@
                     },
                     body: JSON.stringify({ directory: projectPath })
                 });
-                
+
                 const deleteData = await deleteResponse.json();
-                
+
                 if (deleteData.success) {
                     showNotification(`✅ Removed project: ${projectName}`, 'success');
                     // Refresh projects to update the list
@@ -1970,7 +1970,7 @@
                 } else {
                     showNotification(`❌ ${deleteData.error}`, 'error');
                 }
-                
+
             } catch (error) {
                 console.error('Error ignoring directory:', error);
                 showNotification('❌ Failed to ignore directory', 'error');
