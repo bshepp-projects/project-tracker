@@ -261,6 +261,25 @@
             color: var(--text-primary);
         }
 
+        .tip-box {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: var(--button-primary);
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .modal-hidden {
+            display: none;
+        }
+
         .directory-section {
             margin-bottom: 25px;
         }
@@ -759,7 +778,7 @@
             <a href="project-tracker.html" class="nav-item active">🗂️ Project Tracker</a>
             <a href="claude-tracker.html" class="nav-item">🤖 Claude Tracker</a>
             <a href="git-tracker.html" class="nav-item">🔀 Git Tracker</a>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+            <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
                 <span class="theme-icon">🌙</span>
             </button>
         </div>
@@ -768,28 +787,27 @@
     <div class="container">
         <h1>🗂️ Project Tracker</h1>
         <div class="subtitle">Dynamic project discovery and management • Auto-refreshes from filesystem</div>
-        
         <div class="controls">
-            <button class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
-            <button class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Manage Directories</button>
+            <button type="button" class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
+            <button type="button" class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Manage Directories</button>
             <input type="text" class="search-box" placeholder="Search projects..." onkeyup="filterProjects()" id="searchInput">
-            <button class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
-            <button class="filter-btn" onclick="toggleFilter('production')" data-filter="production">Production</button>
-            <button class="filter-btn" onclick="toggleFilter('development')" data-filter="development">Development</button>
-            <button class="filter-btn" onclick="toggleFilter('ai')" data-filter="ai">AI/ML</button>
-            <button class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web</button>
+            <button type="button" class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
+            <button type="button" class="filter-btn" onclick="toggleFilter('production')" data-filter="production">Production</button>
+            <button type="button" class="filter-btn" onclick="toggleFilter('development')" data-filter="development">Development</button>
+            <button type="button" class="filter-btn" onclick="toggleFilter('ai')" data-filter="ai">AI/ML</button>
+            <button type="button" class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web</button>
         </div>
         
         <!-- Directory Management Modal -->
-        <div id="directoryModal" class="modal" style="display: none;">
+        <div id="directoryModal" class="modal modal-hidden">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>⚙️ Manage Project Directories</h2>
-                    <button class="modal-close" onclick="toggleDirectoryManager()" title="Close without refreshing">&times;</button>
+                    <button type="button" class="modal-close" onclick="toggleDirectoryManager()" title="Close without refreshing">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p style="background: var(--card-bg); padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; color: var(--button-primary);">
-                        💡 <strong>Tip:</strong> Add/remove projects without automatic refreshes. Click "Finish & Refresh Projects" when you're done to see changes.
+                    <p class="tip-box">
+                        💡 <strong>Tip:</strong> Add/remove projects without automatic refreshes. Click "Finish &amp; Refresh Projects" when you're done to see changes.
                     </p>
                     
                     <div class="directory-section">
@@ -803,9 +821,9 @@
                         <h3>Add Individual Project Directory</h3>
                         <div class="add-directory-form">
                             <input type="text" id="newDirectoryPath" placeholder="/path/to/specific-project" class="directory-input">
-                            <button onclick="addDirectory()" class="add-btn">➕ Add Project</button>
+                            <button type="button" onclick="addDirectory()" class="add-btn">➕ Add Project</button>
                         </div>
-                        <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 5px;">
+                        <p class="help-text">
                             ℹ️ Add the path to a specific project directory (e.g., /home/user/my-web-app), not parent directories containing multiple projects.
                         </p>
                     </div>
@@ -813,14 +831,14 @@
                     <div class="directory-section">
                         <h3>Quick Actions</h3>
                         <div class="quick-actions">
-                            <button onclick="resetToDefaults()" class="reset-btn">🔄 Reset to Defaults</button>
-                            <button onclick="loadDirectoryConfig()" class="refresh-btn">🔍 Refresh List</button>
+                            <button type="button" onclick="resetToDefaults()" class="reset-btn">🔄 Reset to Defaults</button>
+                            <button type="button" onclick="loadDirectoryConfig()" class="refresh-btn">🔍 Refresh List</button>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button onclick="finishDirectoryChanges()" class="finish-btn">✅ Finish & Refresh Projects</button>
-                    <button onclick="toggleDirectoryManager()" class="cancel-btn">Cancel</button>
+                    <button type="button" onclick="finishDirectoryChanges()" class="finish-btn">✅ Finish &amp; Refresh Projects</button>
+                    <button type="button" onclick="toggleDirectoryManager()" class="cancel-btn">Cancel</button>
                 </div>
             </div>
         </div>
