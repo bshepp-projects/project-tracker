@@ -127,13 +127,25 @@ The backend scans these directories by default (configured in `server.js:14-26`)
 
 ## API Response Fields
 
-### New Local Claude Detection Fields
-Projects returned by `/api/projects` now include:
-- `hasLocalClaude`: Boolean indicating if Claude Code CLI is installed locally in project's virtual environment
-- **Accurate Detection Logic**: Only detects actual Claude Code installations, excludes Anthropic Python SDK
-- **Detection Methods**: Checks for `claude` executables in venv/bin and `claude_code`/`claude-code` packages in site-packages
-- **Supported Patterns**: Works with common venv patterns: `venv`, `.venv`, `env`
-- **False Positive Prevention**: Filters out packages containing 'anthropic' to avoid SDK confusion
+### Claude Code Detection Fields
+Projects returned by `/api/projects` now include enhanced Claude detection:
+
+#### Core Fields
+- `hasLocalClaude`: Boolean indicating if Claude Code CLI is installed locally in the project
+- `hasGlobalClaude`: Boolean indicating if Claude Code CLI is installed system-wide
+- `claudeLocation`: String indicating installation location ("none", "local", "global", or "both")
+
+#### Detection Logic (Fixed)
+- **npm Package Detection**: Correctly checks for `@anthropic-ai/claude-code` in node_modules
+- **Executable Detection**: Looks for `claude` binary in node_modules/.bin/ and venv/bin/
+- **Package.json Scanning**: Checks dependencies for claude-code packages
+- **Global Detection**: Uses `which claude` to find system-wide installations
+- **Local vs Global Differentiation**: Smart path analysis to distinguish installation types
+
+#### Important Notes
+- Claude Code CLI is an **npm package** (`@anthropic-ai/claude-code`), not a Python package
+- The Anthropic Python SDK (`anthropic`) is different from Claude Code CLI
+- Detection properly distinguishes between local project installations and system-wide installations
 
 ## Frontend-Backend Communication
 
