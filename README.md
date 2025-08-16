@@ -19,7 +19,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **🔍 Dynamic Project Scanning**: Real-time project discovery from your filesystem
 - **🤖 Intelligent Auto-Detection**: Automatic detection of CLAUDE.md, virtual environments, and README files
 - **📊 Smart Project Analysis**: Technology stack detection and categorization from file structures
-- **🏷️ Advanced Filtering**: Filter by project type (Production, Development, AI/ML, Web)
+- **🏷️ Advanced Filtering & Tag Management**: Filter by project type with comprehensive tag system and individual project saves
 - **📁 Enhanced Folder Access**: Smart folder opening with platform-specific commands
 - **📋 Path Management**: Copy project paths to clipboard
 - **🌙 Dark/Light Mode**: Eye-friendly themes with persistent preferences and smooth transitions
@@ -32,6 +32,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **🌿 Branch Management**: Current branch, ahead/behind status, working tree analysis
 - **⚡ GitHub Actions**: Workflow status and last run information
 - **📊 Multi-Tab Interface**: Project Tracker, Claude Tracker, and Git Tracker in unified navigation
+- **🏷️ Comprehensive Tag System**: 19 tag categories with smart auto-detection and individual project saves
 
 ### Project Information Displayed
 - Project name and description
@@ -44,6 +45,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **🐍 Virtual environment status** - Shows if project has Python venv
 
 - Project category and type
+- **🏷️ Smart Tags**: Auto-assigned tags including quantum, research, creative, gaming, science, environmental, security, business, education, experimental, framework, data, frontend, backend, tool, ai, web, production, development
 
 ### Supported Project Categories
 - **Utility Projects**: Data tools, analysis systems, automation

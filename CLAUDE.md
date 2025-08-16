@@ -97,6 +97,11 @@ The project includes comprehensive automated testing via GitHub Actions:
 - `DELETE /api/directories` - Remove scan directory
 - `PUT /api/directories` - Update entire directory list
 
+### Tag Management
+- `GET /api/tags` - Get all unique tags from scanned projects
+- `POST /api/projects/:projectPath/tags` - Update tags for a specific project
+- `DELETE /api/tags/:tagName` - Remove a tag globally from all projects
+
 ## Project Analysis Features
 
 ### ProjectAnalyzer Class (`server.js:240+`)
@@ -187,7 +192,7 @@ Backend configuration is persisted in `server/directories.json`:
 3. Add patterns to `ProjectAnalyzer.detectStatus()` for status inference
 
 ### Adding New API Endpoints
-1. Add route handler in `server.js` (after line 393)
+1. Add route handler in `server.js` (after line 1076)
 2. Follow existing patterns for error handling and JSON responses
 3. Update CORS configuration if needed
 
@@ -196,3 +201,25 @@ Backend configuration is persisted in `server/directories.json`:
 2. CSS is embedded in `<style>` tags (lines 12+)
 3. JavaScript is embedded in `<script>` tags (end of file)
 4. Use existing utility functions for consistent UX
+
+### Tag Management System
+The project includes a comprehensive tag management interface:
+
+#### Enhanced Tag Generation (`server.js:377-488`)
+- **19 tag categories**: quantum, research, creative, gaming, science, environmental, security, business, education, experimental, framework, data, frontend, backend, tool, ai, web, production, development
+- **Smart Detection**: Uses project names, paths, and technologies to auto-assign relevant tags
+- **Pattern Matching**: Detects quantum projects, AI/ML projects, research work, creative endeavors, etc.
+
+#### Tag Management UI (`project-tracker.html`)
+- **🏷️ Manage Tags Button**: Purple button in main controls toolbar
+- **Modal Interface**: Comprehensive popup for tag operations
+- **Individual Save Buttons**: Each project has its own save button for incremental updates
+- **Visual Indicators**: Shows unsaved changes with orange status indicators
+- **Change Counter**: Footer displays count of projects with pending changes
+
+#### Tag Operations
+- **Create Tags**: Add custom tags via input field or predefined quick-add buttons
+- **Delete Tags**: Remove tags globally with confirmation (removes from all projects)
+- **Assign/Remove**: Click tags to toggle assignment to specific projects
+- **Bulk Save**: Save all changes at once or save individual projects
+- **Real-time UI**: Immediate visual feedback for all tag operations

@@ -163,6 +163,23 @@
             transform: translateY(-1px);
         }
 
+        .tag-btn {
+            background: #9C27B0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .tag-btn:hover {
+            background: #7B1FA2;
+            transform: translateY(-1px);
+        }
+
         /* Modal Styles */
         .modal {
             position: fixed;
@@ -746,6 +763,126 @@
             font-style: italic;
         }
 
+        /* Tag Management Styles */
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .tag-item.selected {
+            background: var(--button-primary);
+            color: white;
+            border-color: var(--button-primary);
+        }
+
+        .tag-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            margin-left: 8px;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .tag-remove:hover {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .tag-item.selected .tag-remove:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .tag-input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tag-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .tag-input:focus {
+            outline: none;
+            border-color: var(--button-primary);
+        }
+
+        .tag-add-btn {
+            background: var(--button-success);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .tag-add-btn:hover {
+            background: #45a049;
+        }
+
+        .tag-add-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .predefined-tags {
+            margin-bottom: 20px;
+        }
+
+        .predefined-tags h4 {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .predefined-tag {
+            display: inline-block;
+            background: var(--button-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 6px 12px;
+            margin: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .predefined-tag:hover {
+            background: var(--button-primary);
+            color: white;
+            border-color: var(--button-primary);
+        }
+
         @media (max-width: 768px) {
             .projects-grid {
                 grid-template-columns: 1fr;
@@ -789,6 +926,7 @@
         <div class="subtitle">Dynamic project discovery and management • Auto-refreshes from filesystem</div>
         <div class="controls">
             <button type="button" class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
+            <button type="button" class="tag-btn" onclick="toggleTagManager()">🏷️ Manage Tags</button>
             <button type="button" class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Manage Directories</button>
             <input type="text" class="search-box" placeholder="Search projects..." onkeyup="filterProjects()" id="searchInput">
             <button type="button" class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
@@ -839,6 +977,69 @@
                 <div class="modal-footer">
                     <button type="button" onclick="finishDirectoryChanges()" class="finish-btn">✅ Finish &amp; Refresh Projects</button>
                     <button type="button" onclick="toggleDirectoryManager()" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tag Management Modal -->
+        <div id="tagModal" class="modal modal-hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🏷️ Manage Project Tags</h2>
+                    <button type="button" class="modal-close" onclick="toggleTagManager()" title="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="tip-box">
+                        💡 <strong>Tip:</strong> Manage tags used across all your projects. Tags help categorize and filter projects effectively.
+                    </p>
+
+                    <div class="tag-input-section">
+                        <input type="text" id="newTagInput" class="tag-input" placeholder="Enter new tag name..." maxlength="20">
+                        <button type="button" onclick="addNewTag()" class="tag-add-btn">+ Add Tag</button>
+                    </div>
+
+                    <div class="predefined-tags">
+                        <h4>Quick Add Common Tags:</h4>
+                        <span class="predefined-tag" onclick="addPredefinedTag('frontend')">frontend</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('backend')">backend</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('fullstack')">fullstack</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('mobile')">mobile</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('desktop')">desktop</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('research')">research</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('experimental')">experimental</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('archived')">archived</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('personal')">personal</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('work')">work</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('education')">education</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('game')">game</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('tool')">tool</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('library')">library</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('framework')">framework</span>
+                    </div>
+
+                    <div class="directory-section">
+                        <h3>Current Tags</h3>
+                        <div id="currentTags" class="tag-grid">
+                            <!-- Tags will be dynamically populated here -->
+                        </div>
+                    </div>
+
+                    <div class="directory-section">
+                        <h3>Project Tag Assignment</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
+                            Select projects and assign/remove tags. Click on tags to toggle selection.
+                        </p>
+                        <div id="projectTagAssignment">
+                            <!-- Project list for tag assignment will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div style="flex: 1; color: var(--text-secondary); font-size: 14px;" id="changesSummary">
+                        No unsaved changes
+                    </div>
+                    <button type="button" onclick="saveTagChanges()" class="finish-btn">💾 Save All Changes</button>
+                    <button type="button" onclick="toggleTagManager()" class="cancel-btn">Cancel</button>
                 </div>
             </div>
         </div>
@@ -1959,7 +2160,299 @@
                     }
                 });
             }
+
+            // Allow Enter key to add tag
+            const newTagInput = document.getElementById('newTagInput');
+            if (newTagInput) {
+                newTagInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        addNewTag();
+                    }
+                });
+            }
         });
+
+        // Tag Management System
+        let allTags = new Set();
+        let selectedProjects = new Set();
+        let tagChanges = {};
+
+        function toggleTagManager() {
+            const modal = document.getElementById('tagModal');
+            const isHidden = modal.classList.contains('modal-hidden');
+            
+            if (isHidden) {
+                loadTagManager();
+                modal.classList.remove('modal-hidden');
+            } else {
+                modal.classList.add('modal-hidden');
+            }
+        }
+
+        function loadTagManager() {
+            // Collect all unique tags from projects
+            allTags.clear();
+            filteredProjects.forEach(project => {
+                if (project.tags && Array.isArray(project.tags)) {
+                    project.tags.forEach(tag => allTags.add(tag));
+                }
+            });
+
+            renderCurrentTags();
+            renderProjectTagAssignment();
+        }
+
+        function renderCurrentTags() {
+            const container = document.getElementById('currentTags');
+            container.innerHTML = '';
+
+            Array.from(allTags).sort().forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-item';
+                tagElement.innerHTML = `
+                    <span>${tag}</span>
+                    <button type="button" class="tag-remove" onclick="removeTag('${tag}')" title="Remove tag">&times;</button>
+                `;
+                container.appendChild(tagElement);
+            });
+        }
+
+        function renderProjectTagAssignment() {
+            const container = document.getElementById('projectTagAssignment');
+            container.innerHTML = '';
+
+            filteredProjects.forEach(project => {
+                const projectElement = document.createElement('div');
+                projectElement.style.cssText = `
+                    margin-bottom: 15px;
+                    padding: 15px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    background: var(--card-bg);
+                    position: relative;
+                `;
+
+                const projectTags = project.tags || [];
+                const hasChanges = tagChanges[project.path];
+                const tagElements = Array.from(allTags).sort().map(tag => {
+                    const isAssigned = projectTags.includes(tag);
+                    return `<span 
+                        class="predefined-tag ${isAssigned ? 'selected' : ''}" 
+                        onclick="toggleProjectTag('${project.path}', '${tag}')"
+                        style="margin: 2px; ${isAssigned ? 'background: var(--button-primary); color: white;' : ''}"
+                    >${tag}</span>`;
+                }).join('');
+
+                projectElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600; color: var(--text-primary);">
+                            ${project.name}
+                        </div>
+                        <button 
+                            type="button" 
+                            onclick="saveIndividualProject('${project.path}')" 
+                            class="tag-add-btn"
+                            style="padding: 6px 12px; font-size: 12px; ${hasChanges ? '' : 'opacity: 0.5; cursor: not-allowed;'}"
+                            ${hasChanges ? '' : 'disabled'}
+                            title="${hasChanges ? 'Save changes for this project' : 'No changes to save'}"
+                        >
+                            💾 Save
+                        </button>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                        ${project.path}
+                        ${hasChanges ? '<span style="color: var(--button-warning); font-weight: 500;"> • Unsaved changes</span>' : ''}
+                    </div>
+                    <div style="line-height: 1.6;">
+                        ${tagElements}
+                    </div>
+                `;
+                container.appendChild(projectElement);
+            });
+
+            // Update changes summary
+            updateChangesSummary();
+        }
+
+        function updateChangesSummary() {
+            const changesCount = Object.keys(tagChanges).length;
+            const summaryElement = document.getElementById('changesSummary');
+            
+            if (changesCount === 0) {
+                summaryElement.textContent = 'No unsaved changes';
+                summaryElement.style.color = 'var(--text-secondary)';
+            } else {
+                summaryElement.textContent = `${changesCount} project${changesCount === 1 ? '' : 's'} with unsaved changes`;
+                summaryElement.style.color = 'var(--button-warning)';
+            }
+        }
+
+        function addNewTag() {
+            const input = document.getElementById('newTagInput');
+            const tagName = input.value.trim().toLowerCase();
+            
+            if (!tagName) {
+                showNotification('Please enter a tag name', 'error');
+                return;
+            }
+
+            if (tagName.length > 20) {
+                showNotification('Tag name too long (max 20 characters)', 'error');
+                return;
+            }
+
+            if (allTags.has(tagName)) {
+                showNotification('Tag already exists', 'error');
+                return;
+            }
+
+            allTags.add(tagName);
+            input.value = '';
+            renderCurrentTags();
+            renderProjectTagAssignment();
+            showNotification(`Added tag: ${tagName}`, 'success');
+        }
+
+        function addPredefinedTag(tagName) {
+            if (allTags.has(tagName)) {
+                showNotification('Tag already exists', 'error');
+                return;
+            }
+
+            allTags.add(tagName);
+            renderCurrentTags();
+            renderProjectTagAssignment();
+            showNotification(`Added tag: ${tagName}`, 'success');
+        }
+
+        function removeTag(tagName) {
+            if (!confirm(`Remove tag "${tagName}" from all projects?`)) {
+                return;
+            }
+
+            allTags.delete(tagName);
+            
+            // Remove from all projects
+            filteredProjects.forEach(project => {
+                if (project.tags && project.tags.includes(tagName)) {
+                    project.tags = project.tags.filter(tag => tag !== tagName);
+                    if (!tagChanges[project.path]) {
+                        tagChanges[project.path] = { ...project };
+                    }
+                    tagChanges[project.path].tags = project.tags;
+                }
+            });
+
+            renderCurrentTags();
+            renderProjectTagAssignment();
+            showNotification(`Removed tag: ${tagName}`, 'success');
+        }
+
+        function toggleProjectTag(projectPath, tagName) {
+            const project = filteredProjects.find(p => p.path === projectPath);
+            if (!project) return;
+
+            if (!project.tags) project.tags = [];
+            
+            const hasTag = project.tags.includes(tagName);
+            if (hasTag) {
+                project.tags = project.tags.filter(tag => tag !== tagName);
+            } else {
+                project.tags.push(tagName);
+            }
+
+            // Track changes
+            if (!tagChanges[projectPath]) {
+                tagChanges[projectPath] = { ...project };
+            }
+            tagChanges[projectPath].tags = [...project.tags];
+
+            renderProjectTagAssignment();
+        }
+
+        async function saveIndividualProject(projectPath) {
+            const projectData = tagChanges[projectPath];
+            if (!projectData) {
+                showNotification('No changes to save for this project', 'info');
+                return;
+            }
+
+            try {
+                const encodedPath = encodeURIComponent(projectPath);
+                const response = await fetch(`${API_BASE_URL}/api/projects/${encodedPath}/tags`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tags: projectData.tags || []
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to save tags for ${projectPath}`);
+                }
+                
+                // Remove from pending changes
+                delete tagChanges[projectPath];
+                
+                // Update the project display
+                renderProjectTagAssignment();
+                
+                showNotification(`✅ Saved tags for ${projectData.name}`, 'success');
+                
+            } catch (error) {
+                console.error('Error saving project tags:', error);
+                showNotification(`❌ Failed to save tags for ${projectData.name}`, 'error');
+            }
+        }
+
+        async function saveTagChanges() {
+            if (Object.keys(tagChanges).length === 0) {
+                showNotification('No changes to save', 'info');
+                return;
+            }
+
+            try {
+                // Save tag changes to backend
+                const savePromises = Object.entries(tagChanges).map(async ([projectPath, projectData]) => {
+                    const encodedPath = encodeURIComponent(projectPath);
+                    const response = await fetch(`${API_BASE_URL}/api/projects/${encodedPath}/tags`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            tags: projectData.tags || []
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to save tags for ${projectPath}`);
+                    }
+                    
+                    return response.json();
+                });
+
+                await Promise.all(savePromises);
+                
+                showNotification(`Saved tag changes for ${Object.keys(tagChanges).length} project(s)`, 'success');
+                tagChanges = {};
+                
+                // Update the changes summary
+                updateChangesSummary();
+                
+                toggleTagManager();
+                
+                // Refresh the display
+                renderProjects();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Error saving tag changes:', error);
+                showNotification('Failed to save tag changes', 'error');
+            }
+        }
     </script>
 </body>
 </html>

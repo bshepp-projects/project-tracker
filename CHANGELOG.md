@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **🏷️ Comprehensive Tag Management System**: Complete tag interface with individual project saves
+- **Enhanced Tag Generation**: 19 smart tag categories with auto-detection based on project names, paths, and technologies
+- **Individual Save Buttons**: Each project has its own save button for incremental tag updates
+- **Visual Change Indicators**: Orange status indicators for projects with unsaved changes
+- **Tag Management API**: Backend endpoints for tag operations (`GET /api/tags`, `POST /api/projects/:path/tags`, `DELETE /api/tags/:name`)
+- **Real-time UI Updates**: Immediate visual feedback for all tag operations
+- **Smart Tag Detection**: Auto-assigns relevant tags (quantum, research, creative, gaming, science, environmental, security, business, education, experimental, framework, data, frontend, backend, tool, ai, web, production, development)
+
+### Changed
+- Enhanced project analysis with improved tag generation algorithm
+- Updated `generateTags()` function to accept project name and path parameters for smarter tag assignment
+
+## [1.5.2] - 2025-08-16
+
 ### Fixed
 - **🌙 Dark Mode Improvements**
   - Fixed popup windows (manage directories modal) not following dark/light mode theme switching
