@@ -215,7 +215,7 @@ class ProjectAnalyzer {
                 status: status,
                 technologies: technologies,
                 category: category,
-                tags: this.generateTags(status, technologies, category),
+                tags: this.generateTags(status, technologies, category, projectName, projectPath),
                 hasReadme: hasReadme,
                 hasClaude: hasClaude,
                 hasVenv: hasVenv,
@@ -374,16 +374,115 @@ class ProjectAnalyzer {
         return 'Development'; // Default
     }
     
-    static generateTags(status, technologies, category) {
+    static generateTags(status, technologies, category, projectName = '', projectPath = '') {
         const tags = new Set();
         
+        // Status-based tags
         if (status.toLowerCase() === 'production') tags.add('production');
         if (status.toLowerCase() === 'development') tags.add('development');
         
+        // Technology-based tags
         if (technologies.includes('JavaScript') || technologies.includes('HTML')) tags.add('web');
+        if (technologies.includes('React')) tags.add('frontend');
+        if (technologies.includes('Node.js')) tags.add('backend');
         if (technologies.includes('Python') && (category.includes('AI') || category.includes('ML'))) tags.add('ai');
+        if (technologies.includes('Python') && !tags.has('ai')) tags.add('backend');
         if (category.includes('Web')) tags.add('web');
         if (technologies.includes('Docker')) tags.add('production');
+        
+        // Project name-based tags (quantum, research, etc.)
+        const nameLower = projectName.toLowerCase();
+        const pathLower = projectPath.toLowerCase();
+        
+        // Quantum computing projects
+        if (nameLower.includes('quantum') || nameLower.includes('q-art') || nameLower.includes('qsim') || 
+            nameLower.includes('photon') || pathLower.includes('quantum')) {
+            tags.add('quantum');
+        }
+        
+        // AI/ML projects
+        if (nameLower.includes('ai') || nameLower.includes('ml') || nameLower.includes('neural') ||
+            nameLower.includes('machine') || nameLower.includes('learning') || 
+            category.includes('AI') || category.includes('ML')) {
+            tags.add('ai');
+        }
+        
+        // Research projects
+        if (nameLower.includes('research') || nameLower.includes('analysis') || 
+            nameLower.includes('study') || pathLower.includes('science') ||
+            pathLower.includes('consciousness') || nameLower.includes('experiment')) {
+            tags.add('research');
+        }
+        
+        // Creative/Art projects
+        if (nameLower.includes('art') || nameLower.includes('creative') || 
+            nameLower.includes('haiku') || nameLower.includes('curator') ||
+            pathLower.includes('art-projects')) {
+            tags.add('creative');
+        }
+        
+        // Game projects
+        if (nameLower.includes('game') || nameLower.includes('gaming') ||
+            pathLower.includes('game')) {
+            tags.add('gaming');
+        }
+        
+        // Tool/Utility projects
+        if (pathLower.includes('utility') || nameLower.includes('tool') ||
+            nameLower.includes('tracker') || nameLower.includes('analyzer') ||
+            nameLower.includes('counter') || nameLower.includes('finder')) {
+            tags.add('tool');
+        }
+        
+        // Science projects
+        if (pathLower.includes('science') || nameLower.includes('physics') ||
+            nameLower.includes('neutrino') || nameLower.includes('topology') ||
+            nameLower.includes('icecube') || nameLower.includes('prover')) {
+            tags.add('science');
+        }
+        
+        // Environmental projects
+        if (pathLower.includes('environmental') || nameLower.includes('runoff') ||
+            nameLower.includes('eco') || nameLower.includes('climate')) {
+            tags.add('environmental');
+        }
+        
+        // Security projects
+        if (nameLower.includes('security') || nameLower.includes('captcha') ||
+            nameLower.includes('auth') || nameLower.includes('guard')) {
+            tags.add('security');
+        }
+        
+        // Business/Commercial projects
+        if (nameLower.includes('business') || nameLower.includes('commercial') ||
+            nameLower.includes('shop') || nameLower.includes('.com') ||
+            pathLower.includes('dark-forest-labs')) {
+            tags.add('business');
+        }
+        
+        // Education projects
+        if (nameLower.includes('education') || nameLower.includes('tutorial') ||
+            nameLower.includes('cs102') || nameLower.includes('learn')) {
+            tags.add('education');
+        }
+        
+        // Experimental projects
+        if (pathLower.includes('experimental') || nameLower.includes('experiment') ||
+            nameLower.includes('prototype') || nameLower.includes('test')) {
+            tags.add('experimental');
+        }
+        
+        // Architecture/Framework projects
+        if (nameLower.includes('architecture') || nameLower.includes('framework') ||
+            nameLower.includes('template') || nameLower.includes('platform')) {
+            tags.add('framework');
+        }
+        
+        // Data/Analytics projects
+        if (nameLower.includes('data') || nameLower.includes('analytics') ||
+            nameLower.includes('retrieval') || nameLower.includes('analysis')) {
+            tags.add('data');
+        }
         
         return Array.from(tags);
     }
@@ -962,6 +1061,119 @@ app.get('/api/git/repos', async (req, res) => {
     }
 });
 
+// Tag management endpoints
+app.get('/api/tags', async (req, res) => {
+    try {
+        console.log('🏷️ Getting all tags...');
+        const allTags = new Set();
+        
+        for (const scanDir of scanDirectories) {
+            try {
+                const stats = await fs.stat(scanDir);
+                if (stats.isDirectory()) {
+                    const dirName = path.basename(scanDir);
+                    if (dirName.startsWith('$Temp') || 
+                        dirName.endsWith('.tmp') ||
+                        dirName === '$RECYCLE.BIN' || 
+                        dirName === 'System Volume Information' ||
+                        (dirName.startsWith('.') && dirName !== '.claude')) {
+                        continue;
+                    }
+                    
+                    const project = await ProjectAnalyzer.analyzeProject(scanDir, dirName);
+                    if (project && project.tags) {
+                        project.tags.forEach(tag => allTags.add(tag));
+                    }
+                }
+            } catch (error) {
+                console.warn(`Could not scan directory ${scanDir} for tags:`, error.message);
+            }
+        }
+        
+        console.log(`🏷️ Found ${allTags.size} unique tags`);
+        res.json({
+            success: true,
+            tags: Array.from(allTags).sort(),
+            scanTime: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        console.error('Error getting tags:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/projects/:projectPath/tags', async (req, res) => {
+    try {
+        const { projectPath } = req.params;
+        const { tags } = req.body;
+        
+        if (!Array.isArray(tags)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Tags must be an array'
+            });
+        }
+        
+        // Decode the project path
+        const decodedPath = decodeURIComponent(projectPath);
+        
+        // Validate that directory exists
+        try {
+            await fs.access(decodedPath);
+        } catch (error) {
+            return res.status(404).json({
+                success: false,
+                error: 'Project directory not found'
+            });
+        }
+        
+        // Here you would typically save tags to a database or metadata file
+        // For now, we'll just return success since tags are managed client-side
+        console.log(`🏷️ Updated tags for ${decodedPath}: ${tags.join(', ')}`);
+        
+        res.json({
+            success: true,
+            message: 'Tags updated successfully',
+            projectPath: decodedPath,
+            tags: tags
+        });
+        
+    } catch (error) {
+        console.error('Error updating project tags:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.delete('/api/tags/:tagName', async (req, res) => {
+    try {
+        const { tagName } = req.params;
+        
+        console.log(`🗑️ Removing tag: ${tagName}`);
+        
+        // Here you would typically remove the tag from all projects in a database
+        // For now, we'll just return success since tags are managed client-side
+        
+        res.json({
+            success: true,
+            message: `Tag "${tagName}" removed successfully`
+        });
+        
+    } catch (error) {
+        console.error('Error removing tag:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // Initialize and start server
 async function startServer() {
     // Load directories from file on startup
@@ -971,6 +1183,7 @@ async function startServer() {
         console.log(`🚀 Project Tracker Backend running on http://localhost:${PORT}`);
         console.log(`📂 Scanning directories: ${scanDirectories.length} configured`);
         console.log(`🔍 Access projects API at: http://localhost:${PORT}/api/projects`);
+        console.log(`🏷️ Access tags API at: http://localhost:${PORT}/api/tags`);
     });
 }
 
