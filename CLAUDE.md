@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Project Tracker is a comprehensive local web-based project management and discovery tool. It consists of:
+Project Tracker is a local tool to find and organize your projects. It has:
 
 - **Frontend**: Single-page HTML application (`project-tracker.html`) with embedded CSS/JavaScript
 - **Backend**: Node.js Express server (`server/server.js`) that provides API endpoints for filesystem scanning
-- **Architecture**: Hybrid system combining hardcoded project data with dynamic filesystem scanning
+- **Simple design**: Frontend HTML file + optional Node.js backend for scanning
 
 ## Core Architecture
 
@@ -103,14 +103,14 @@ The project includes comprehensive automated testing via GitHub Actions:
 - Recursive filesystem scanning with exclusion patterns
 - Technology stack detection from file extensions
 - Virtual environment detection for Python projects
-- **Local Claude Code detection** for venv installations
+
 - Automatic categorization (Web, AI/ML, Backend, etc.)
 - Project status inference (Production, Development)
 
 ### ClaudeAnalyzer Class (`server.js:61-189`)
 - Detects CLAUDE.md files and .claude directories
 - Extracts metadata from CLAUDE.md (Name, Role patterns)
-- **Local Claude Code detection** via `detectLocalClaudeInstall()` method
+
 - Analyzes Claude project permissions and settings
 - Determines Claude project status and activity
 
@@ -140,30 +140,28 @@ The backend scans these directories by default (configured in `server.js:14-26`)
 - Documentation: `readme.*` files
 - Claude Integration: `CLAUDE.md`, `.claude/` directory
 - Virtual Environments: `venv/`, `.venv/`, `env/` directories
-- **Local Claude Installations**: Claude packages in `venv/lib/python*/site-packages/`
+
 - Configuration: `package.json`, `requirements.txt`, `setup.py`
 
 ## API Response Fields
 
-### Claude Code Detection Fields
-Projects returned by `/api/projects` now include enhanced Claude detection:
+### Claude Project Detection
+Projects returned by `/api/projects` include basic Claude detection:
 
 #### Core Fields
-- `hasLocalClaude`: Boolean indicating if Claude Code CLI is installed locally in the project
-- `hasGlobalClaude`: Boolean indicating if Claude Code CLI is installed system-wide
-- `claudeLocation`: String indicating installation location ("none", "local", "global", or "both")
+- `hasClaudeFile`: Boolean indicating if CLAUDE.md file exists
+- `hasClaudeDir`: Boolean indicating if .claude directory exists
+- `claudeRole`: Extracted role from CLAUDE.md metadata
+- `permissions`: Array of Claude permissions from settings
 
-#### Detection Logic (Fixed)
-- **npm Package Detection**: Correctly checks for `@anthropic-ai/claude-code` in node_modules
-- **Executable Detection**: Looks for `claude` binary in node_modules/.bin/ and venv/bin/
-- **Package.json Scanning**: Checks dependencies for claude-code packages
-- **Global Detection**: Uses `which claude` to find system-wide installations
-- **Local vs Global Differentiation**: Smart path analysis to distinguish installation types
+#### Detection Logic
+- **File Detection**: Looks for CLAUDE.md files and .claude directories
+- **Metadata Extraction**: Parses project name and role from CLAUDE.md content
+- **Settings Analysis**: Reads .claude/settings.local.json for permissions
 
-#### Important Notes
-- Claude Code CLI is an **npm package** (`@anthropic-ai/claude-code`), not a Python package
-- The Anthropic Python SDK (`anthropic`) is different from Claude Code CLI
-- Detection properly distinguishes between local project installations and system-wide installations
+#### Notes
+- Local Claude Code CLI detection was removed (not feasible)
+- Focus is on CLAUDE.md file presence and project metadata
 
 ## Frontend-Backend Communication
 
