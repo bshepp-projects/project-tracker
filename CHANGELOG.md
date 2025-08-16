@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Smart Tag Detection**: Auto-assigns relevant tags (quantum, research, creative, gaming, science, environmental, security, business, education, experimental, framework, data, frontend, backend, tool, ai, web, production, development)
 
 ### Changed
+- **🔍 Simplified Search Interface**: Removed filter buttons, expanded search bar to full width with enhanced tag searching
 - Enhanced project analysis with improved tag generation algorithm
 - Updated `generateTags()` function to accept project name and path parameters for smarter tag assignment
 
