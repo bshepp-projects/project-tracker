@@ -1326,7 +1326,9 @@
         }
 
         function viewReadme(path) {
-            window.open(`file://${path}/README.md`);
+            // Copy README path to clipboard since browsers can't open local files
+            const readmePath = `${path}/README.md`;
+            copyToClipboard(readmePath, 'README path copied to clipboard! Open in your editor.');
         }
 
         function copyPath(path) {
@@ -1375,12 +1377,12 @@
 
         function viewClaudeFile(projectPath) {
             const claudePath = `${projectPath}/CLAUDE.md`;
-            window.open(`file://${claudePath}`, '_blank');
+            copyToClipboard(claudePath, 'CLAUDE.md path copied to clipboard! Open in your editor.');
         }
 
         function viewClaudeSettings(projectPath) {
             const settingsPath = `${projectPath}/.claude/settings.local.json`;
-            window.open(`file://${settingsPath}`, '_blank');
+            copyToClipboard(settingsPath, 'Claude settings path copied to clipboard! Open in your editor.');
         }
 
         function activateVenv(path) {
@@ -1413,6 +1415,21 @@
                     button.textContent = originalText;
                     button.style.background = '#FF5722';
                 }, 2000);
+            });
+        }
+
+        function copyToClipboard(text, message = 'Copied to clipboard!') {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification(message, 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification(message, 'success');
             });
         }
 

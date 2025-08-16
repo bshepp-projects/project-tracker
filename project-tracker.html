@@ -1280,17 +1280,13 @@
                             <div class="info-label">Virtual Env</div>
                             <div class="info-value">${project.hasVenv === true ? '🐍 Yes' : (project.hasVenv === false ? '❌ No' : '❓ Unknown')}</div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Local Claude</div>
-                            <div class="info-value">${project.hasLocalClaude === true ? '💻 Yes' : (project.hasLocalClaude === false ? '❌ No' : '❓ Unknown')}</div>
-                        </div>
                     </div>
 
                     <div class="project-actions">
                         <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
                         ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')">📄 README</button>` : ''}
                         ${project.hasClaude === true ? `<button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🤖 Claude</button>` : ''}
-                        ${project.hasLocalClaude === true ? `<button class="action-btn local-claude-btn" onclick="launchLocalClaude('${project.path}')">💻 Local Claude</button>` : ''}
+
                         ${project.hasVenv === true ? `<button class="action-btn venv-btn" onclick="activateVenv('${project.path}')">🐍 Activate</button>` : ''}
                         <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
                         <button class="action-btn ignore-btn" onclick="ignoreDirectory('${project.path}')" title="Remove this project from tracker">🚫 Remove</button>
@@ -1387,7 +1383,9 @@
         }
 
         function viewReadme(path) {
-            window.open(`file://${path}/README.md`);
+            // Copy README path to clipboard since browsers can't open local files
+            const readmePath = `${path}/README.md`;
+            copyToClipboard(readmePath, 'README path copied to clipboard! Open in your editor.');
         }
 
         function copyPath(path) {
@@ -1434,37 +1432,7 @@
             });
         }
 
-        function launchLocalClaude(path) {
-            // Launch local Claude installation from the project's virtual environment
-            const commands = [
-                `cd "${path}"`,
-                `source venv/bin/activate || source .venv/bin/activate || source env/bin/activate`,  // Linux/Mac
-                `claude --continue`
-            ];
-            const command = commands.join(' && ');
 
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '🚀 Launching...';
-            button.style.background = '#1976D2';
-
-            // Copy command to clipboard for now
-            navigator.clipboard.writeText(command).then(() => {
-                setTimeout(() => {
-                    button.textContent = '📋 Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '#2196F3';
-                    }, 1500);
-                }, 500);
-            }).catch(() => {
-                alert(`Command copied to clipboard: ${command}`);
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '#2196F3';
-                }, 2000);
-            });
-        }
 
         function activateVenv(path) {
             // For now, show the activation command
@@ -1639,6 +1607,9 @@
             const name = projectName.toLowerCase();
 
             // Check for specific patterns
+            if (name.includes('quantum') || name.includes('q-art') || name.includes('qsim') || name.includes('photon')) {
+                return 'Quantum Computing';
+            }
             if (name.includes('web') || name.includes('site') || fileNames.includes('index.html')) {
                 return 'Web Application';
             }
@@ -1688,6 +1659,7 @@
             if (technologies.includes('JavaScript') || technologies.includes('HTML')) tags.push('web');
             if (technologies.includes('Python') && (category.includes('AI') || category.includes('ML'))) tags.push('ai');
             if (category.includes('Web')) tags.push('web');
+            if (category.includes('Quantum')) tags.push('quantum');
 
             return tags;
         }

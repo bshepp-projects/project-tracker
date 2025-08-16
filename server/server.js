@@ -93,8 +93,7 @@ class ClaudeAnalyzer {
             const stats = await fs.stat(hasClaudeFile ? claudeMdPath : claudeDirPath);
             lastActivity = stats.mtime;
             
-            // Check for Claude Code installations (both local and global)
-            const claudeDetection = await this.detectClaudeInstallations(projectPath);
+            // Claude Code detection removed - not feasible
             
             // Determine status
             const status = this.determineClaudeStatus(hasClaudeFile, hasClaudeDir, lastActivity);
@@ -105,9 +104,6 @@ class ClaudeAnalyzer {
                 claudeRole: claudeRole,
                 hasClaudeFile: hasClaudeFile,
                 hasClaudeDir: hasClaudeDir,
-                hasLocalClaude: claudeDetection.hasLocalClaude,
-                hasGlobalClaude: claudeDetection.hasGlobalClaude,
-                claudeLocation: claudeDetection.claudeLocation,
                 permissions: permissions,
                 permissionCount: permissions.length,
                 lastActivity: lastActivity.toISOString(),
@@ -132,105 +128,7 @@ class ClaudeAnalyzer {
         }
     }
     
-    static async detectClaudeInstallations(projectPath) {
-        const result = {
-            hasLocalClaude: false,
-            hasGlobalClaude: false,
-            claudeLocation: 'none', // 'local', 'global', 'both', or 'none'
-            localPaths: [],
-            globalPath: null
-        };
-
-        // Check for LOCAL Claude Code CLI installations
-        const localExecutablePaths = [
-            // Local project executables
-            'claude',
-            'claude.exe',
-            // Python venv bins (though Claude Code isn't Python, it might be symlinked)
-            'venv/bin/claude',
-            'venv/Scripts/claude.exe',
-            '.venv/bin/claude', 
-            '.venv/Scripts/claude.exe',
-            'env/bin/claude',
-            'env/Scripts/claude.exe',
-            // Node.js local bin
-            'node_modules/.bin/claude',
-            'node_modules/.bin/claude.cmd'
-        ];
-        
-        for (const claudePath of localExecutablePaths) {
-            const fullPath = path.join(projectPath, claudePath);
-            if (await this.fileExists(fullPath)) {
-                result.hasLocalClaude = true;
-                result.localPaths.push(claudePath);
-            }
-        }
-        
-        // Check for Claude Code npm package installation
-        const nodeModulesPath = path.join(projectPath, 'node_modules', '@anthropic-ai', 'claude-code');
-        if (await this.fileExists(nodeModulesPath)) {
-            result.hasLocalClaude = true;
-            result.localPaths.push('node_modules/@anthropic-ai/claude-code');
-        }
-        
-        // Check package.json for claude-code dependency
-        const packageJsonPath = path.join(projectPath, 'package.json');
-        if (await this.fileExists(packageJsonPath)) {
-            try {
-                const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
-                const packageJson = JSON.parse(packageJsonContent);
-                
-                // Check dependencies and devDependencies
-                const allDeps = {
-                    ...packageJson.dependencies,
-                    ...packageJson.devDependencies,
-                    ...packageJson.peerDependencies
-                };
-                
-                if (allDeps['@anthropic-ai/claude-code'] || allDeps['claude-code']) {
-                    result.hasLocalClaude = true;
-                    result.localPaths.push('package.json (dependency)');
-                }
-            } catch (error) {
-                // Continue if package.json can't be read or parsed
-            }
-        }
-        
-        // Check for GLOBAL Claude Code installation
-        try {
-            const { execSync } = require('child_process');
-            // Check if claude command exists globally
-            const claudePath = execSync('which claude 2>/dev/null || where claude 2>nul || echo ""', { 
-                encoding: 'utf8',
-                stdio: ['pipe', 'pipe', 'ignore']
-            }).trim();
-            
-            if (claudePath && !claudePath.includes(projectPath)) {
-                // It's a global installation if the path is outside the project
-                result.hasGlobalClaude = true;
-                result.globalPath = claudePath;
-            }
-        } catch (error) {
-            // claude command not found globally
-        }
-        
-        // Determine overall location
-        if (result.hasLocalClaude && result.hasGlobalClaude) {
-            result.claudeLocation = 'both';
-        } else if (result.hasLocalClaude) {
-            result.claudeLocation = 'local';
-        } else if (result.hasGlobalClaude) {
-            result.claudeLocation = 'global';
-        }
-        
-        return result;
-    }
-    
-    // Keep the old method for backward compatibility, but use the new detection
-    static async detectLocalClaudeInstall(projectPath) {
-        const detection = await this.detectClaudeInstallations(projectPath);
-        return detection.hasLocalClaude;
-    }
+    // Local Claude detection removed - not feasible
     
     static extractClaudeMetadata(content) {
         const metadata = { name: null, role: null };
@@ -299,8 +197,7 @@ class ProjectAnalyzer {
             const hasClaude = fileNames.includes('claude.md');
             const hasVenv = await this.detectVirtualEnv(projectPath, files);
             
-            // Enhanced Claude detection (local vs global)
-            const claudeDetection = await ClaudeAnalyzer.detectClaudeInstallations(projectPath);
+            // Local Claude detection removed - not feasible
             
             // Detect technologies and category
             const technologies = this.detectTechnologies(extensions, fileNames);
@@ -322,9 +219,7 @@ class ProjectAnalyzer {
                 hasReadme: hasReadme,
                 hasClaude: hasClaude,
                 hasVenv: hasVenv,
-                hasLocalClaude: claudeDetection.hasLocalClaude,
-                hasGlobalClaude: claudeDetection.hasGlobalClaude,
-                claudeLocation: claudeDetection.claudeLocation,
+
                 lastUpdated: lastModified,
                 isScanned: true,
                 dateScanned: new Date().toISOString()

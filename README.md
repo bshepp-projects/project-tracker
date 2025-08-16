@@ -1,6 +1,6 @@
 # Project Tracker
 
-A comprehensive local web-based project management and discovery tool designed to help developers track, organize, and navigate their numerous projects across multiple directories.
+A local web-based tool to help developers track and organize their projects across multiple directories.
 
 ## 🎯 Problem Statement
 
@@ -42,7 +42,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - README availability
 - **🤖 CLAUDE.md presence** - Shows if project has Claude integration
 - **🐍 Virtual environment status** - Shows if project has Python venv
-- **💻 Claude Code installation** - Detects both local (npm/project-specific) and global (system-wide) Claude Code CLI installations
+
 - Project category and type
 
 ### Supported Project Categories
@@ -57,10 +57,8 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 ## 🚀 Quick Start
 
 ### Requirements
-- Any modern web browser (Chrome, Firefox, Safari, Edge)
+- Any modern web browser
 - Node.js 16+ (for backend API)
-- Git CLI (for repository status tracking)
-- GitHub CLI `gh` (optional, for GitHub Actions integration)
 - Local file system access
 
 ### Installation & Setup
@@ -150,7 +148,7 @@ Note: The standalone frontend will use fallback project data when the backend is
    - Click "📁 Open" to open the project directory in file explorer
    - Click "📄 README" to view project documentation
    - Click "🤖 Claude" to copy `claude --continue` command (for projects with CLAUDE.md)
-   - Click "💻 Local Claude" to copy local venv Claude activation command
+
    - Click "🐍 Activate" to copy virtual environment activation commands
    - Click "🔗 GitHub" to copy GitHub repository URL
    - Click "📋 Copy" to copy the full path to clipboard
@@ -162,7 +160,7 @@ Note: The standalone frontend will use fallback project data when the backend is
 - **🔍 Individual Project Management**: Add specific project directories rather than parent folders
 - **🤖 CLAUDE.md Projects**: Projects with 🤖 indicator have Claude integration ready
 - **🐍 Python Projects**: Projects with 🐍 indicator have virtual environments configured
-- **💻 Local Claude Projects**: Projects with 💻 indicator have Claude Code installed locally in their venv
+
 - **📊 Smart Analysis**: Automatic detection of technologies, frameworks, and project types
 - **⚡ Batched Operations**: Add/remove multiple projects without interrupting refreshes
 - **🌙 Eye-friendly Development**: Dark mode for extended coding sessions
@@ -181,11 +179,11 @@ Note: The standalone frontend will use fallback project data when the backend is
 
 ## 📈 Project Statistics
 
-The current installation tracks **51+ projects** across categories:
-- **15 Production-ready projects** with live deployments
-- **18 AI/ML projects** covering various machine learning domains
-- **8 Quantum computing projects** with real hardware integration
-- **12 Web applications** ranging from simple sites to complex platforms
+Example of what it can track:
+- Multiple project categories (Web, AI/ML, Utilities, etc.)
+- Technology stack detection
+- Git repository status
+- Claude integration status
 
 ## 🛠️ Project Structure
 
@@ -233,32 +231,19 @@ The CSS is embedded in the HTML file and can be modified to change:
 - Card designs and animations
 - Typography and fonts
 
-## 🎨 Features Showcase
 
-### Dashboard Overview
-- Clean, card-based layout with project thumbnails
-- Real-time statistics showing total projects and activity levels
-- Responsive grid that adapts to screen size
 
-### Advanced Search
-- Search across project names, descriptions, and technology stacks
-- Instant results with highlight matching
-- No backend required - all processing happens in the browser
+## Features
 
-### Smart Filtering
-- Pre-defined category filters for common project types
-- Dynamic statistics that update based on active filters
-- Easy one-click filter application and removal
+- Shows your projects in a grid
+- Search by name or technology  
+- Filter by project type
+- Click to open project folders
+- Dark/light theme
 
-## 🚀 Future Development
+## Future Ideas
 
-This project has an extensive roadmap! See [FUTURE_IMPROVEMENTS.md](FUTURE_IMPROVEMENTS.md) for detailed plans including:
-
-- **Dynamic Project Scanning**: Automatic filesystem monitoring
-- **Git Integration**: Show commit history, branch status, and repository health
-- **Project Analytics**: Time tracking, technology trends, and insights
-- **Collaboration Features**: Team sharing and multi-user support
-- **Advanced UI**: Dark mode, customizable layouts, and mobile app
+See [FUTURE_IMPROVEMENTS.md](FUTURE_IMPROVEMENTS.md) for potential improvements.
 
 ## 🤝 Contributing
 
@@ -327,6 +312,4 @@ This project is open source. Feel free to use, modify, and distribute as needed.
 
 ---
 
-**Made with ❤️ for developers who have too many projects to keep track of!**
-
-For questions, suggestions, or contributions, please open an issue or submit a pull request.
+**A simple tool for developers with too many projects.**
