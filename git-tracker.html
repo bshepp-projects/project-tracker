@@ -186,32 +186,362 @@
             flex-wrap: wrap;
         }
 
-        .refresh-btn, .filter-btn {
+        .refresh-btn {
             background: #4CAF50;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 40px;
+            margin-right: 10px;
         }
 
-        .filter-btn {
-            background: #2196F3;
-        }
-
-        .filter-btn.active {
-            background: #1976D2;
-        }
 
         .refresh-btn:hover {
             background: #45a049;
         }
 
-        .filter-btn:hover {
-            background: #1976D2;
+        .settings-btn {
+            background: #FF9800;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 40px;
+            margin-right: 10px;
         }
+
+        .settings-btn:hover {
+            background: #F57C00;
+            transform: translateY(-1px);
+        }
+
+        .tag-btn {
+            background: #9C27B0;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .tag-btn:hover {
+            background: #7B1FA2;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-hidden {
+            display: none !important;
+        }
+
+        .modal-content {
+            background: var(--modal-content-bg);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--button-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .finish-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .finish-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .finish-btn:hover {
+            background: #45a049;
+        }
+
+        .cancel-btn {
+            background: var(--button-secondary);
+            color: var(--text-primary);
+        }
+
+        .cancel-btn:hover {
+            background: #e0e0e0;
+        }
+
+        /* Tag Management Styles */
+        .tip-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .tag-input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .tag-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .tag-add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .tag-add-btn:hover {
+            background: #45a049;
+        }
+
+        .predefined-tags {
+            margin-bottom: 20px;
+        }
+
+        .predefined-tags h4 {
+            margin: 0 0 10px 0;
+            color: var(--text-primary);
+        }
+
+        .predefined-tag {
+            display: inline-block;
+            background: var(--button-secondary);
+            color: var(--text-primary);
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .predefined-tag:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .directory-section {
+            margin-bottom: 25px;
+        }
+
+        .directory-section h3 {
+            margin: 0 0 15px 0;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
+        .tag-name {
+            flex: 1;
+            color: var(--text-primary);
+        }
+
+        .tag-remove {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tag-remove:hover {
+            background: #d32f2f;
+        }
+
+        .directory-list {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .directory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .directory-item:last-child {
+            border-bottom: none;
+        }
+
+        .directory-path {
+            font-family: monospace;
+            color: var(--text-primary);
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .directory-remove {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .directory-remove:hover {
+            background: #d32f2f;
+        }
+
+        .add-directory-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .directory-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: monospace;
+        }
+
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            background: #45a049;
+        }
+
+        .help-text {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin: 0;
+        }
+
 
         .search-box {
             flex: 1;
@@ -220,8 +550,10 @@
             background: var(--input-bg);
             color: var(--text-primary);
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             min-width: 250px;
+            height: 40px;
+            box-sizing: border-box;
             transition: all 0.3s ease;
         }
 
@@ -231,20 +563,35 @@
         }
 
         .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             background: var(--card-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
+            justify-content: center;
             margin-bottom: 25px;
         }
 
         .stat-item {
             text-align: center;
-            padding: 10px;
+            padding: 8px 12px;
             background: var(--input-bg);
-            border-radius: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .stat-item:hover {
+            background: var(--border-color);
+            transform: translateY(-2px);
+        }
+
+        .stat-item.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
         }
 
         .stat-number {
@@ -518,51 +865,124 @@
         <div class="subtitle">Repository status dashboard • Branch tracking • GitHub integration</div>
         
         <div class="controls">
-            <button class="refresh-btn" onclick="refreshRepos()">🔄 Refresh</button>
-            <input type="text" class="search-box" placeholder="Search repositories..." onkeyup="filterRepos()" id="searchInput">
-            <button class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
-            <button class="filter-btn" onclick="toggleFilter('ahead')" data-filter="ahead">Ahead</button>
-            <button class="filter-btn" onclick="toggleFilter('behind')" data-filter="behind">Behind</button>
-            <button class="filter-btn" onclick="toggleFilter('dirty')" data-filter="dirty">Uncommitted</button>
-            <button class="filter-btn" onclick="toggleFilter('github')" data-filter="github">GitHub</button>
+            <button type="button" class="refresh-btn" onclick="refreshRepos()">🔄 Refresh</button>
+            <button type="button" class="tag-btn" onclick="toggleTagManager()">🏷️ Manage Tags</button>
+            <button type="button" class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Directories</button>
+            <input type="text" class="search-box" placeholder="🔍 Search repositories by name, technology, branch, status, or path..." onkeyup="filterRepos()" id="searchInput">
         </div>
         
         <div class="stats" id="stats">
-            <div class="stat-item">
-                <div class="stat-number" id="totalRepos">0</div>
-                <div class="stat-label">Total Repos</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="aheadRepos">0</div>
-                <div class="stat-label">Ahead</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="behindRepos">0</div>
-                <div class="stat-label">Behind</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="dirtyRepos">0</div>
-                <div class="stat-label">Uncommitted</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="githubRepos">0</div>
-                <div class="stat-label">GitHub Repos</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="actionsPassedRepos">0</div>
-                <div class="stat-label">Actions Passed</div>
-            </div>
+            <!-- Stats will be dynamically generated: Total Repos + Top 10 Tags -->
         </div>
 
         <div id="loading" class="loading" style="display: none;">Loading repositories...</div>
         <div id="repos" class="repos-grid"></div>
         <div id="noResults" class="no-results" style="display: none;">No repositories match your search criteria.</div>
+
+        <!-- Tag Management Modal -->
+        <div id="tagModal" class="modal modal-hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🏷️ Manage Repository Tags</h2>
+                    <button type="button" class="modal-close" onclick="toggleTagManager()" title="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="tip-box">
+                        💡 <strong>Tip:</strong> Manage tags used across all your repositories. Tags help categorize and filter repositories effectively.
+                    </p>
+                    <div class="tag-input-section">
+                        <input type="text" id="newTagInput" class="tag-input" placeholder="Enter new tag name..." maxlength="20">
+                        <button type="button" onclick="addNewTag()" class="tag-add-btn">+ Add Tag</button>
+                    </div>
+                    <div class="predefined-tags">
+                        <h4>Quick Add Common Tags:</h4>
+                        <span class="predefined-tag" onclick="addPredefinedTag('frontend')">frontend</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('backend')">backend</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('fullstack')">fullstack</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('mobile')">mobile</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('desktop')">desktop</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('research')">research</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('experimental')">experimental</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('archived')">archived</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('personal')">personal</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('work')">work</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('education')">education</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('game')">game</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('tool')">tool</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('library')">library</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('framework')">framework</span>
+                    </div>
+                    <div class="directory-section">
+                        <h3>Current Tags</h3>
+                        <div id="currentTags" class="tag-grid">
+                            <!-- Tags will be dynamically populated here -->
+                        </div>
+                    </div>
+                    <div class="directory-section">
+                        <h3>Repository Tag Assignment</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
+                            Select repositories and assign/remove tags. Click on tags to toggle selection.
+                        </p>
+                        <div id="projectTagAssignment">
+                            <!-- Repository list for tag assignment will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div style="flex: 1; color: var(--text-secondary); font-size: 14px;" id="changesSummary">
+                        No unsaved changes
+                    </div>
+                    <button type="button" onclick="saveTagChanges()" class="finish-btn">💾 Save All Changes</button>
+                    <button type="button" onclick="toggleTagManager()" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Directory Management Modal -->
+        <div id="directoryModal" class="modal modal-hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Manage Repository Directories</h2>
+                    <button type="button" class="modal-close" onclick="toggleDirectoryManager()" title="Close without refreshing">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="tip-box">
+                        💡 <strong>Tip:</strong> Add/remove repositories without automatic refreshes. Click "Finish &amp; Refresh Repositories" when you're done to see changes.
+                    </p>
+                    <div class="directory-section">
+                        <h3>Current Directories</h3>
+                        <div id="currentDirectories" class="directory-list">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="directory-section">
+                        <h3>Add Individual Repository Directory</h3>
+                        <div class="add-directory-form">
+                            <input type="text" id="newDirectoryPath" placeholder="/path/to/specific-repository" class="directory-input">
+                            <button type="button" onclick="addDirectory()" class="add-btn">➕ Add Repository</button>
+                        </div>
+                        <p class="help-text">
+                            ℹ️ Add the path to a specific repository directory (e.g., /home/user/my-web-app), not parent directories containing multiple repositories.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div style="flex: 1; color: var(--text-secondary); font-size: 14px;" id="directoryChangesSummary">
+                        Ready to manage directories
+                    </div>
+                    <button type="button" onclick="finishDirectoryManagement()" class="finish-btn">🔄 Finish &amp; Refresh Repositories</button>
+                    <button type="button" onclick="toggleDirectoryManager()" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         // Repository data will be loaded from backend API
         let reposData = [];
         let filteredRepos = [];
+        let activeTagFilter = null;
         let currentFilter = 'all';
 
         // Backend API configuration
@@ -723,33 +1143,66 @@
             updateStats();
         }
 
-        function toggleFilter(filter) {
-            // Update active filter button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-            
-            currentFilter = filter;
-            filterRepos();
-        }
 
         function updateStats() {
-            const stats = {
-                total: filteredRepos.length,
-                ahead: filteredRepos.filter(r => r.aheadCount > 0).length,
-                behind: filteredRepos.filter(r => r.behindCount > 0).length,
-                dirty: filteredRepos.filter(r => r.workingTreeClean === false).length,
-                github: filteredRepos.filter(r => r.isGitHub).length,
-                actionsPassed: filteredRepos.filter(r => r.githubActions?.status === 'success').length
-            };
-
-            document.getElementById('totalRepos').textContent = stats.total;
-            document.getElementById('aheadRepos').textContent = stats.ahead;
-            document.getElementById('behindRepos').textContent = stats.behind;
-            document.getElementById('dirtyRepos').textContent = stats.dirty;
-            document.getElementById('githubRepos').textContent = stats.github;
-            document.getElementById('actionsPassedRepos').textContent = stats.actionsPassed;
+            const statsContainer = document.getElementById('stats');
+            
+            // Count all tags from all repos (not just filtered)
+            const tagCounts = {};
+            reposData.forEach(repo => {
+                if (repo.tags && repo.tags.length > 0) {
+                    repo.tags.forEach(tag => {
+                        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                    });
+                }
+            });
+            
+            // Sort tags by count and get top 10
+            const sortedTags = Object.entries(tagCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            // Clear and rebuild stats container
+            statsContainer.innerHTML = '';
+            
+            // Add Total Repos first
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'stat-item total-repos';
+            totalDiv.innerHTML = `
+                <div class="stat-number">${filteredRepos.length}</div>
+                <div class="stat-label">Total Repos</div>
+            `;
+            statsContainer.appendChild(totalDiv);
+            
+            // Add top 10 tags
+            sortedTags.forEach(([tag, count]) => {
+                const tagDiv = document.createElement('div');
+                tagDiv.className = `stat-item tag-filter ${activeTagFilter === tag ? 'active' : ''}`;
+                tagDiv.setAttribute('data-tag', tag);
+                tagDiv.innerHTML = `
+                    <div class="stat-number">${count}</div>
+                    <div class="stat-label">${tag.charAt(0).toUpperCase() + tag.slice(1)}</div>
+                `;
+                tagDiv.addEventListener('click', () => filterByTag(tag));
+                statsContainer.appendChild(tagDiv);
+            });
+        }
+        
+        function filterByTag(tag) {
+            const searchInput = document.getElementById('searchInput');
+            
+            if (activeTagFilter === tag) {
+                // If clicking the same tag, clear the filter
+                activeTagFilter = null;
+                searchInput.value = '';
+            } else {
+                // Set new tag filter
+                activeTagFilter = tag;
+                searchInput.value = tag;
+            }
+            
+            filterRepos();
+            updateStats(); // Refresh to update active states
         }
 
         // Load repositories from backend API
@@ -917,8 +1370,210 @@
             console.log('Git Tracker page loaded, loading repositories...');
             
             await loadReposFromAPI();
-            toggleFilter('all');
+            currentFilter = 'all';
+            filterRepos();
         });
+
+        // Tag Management System
+        let allTags = new Set();
+        let projectTagChanges = new Map();
+
+        function toggleTagManager() {
+            const modal = document.getElementById('tagModal');
+            const isHidden = modal.classList.contains('modal-hidden');
+            
+            if (isHidden) {
+                loadTagManager();
+                modal.classList.remove('modal-hidden');
+            } else {
+                modal.classList.add('modal-hidden');
+            }
+        }
+
+        function loadTagManager() {
+            // Since Git Tracker doesn't have repository tags yet, we'll create a placeholder system
+            // This can be enhanced to work with actual git repositories
+            renderCurrentTags();
+            renderProjectTagAssignment();
+            updateChangesSummary();
+        }
+
+        function renderCurrentTags() {
+            const container = document.getElementById('currentTags');
+            const tagsArray = Array.from(allTags).sort();
+            
+            container.innerHTML = tagsArray.map(tag => `
+                <div class="tag-item">
+                    <span class="tag-name">${tag}</span>
+                    <button class="tag-remove" onclick="removeTag('${tag}')" title="Delete tag">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        function renderProjectTagAssignment() {
+            const container = document.getElementById('projectTagAssignment');
+            // For now, we'll show a message about repository tag support
+            container.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                    <h4>Repository Tag System</h4>
+                    <p>Repository tagging will be available in a future update.</p>
+                    <p>This will allow you to tag repositories for better organization and filtering.</p>
+                </div>
+            `;
+        }
+
+        function addNewTag() {
+            const input = document.getElementById('newTagInput');
+            const tagName = input.value.trim().toLowerCase();
+            
+            if (tagName && !allTags.has(tagName)) {
+                allTags.add(tagName);
+                input.value = '';
+                renderCurrentTags();
+                updateChangesSummary();
+            }
+        }
+
+        function addPredefinedTag(tagName) {
+            if (!allTags.has(tagName)) {
+                allTags.add(tagName);
+                renderCurrentTags();
+                updateChangesSummary();
+            }
+        }
+
+        function removeTag(tagName) {
+            if (confirm(`Remove tag "${tagName}"? This will remove it from all repositories.`)) {
+                allTags.delete(tagName);
+                renderCurrentTags();
+                updateChangesSummary();
+            }
+        }
+
+        function saveTagChanges() {
+            // Save tags (implementation would depend on backend)
+            alert('Tag changes saved! (Repository tagging will be available in a future update)');
+            toggleTagManager();
+        }
+
+        function updateChangesSummary() {
+            const summary = document.getElementById('changesSummary');
+            summary.textContent = `${allTags.size} tags available`;
+        }
+
+        // Directory Management System
+        let currentDirectoriesData = [];
+
+        function toggleDirectoryManager() {
+            const modal = document.getElementById('directoryModal');
+            const isHidden = modal.classList.contains('modal-hidden');
+            
+            if (isHidden) {
+                loadDirectoryManager();
+                modal.classList.remove('modal-hidden');
+            } else {
+                modal.classList.add('modal-hidden');
+            }
+        }
+
+        async function loadDirectoryManager() {
+            try {
+                const response = await fetch('/api/config');
+                if (response.ok) {
+                    const config = await response.json();
+                    currentDirectoriesData = config.directories || [];
+                } else {
+                    currentDirectoriesData = [];
+                }
+            } catch (error) {
+                console.error('Error loading directories:', error);
+                currentDirectoriesData = [];
+            }
+            
+            renderDirectoryList();
+            updateDirectoryChangesSummary();
+        }
+
+        function renderDirectoryList() {
+            const container = document.getElementById('currentDirectories');
+            
+            if (currentDirectoriesData.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">No directories configured</div>';
+                return;
+            }
+            
+            container.innerHTML = currentDirectoriesData.map(dir => `
+                <div class="directory-item">
+                    <div class="directory-path">${dir}</div>
+                    <button class="directory-remove" onclick="removeDirectory('${dir}')">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        async function addDirectory() {
+            const input = document.getElementById('newDirectoryPath');
+            const path = input.value.trim();
+            
+            if (!path) return;
+            
+            if (currentDirectoriesData.includes(path)) {
+                alert('Directory already exists in the list');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/directories', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ directory: path })
+                });
+                
+                if (response.ok) {
+                    currentDirectoriesData.push(path);
+                    input.value = '';
+                    renderDirectoryList();
+                    updateDirectoryChangesSummary();
+                } else {
+                    alert('Failed to add directory');
+                }
+            } catch (error) {
+                console.error('Error adding directory:', error);
+                alert('Error adding directory');
+            }
+        }
+
+        async function removeDirectory(path) {
+            if (!confirm(`Remove directory: ${path}?`)) return;
+            
+            try {
+                const response = await fetch('/api/directories', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ directory: path })
+                });
+                
+                if (response.ok) {
+                    currentDirectoriesData = currentDirectoriesData.filter(dir => dir !== path);
+                    renderDirectoryList();
+                    updateDirectoryChangesSummary();
+                } else {
+                    alert('Failed to remove directory');
+                }
+            } catch (error) {
+                console.error('Error removing directory:', error);
+                alert('Error removing directory');
+            }
+        }
+
+        function finishDirectoryManagement() {
+            toggleDirectoryManager();
+            refreshRepos(); // Refresh repositories with new directory configuration
+        }
+
+        function updateDirectoryChangesSummary() {
+            const summary = document.getElementById('directoryChangesSummary');
+            summary.textContent = `${currentDirectoriesData.length} directories configured`;
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {

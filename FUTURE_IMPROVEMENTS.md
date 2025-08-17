@@ -5,6 +5,24 @@ This document outlines planned enhancements and future development ideas for the
 
 ## Recently Completed
 
+### ✅ Favorites System (v1.6.1) 
+**Status**: COMPLETED 2025-08-17
+- [x] Star icon in upper right corner of project cards (☆ empty, ★ filled gold)
+- [x] Click to toggle favorite status with instant visual feedback
+- [x] Favorites automatically sorted to the top of project list
+- [x] Persistent storage using localStorage across browser sessions
+- [x] Hover effects with background highlight and scale animation
+- [x] Smart sorting: favorites first, then alphabetical within each group
+- [x] Integration with existing search and filtering functionality
+
+### ✅ Unified Stats Bar Standardization (v1.6.1)
+**Status**: COMPLETED 2025-08-17
+- [x] Standardized dynamic stats across Project, Claude, and Git trackers
+- [x] Consistent "Total Projects/Repos + Top 10 Tags" format
+- [x] Clickable tag filtering with visual active states
+- [x] Compact flexbox layout with responsive design
+- [x] Real-time tag counting and sorting by frequency
+
 ### ✅ Comprehensive Tag Management System (v1.6.0)
 **Status**: COMPLETED 2025-08-16
 - [x] Full tag management interface with 🏷️ Manage Tags button
@@ -120,7 +138,6 @@ This document outlines planned enhancements and future development ideas for the
 - [ ] Fuzzy search with typo tolerance
 - [ ] Tag-based organization system
 - [ ] Custom project categories
-- [ ] Bookmark/favorites system
 - [ ] Recently accessed projects tracking
 - [ ] Advanced filtering (by language, framework, size, etc.)
 - [ ] **Filter by CLAUDE.md and venv presence**

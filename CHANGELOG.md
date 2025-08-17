@@ -8,16 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **⭐ Favorites System**: Complete favorites functionality with persistent storage
+  - Star icon in upper right corner of each project card (☆ empty, ★ filled gold)
+  - Click to toggle favorite status with instant visual feedback
+  - Favorites automatically sorted to the top of project list
+  - Persistent storage using localStorage across browser sessions
+  - Hover effects with background highlight and scale animation
+  - Smart sorting: favorites first, then alphabetical within each group
+
+- **📊 Unified Stats Bar**: Standardized dynamic stats across all three tracker applications
+  - Consistent "Total Projects/Repos + Top 10 Tags" format across Project, Claude, and Git trackers
+  - Clickable tag filtering with visual active states
+  - Compact flexbox layout with responsive design
+  - Real-time tag counting and sorting by frequency
+
 - **🏷️ Comprehensive Tag Management System**: Complete tag interface with individual project saves
-- **Enhanced Tag Generation**: 19 smart tag categories with auto-detection based on project names, paths, and technologies
-- **Individual Save Buttons**: Each project has its own save button for incremental tag updates
-- **Visual Change Indicators**: Orange status indicators for projects with unsaved changes
-- **Tag Management API**: Backend endpoints for tag operations (`GET /api/tags`, `POST /api/projects/:path/tags`, `DELETE /api/tags/:name`)
-- **Real-time UI Updates**: Immediate visual feedback for all tag operations
-- **Smart Tag Detection**: Auto-assigns relevant tags (quantum, research, creative, gaming, science, environmental, security, business, education, experimental, framework, data, frontend, backend, tool, ai, web, production, development)
+  - Enhanced tag generation with 19 smart tag categories
+  - Individual save buttons for incremental tag updates
+  - Visual change indicators for projects with unsaved changes
+  - Tag Management API endpoints (`GET /api/tags`, `POST /api/projects/:path/tags`, `DELETE /api/tags/:name`)
+  - Real-time UI updates and smart tag detection
 
 ### Changed
 - **🔍 Simplified Search Interface**: Removed filter buttons, expanded search bar to full width with enhanced tag searching
+- **🎯 Enhanced Project Sorting**: Projects now sorted with favorites first, then alphabetically
+- **📱 Standardized UI Components**: Consistent button heights, text, and styling across all tracker interfaces
 - Enhanced project analysis with improved tag generation algorithm
 - Updated `generateTags()` function to accept project name and path parameters for smarter tag assignment
 
