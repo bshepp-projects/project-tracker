@@ -174,6 +174,26 @@ The frontend automatically detects backend availability and switches modes:
 - **With Backend**: Dynamic project scanning, real-time updates
 - **Without Backend**: Falls back to hardcoded project data for development
 
+## Favorites System
+
+The Project Tracker includes a comprehensive favorites system for organizing important projects:
+
+### Features
+- **⭐ Star Icon**: Each project card displays a star icon in the upper right corner
+- **Visual States**: Empty star (☆) for non-favorites, filled gold star (★) for favorites
+- **Toggle Functionality**: Click the star to add/remove projects from favorites
+- **Persistent Storage**: Favorites saved to `localStorage` and persist across browser sessions
+- **Smart Sorting**: Favorites automatically appear at the top of the project list
+- **Integration**: Works seamlessly with search, filtering, and tag management
+
+### Implementation Details
+- **CSS Classes**: `.favorite-star`, `.favorited` for styling and states
+- **JavaScript Functions**: 
+  - `isFavorite(projectPath)` - checks favorite status
+  - `toggleFavorite(projectPath)` - toggles and saves favorite state
+- **Storage Key**: `projectFavorites` in localStorage
+- **Sorting Logic**: Enhanced `filterProjects()` with favorites-first sorting
+
 ## Configuration Persistence
 
 Backend configuration is persisted in `server/directories.json`:

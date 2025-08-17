@@ -115,15 +115,18 @@
             flex-wrap: wrap;
         }
 
-        .refresh-btn, .scan-btn, .filter-btn {
+        .refresh-btn, .scan-btn {
             background: #4CAF50;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 40px;
+            margin-right: 10px;
         }
 
         .scan-btn {
@@ -134,13 +137,6 @@
             background: #F57C00;
         }
 
-        .filter-btn {
-            background: #2196F3;
-        }
-
-        .filter-btn.active {
-            background: #1976D2;
-        }
 
         .refresh-btn:hover {
             background: #45a049;
@@ -150,11 +146,13 @@
             background: #FF9800;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 16px;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
+            height: 40px;
             margin-right: 10px;
         }
 
@@ -167,11 +165,13 @@
             background: #9C27B0;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 16px;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
+            height: 40px;
             margin-right: 10px;
         }
 
@@ -538,9 +538,6 @@
             border-color: #5a67d8;
         }
 
-        .filter-btn:hover {
-            background: #1976D2;
-        }
 
         .search-box {
             flex: 1;
@@ -549,8 +546,10 @@
             background: var(--input-bg);
             color: var(--text-primary);
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             min-width: 250px;
+            height: 40px;
+            box-sizing: border-box;
             transition: all 0.3s ease;
         }
 
@@ -573,11 +572,37 @@
             background: var(--card-bg);
             color: var(--text-primary);
             transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
+            position: relative;
         }
 
         .project-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px var(--card-hover-shadow);
+        }
+
+        .favorite-star {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .favorite-star:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: scale(1.1);
+        }
+
+        .favorite-star.favorited {
+            color: #FFD700;
+        }
+
+        .favorite-star:not(.favorited) {
+            color: var(--text-secondary);
         }
 
         .project-title {
@@ -722,32 +747,61 @@
         }
 
         .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             background: var(--card-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
+            justify-content: center;
             margin-bottom: 25px;
         }
 
         .stat-item {
             text-align: center;
-            padding: 10px;
+            padding: 6px 10px;
             background: var(--input-bg);
-            border-radius: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            min-width: 70px;
+            flex-shrink: 0;
+        }
+        
+        .stat-item:hover {
+            background: var(--card-hover-shadow);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .stat-item.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .stat-item.total-projects {
+            cursor: default;
+            border-color: #4CAF50;
+        }
+        
+        .stat-item.total-projects:hover {
+            transform: none;
+            background: var(--input-bg);
         }
 
         .stat-number {
-            font-size: 2em;
+            font-size: 1.2em;
             font-weight: bold;
             color: #667eea;
+            line-height: 1.2;
         }
 
         .stat-label {
             color: var(--text-secondary);
-            font-size: 0.9em;
-            margin-top: 5px;
+            font-size: 0.75em;
+            line-height: 1.1;
+            margin-top: 2px;
         }
 
         .loading {
@@ -927,13 +981,8 @@
         <div class="controls">
             <button type="button" class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
             <button type="button" class="tag-btn" onclick="toggleTagManager()">🏷️ Manage Tags</button>
-            <button type="button" class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Manage Directories</button>
-            <input type="text" class="search-box" placeholder="Search projects..." onkeyup="filterProjects()" id="searchInput">
-            <button type="button" class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
-            <button type="button" class="filter-btn" onclick="toggleFilter('production')" data-filter="production">Production</button>
-            <button type="button" class="filter-btn" onclick="toggleFilter('development')" data-filter="development">Development</button>
-            <button type="button" class="filter-btn" onclick="toggleFilter('ai')" data-filter="ai">AI/ML</button>
-            <button type="button" class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web</button>
+            <button type="button" class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Directories</button>
+            <input type="text" class="search-box" placeholder="🔍 Search projects by name, technology, category, tags, or path..." onkeyup="filterProjects()" id="searchInput">
         </div>
 
         <!-- Directory Management Modal -->
@@ -1045,30 +1094,7 @@
         </div>
 
         <div class="stats" id="stats">
-            <div class="stat-item">
-                <div class="stat-number" id="totalProjects">51</div>
-                <div class="stat-label">Total Projects</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="productionProjects">15</div>
-                <div class="stat-label">Production</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="developmentProjects">25</div>
-                <div class="stat-label">Development</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="aiProjects">18</div>
-                <div class="stat-label">AI/ML Projects</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="quantumProjects">8</div>
-                <div class="stat-label">Quantum Computing</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="webProjects">12</div>
-                <div class="stat-label">Web Applications</div>
-            </div>
+            <!-- Stats will be dynamically generated: Total Projects + Top 10 Tags -->
         </div>
 
         <div id="loading" class="loading" style="display: none;">Loading projects...</div>
@@ -1431,7 +1457,6 @@
             }
         ];
 
-        let currentFilter = 'all';
         let filteredProjects = [...projectsData];
 
         function renderProjects() {
@@ -1448,6 +1473,9 @@
 
             projectsContainer.innerHTML = filteredProjects.map(project => `
                 <div class="project-card">
+                    <div class="favorite-star ${isFavorite(project.path) ? 'favorited' : ''}" onclick="toggleFavorite('${project.path.replace(/'/g, "\\'")}'); event.stopPropagation();" title="Add to favorites">
+                        ${isFavorite(project.path) ? '★' : '☆'}
+                    </div>
                     <div class="project-title">${project.name}</div>
                     <div class="project-path">${project.path}</div>
                     <div class="project-description">${project.description}</div>
@@ -1499,21 +1527,27 @@
         function filterProjects() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-            console.log(`Filtering projects: ${projectsData.length} total, currentFilter: ${currentFilter}`);
+            console.log(`Filtering projects: ${projectsData.length} total`);
 
             filteredProjects = projectsData.filter(project => {
                 const matchesSearch = searchTerm === '' ||
                     project.name.toLowerCase().includes(searchTerm) ||
                     project.description.toLowerCase().includes(searchTerm) ||
                     project.technologies.toLowerCase().includes(searchTerm) ||
-                    project.category.toLowerCase().includes(searchTerm);
+                    project.category.toLowerCase().includes(searchTerm) ||
+                    (project.tags && project.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
 
-                const matchesFilter = currentFilter === 'all' ||
-                    project.tags.includes(currentFilter) ||
-                    (currentFilter === 'production' && project.status === 'Production') ||
-                    (currentFilter === 'development' && project.status === 'Development');
-
-                return matchesSearch && matchesFilter;
+                return matchesSearch;
+            }).sort((a, b) => {
+                // Sort favorites to the top
+                const aIsFavorite = isFavorite(a.path);
+                const bIsFavorite = isFavorite(b.path);
+                
+                if (aIsFavorite && !bIsFavorite) return -1;
+                if (!aIsFavorite && bIsFavorite) return 1;
+                
+                // If both are favorites or both are not favorites, sort alphabetically by name
+                return a.name.localeCompare(b.name);
             });
 
             console.log(`After filtering: ${filteredProjects.length} projects match`);
@@ -1522,33 +1556,84 @@
             updateStats();
         }
 
-        function toggleFilter(filter) {
-            // Update active filter button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
 
-            currentFilter = filter;
-            filterProjects();
-        }
+        let activeTagFilter = null;
+        let favorites = JSON.parse(localStorage.getItem('projectFavorites') || '[]');
 
         function updateStats() {
-            const stats = {
-                total: filteredProjects.length,
-                production: filteredProjects.filter(p => p.status === 'Production').length,
-                development: filteredProjects.filter(p => p.status === 'Development').length,
-                ai: filteredProjects.filter(p => p.tags.includes('ai')).length,
-                quantum: filteredProjects.filter(p => p.tags.includes('quantum')).length,
-                web: filteredProjects.filter(p => p.tags.includes('web')).length
-            };
+            const statsContainer = document.getElementById('stats');
+            
+            // Count all tags from all projects (not just filtered)
+            const tagCounts = {};
+            projectsData.forEach(project => {
+                if (project.tags && project.tags.length > 0) {
+                    project.tags.forEach(tag => {
+                        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                    });
+                }
+            });
+            
+            // Sort tags by count and get top 10
+            const sortedTags = Object.entries(tagCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            // Clear and rebuild stats container
+            statsContainer.innerHTML = '';
+            
+            // Add Total Projects first
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'stat-item total-projects';
+            totalDiv.innerHTML = `
+                <div class="stat-number">${filteredProjects.length}</div>
+                <div class="stat-label">Total Projects</div>
+            `;
+            statsContainer.appendChild(totalDiv);
+            
+            // Add top 10 tags
+            sortedTags.forEach(([tag, count]) => {
+                const tagDiv = document.createElement('div');
+                tagDiv.className = `stat-item tag-filter ${activeTagFilter === tag ? 'active' : ''}`;
+                tagDiv.setAttribute('data-tag', tag);
+                tagDiv.innerHTML = `
+                    <div class="stat-number">${count}</div>
+                    <div class="stat-label">${tag.charAt(0).toUpperCase() + tag.slice(1)}</div>
+                `;
+                tagDiv.addEventListener('click', () => filterByTag(tag));
+                statsContainer.appendChild(tagDiv);
+            });
+        }
+        
+        function filterByTag(tag) {
+            const searchInput = document.getElementById('searchInput');
+            
+            if (activeTagFilter === tag) {
+                // If clicking the same tag, clear the filter
+                activeTagFilter = null;
+                searchInput.value = '';
+            } else {
+                // Set new tag filter
+                activeTagFilter = tag;
+                searchInput.value = tag;
+            }
+            
+            filterProjects();
+            updateStats(); // Refresh to update active states
+        }
 
-            document.getElementById('totalProjects').textContent = stats.total;
-            document.getElementById('productionProjects').textContent = stats.production;
-            document.getElementById('developmentProjects').textContent = stats.development;
-            document.getElementById('aiProjects').textContent = stats.ai;
-            document.getElementById('quantumProjects').textContent = stats.quantum;
-            document.getElementById('webProjects').textContent = stats.web;
+        function isFavorite(projectPath) {
+            return favorites.includes(projectPath);
+        }
+
+        function toggleFavorite(projectPath) {
+            const index = favorites.indexOf(projectPath);
+            if (index === -1) {
+                favorites.push(projectPath);
+            } else {
+                favorites.splice(index, 1);
+            }
+            localStorage.setItem('projectFavorites', JSON.stringify(favorites));
+            renderProjects(); // Re-render to update star and sorting
         }
 
         function openFolder(path) {

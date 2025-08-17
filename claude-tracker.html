@@ -123,15 +123,18 @@
             flex-wrap: wrap;
         }
 
-        .refresh-btn, .scan-btn, .filter-btn {
+        .refresh-btn, .scan-btn {
             background: #4CAF50;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 40px;
+            margin-right: 10px;
         }
         
         .scan-btn {
@@ -142,13 +145,6 @@
             background: #F57C00;
         }
 
-        .filter-btn {
-            background: #2196F3;
-        }
-
-        .filter-btn.active {
-            background: #1976D2;
-        }
 
         .refresh-btn:hover {
             background: #45a049;
@@ -158,16 +154,37 @@
             background: #FF9800;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 16px;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
+            height: 40px;
             margin-right: 10px;
         }
 
         .settings-btn:hover {
             background: #F57C00;
+            transform: translateY(-1px);
+        }
+
+        .tag-btn {
+            background: #9C27B0;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .tag-btn:hover {
+            background: #7B1FA2;
             transform: translateY(-1px);
         }
 
@@ -230,6 +247,166 @@
 
         .modal-body {
             padding: 20px;
+        }
+
+        .modal-hidden {
+            display: none !important;
+        }
+
+        /* Tag Management Styles */
+        .tip-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .tag-input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .tag-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .tag-add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .tag-add-btn:hover {
+            background: #45a049;
+        }
+
+        .predefined-tags {
+            margin-bottom: 20px;
+        }
+
+        .predefined-tags h4 {
+            margin: 0 0 10px 0;
+            color: var(--text-primary);
+        }
+
+        .predefined-tag {
+            display: inline-block;
+            background: var(--button-secondary);
+            color: var(--text-primary);
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .predefined-tag:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .directory-section {
+            margin-bottom: 25px;
+        }
+
+        .directory-section h3 {
+            margin: 0 0 15px 0;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
+        .tag-name {
+            flex: 1;
+            color: var(--text-primary);
+        }
+
+        .tag-remove {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tag-remove:hover {
+            background: #d32f2f;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .finish-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .finish-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .finish-btn:hover {
+            background: #45a049;
+        }
+
+        .cancel-btn {
+            background: var(--button-secondary);
+            color: var(--text-primary);
+        }
+
+        .cancel-btn:hover {
+            background: #e0e0e0;
         }
 
         .directory-section {
@@ -473,17 +650,17 @@
             transform: rotate(180deg);
         }
 
-        .filter-btn:hover {
-            background: #1976D2;
-        }
 
         .search-box {
             flex: 1;
             padding: 12px 16px;
             border: 2px solid #ddd;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             min-width: 250px;
+            height: 40px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
         .search-box:focus {
@@ -657,32 +834,61 @@
         }
 
         .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             background: var(--card-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
+            justify-content: center;
             margin-bottom: 25px;
         }
 
         .stat-item {
             text-align: center;
-            padding: 10px;
+            padding: 6px 10px;
             background: var(--input-bg);
-            border-radius: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            min-width: 70px;
+            flex-shrink: 0;
+        }
+        
+        .stat-item:hover {
+            background: var(--card-hover-shadow);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .stat-item.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .stat-item.total-projects {
+            cursor: default;
+            border-color: #4CAF50;
+        }
+        
+        .stat-item.total-projects:hover {
+            transform: none;
+            background: var(--input-bg);
         }
 
         .stat-number {
-            font-size: 2em;
+            font-size: 1.2em;
             font-weight: bold;
             color: #667eea;
+            line-height: 1.2;
         }
 
         .stat-label {
             color: var(--text-secondary);
-            font-size: 0.9em;
-            margin-top: 5px;
+            font-size: 0.75em;
+            line-height: 1.1;
+            margin-top: 2px;
         }
 
         .loading {
@@ -741,14 +947,10 @@
         <div class="subtitle">Claude project discovery and management • Auto-refreshes from filesystem</div>
         
         <div class="controls">
-            <button class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
-            <button class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Manage Directories</button>
-            <input type="text" class="search-box" placeholder="Search Claude projects..." onkeyup="filterProjects()" id="searchInput">
-            <button class="filter-btn" onclick="toggleFilter('all')" data-filter="all">All</button>
-            <button class="filter-btn" onclick="toggleFilter('active')" data-filter="active">Active</button>
-            <button class="filter-btn" onclick="toggleFilter('configured')" data-filter="configured">Configured</button>
-            <button class="filter-btn" onclick="toggleFilter('partial')" data-filter="partial">Partial Setup</button>
-            <button class="filter-btn" onclick="toggleFilter('web')" data-filter="web">Web Dev</button>
+            <button type="button" class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
+            <button type="button" class="tag-btn" onclick="toggleTagManager()">🏷️ Manage Tags</button>
+            <button type="button" class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Directories</button>
+            <input type="text" class="search-box" placeholder="🔍 Search Claude projects by name, technology, category, tags, or path..." onkeyup="filterProjects()" id="searchInput">
         </div>
         
         <!-- Directory Management Modal -->
@@ -784,32 +986,68 @@
                 </div>
             </div>
         </div>
+
+        <!-- Tag Management Modal -->
+        <div id="tagModal" class="modal modal-hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🏷️ Manage Claude Project Tags</h2>
+                    <button type="button" class="modal-close" onclick="toggleTagManager()" title="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="tip-box">
+                        💡 <strong>Tip:</strong> Manage tags used across all your Claude projects. Tags help categorize and filter projects effectively.
+                    </p>
+                    <div class="tag-input-section">
+                        <input type="text" id="newTagInput" class="tag-input" placeholder="Enter new tag name..." maxlength="20">
+                        <button type="button" onclick="addNewTag()" class="tag-add-btn">+ Add Tag</button>
+                    </div>
+                    <div class="predefined-tags">
+                        <h4>Quick Add Common Tags:</h4>
+                        <span class="predefined-tag" onclick="addPredefinedTag('frontend')">frontend</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('backend')">backend</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('fullstack')">fullstack</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('mobile')">mobile</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('desktop')">desktop</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('research')">research</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('experimental')">experimental</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('archived')">archived</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('personal')">personal</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('work')">work</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('education')">education</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('game')">game</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('tool')">tool</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('library')">library</span>
+                        <span class="predefined-tag" onclick="addPredefinedTag('framework')">framework</span>
+                    </div>
+                    <div class="directory-section">
+                        <h3>Current Tags</h3>
+                        <div id="currentTags" class="tag-grid">
+                            <!-- Tags will be dynamically populated here -->
+                        </div>
+                    </div>
+                    <div class="directory-section">
+                        <h3>Claude Project Tag Assignment</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
+                            Select Claude projects and assign/remove tags. Click on tags to toggle selection.
+                        </p>
+                        <div id="projectTagAssignment">
+                            <!-- Claude project list for tag assignment will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div style="flex: 1; color: var(--text-secondary); font-size: 14px;" id="changesSummary">
+                        No unsaved changes
+                    </div>
+                    <button type="button" onclick="saveTagChanges()" class="finish-btn">💾 Save All Changes</button>
+                    <button type="button" onclick="toggleTagManager()" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
         
         <div class="stats" id="stats">
-            <div class="stat-item">
-                <div class="stat-number" id="totalProjects">0</div>
-                <div class="stat-label">Total Claude Projects</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="activeProjects">0</div>
-                <div class="stat-label">Active</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="configuredProjects">0</div>
-                <div class="stat-label">Configured</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="partialProjects">0</div>
-                <div class="stat-label">Partial Setup</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="permissionProjects">0</div>
-                <div class="stat-label">With Permissions</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="webProjects">0</div>
-                <div class="stat-label">Web Development</div>
-            </div>
+            <!-- Stats will be dynamically generated: Total Projects + Top 10 Tags -->
         </div>
 
         <div id="loading" class="loading" style="display: none;">Loading projects...</div>
@@ -1264,33 +1502,66 @@
             updateStats();
         }
 
-        function toggleFilter(filter) {
-            // Update active filter button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-            
-            currentFilter = filter;
-            filterProjects();
-        }
 
         function updateStats() {
-            const stats = {
-                total: filteredProjects.length,
-                active: filteredProjects.filter(p => p.status === 'Active').length,
-                configured: filteredProjects.filter(p => p.status === 'Configured').length,
-                partial: filteredProjects.filter(p => p.status === 'Partial Setup').length,
-                withPermissions: filteredProjects.filter(p => p.permissionCount > 0).length,
-                webProjects: filteredProjects.filter(p => p.projectType.includes('Web')).length
-            };
-
-            document.getElementById('totalProjects').textContent = stats.total;
-            document.getElementById('activeProjects').textContent = stats.active;
-            document.getElementById('configuredProjects').textContent = stats.configured;
-            document.getElementById('partialProjects').textContent = stats.partial;
-            document.getElementById('permissionProjects').textContent = stats.withPermissions;
-            document.getElementById('webProjects').textContent = stats.webProjects;
+            const statsContainer = document.getElementById('stats');
+            
+            // Count all tags from all projects (not just filtered)
+            const tagCounts = {};
+            projectsData.forEach(project => {
+                if (project.tags && project.tags.length > 0) {
+                    project.tags.forEach(tag => {
+                        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                    });
+                }
+            });
+            
+            // Sort tags by count and get top 10
+            const sortedTags = Object.entries(tagCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            // Clear and rebuild stats container
+            statsContainer.innerHTML = '';
+            
+            // Add Total Projects first
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'stat-item total-projects';
+            totalDiv.innerHTML = `
+                <div class="stat-number">${filteredProjects.length}</div>
+                <div class="stat-label">Total Projects</div>
+            `;
+            statsContainer.appendChild(totalDiv);
+            
+            // Add top 10 tags
+            sortedTags.forEach(([tag, count]) => {
+                const tagDiv = document.createElement('div');
+                tagDiv.className = `stat-item tag-filter ${activeTagFilter === tag ? 'active' : ''}`;
+                tagDiv.setAttribute('data-tag', tag);
+                tagDiv.innerHTML = `
+                    <div class="stat-number">${count}</div>
+                    <div class="stat-label">${tag.charAt(0).toUpperCase() + tag.slice(1)}</div>
+                `;
+                tagDiv.addEventListener('click', () => filterByTag(tag));
+                statsContainer.appendChild(tagDiv);
+            });
+        }
+        
+        function filterByTag(tag) {
+            const searchInput = document.getElementById('searchInput');
+            
+            if (activeTagFilter === tag) {
+                // If clicking the same tag, clear the filter
+                activeTagFilter = null;
+                searchInput.value = '';
+            } else {
+                // Set new tag filter
+                activeTagFilter = tag;
+                searchInput.value = tag;
+            }
+            
+            filterProjects();
+            updateStats(); // Refresh to update active states
         }
 
         function openFolder(path) {
@@ -1667,9 +1938,9 @@
             
             // Load projects from API on page load
             await loadProjectsFromAPI();
-            // Set initial active filter
-            console.log('Setting initial filter to all...');
-            toggleFilter('all');
+            // Initialize with all projects
+            currentFilter = 'all';
+            filterProjects();
         });
 
         // Initial loader functions
@@ -1926,6 +2197,94 @@
             if (themeIcon) {
                 themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
             }
+        }
+
+        // Tag Management System
+        let allTags = new Set();
+        let activeTagFilter = null;
+        let projectTagChanges = new Map();
+
+        function toggleTagManager() {
+            const modal = document.getElementById('tagModal');
+            const isHidden = modal.classList.contains('modal-hidden');
+            
+            if (isHidden) {
+                loadTagManager();
+                modal.classList.remove('modal-hidden');
+            } else {
+                modal.classList.add('modal-hidden');
+            }
+        }
+
+        function loadTagManager() {
+            // For Claude projects, we'll create a placeholder system
+            // This can be enhanced to work with actual Claude project tags
+            renderCurrentTags();
+            renderProjectTagAssignment();
+            updateChangesSummary();
+        }
+
+        function renderCurrentTags() {
+            const container = document.getElementById('currentTags');
+            const tagsArray = Array.from(allTags).sort();
+            
+            container.innerHTML = tagsArray.map(tag => `
+                <div class="tag-item">
+                    <span class="tag-name">${tag}</span>
+                    <button class="tag-remove" onclick="removeTag('${tag}')" title="Delete tag">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        function renderProjectTagAssignment() {
+            const container = document.getElementById('projectTagAssignment');
+            // For now, we'll show a message about Claude project tag support
+            container.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                    <h4>Claude Project Tag System</h4>
+                    <p>Claude project tagging will be available in a future update.</p>
+                    <p>This will allow you to tag Claude projects for better organization and filtering.</p>
+                </div>
+            `;
+        }
+
+        function addNewTag() {
+            const input = document.getElementById('newTagInput');
+            const tagName = input.value.trim().toLowerCase();
+            
+            if (tagName && !allTags.has(tagName)) {
+                allTags.add(tagName);
+                input.value = '';
+                renderCurrentTags();
+                updateChangesSummary();
+            }
+        }
+
+        function addPredefinedTag(tagName) {
+            if (!allTags.has(tagName)) {
+                allTags.add(tagName);
+                renderCurrentTags();
+                updateChangesSummary();
+            }
+        }
+
+        function removeTag(tagName) {
+            if (confirm(`Remove tag "${tagName}"? This will remove it from all Claude projects.`)) {
+                allTags.delete(tagName);
+                renderCurrentTags();
+                updateChangesSummary();
+            }
+        }
+
+        function saveTagChanges() {
+            // Save tags (implementation would depend on backend)
+            alert('Tag changes saved! (Claude project tagging will be available in a future update)');
+            toggleTagManager();
+        }
+
+        function updateChangesSummary() {
+            const summary = document.getElementById('changesSummary');
+            summary.textContent = `${allTags.size} tags available`;
         }
     </script>
 </body>
