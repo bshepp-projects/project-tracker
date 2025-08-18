@@ -897,7 +897,7 @@ app.get('/api/config', (req, res) => {
 // Directory management endpoints
 app.post('/api/directories', async (req, res) => {
     try {
-        const { directory } = req.body;
+        let { directory } = req.body;
         
         if (!directory || typeof directory !== 'string') {
             return res.status(400).json({
@@ -905,6 +905,9 @@ app.post('/api/directories', async (req, res) => {
                 error: 'Directory path is required and must be a string'
             });
         }
+        
+        // Normalize path for cross-platform compatibility
+        directory = path.resolve(directory.trim());
         
         // Check if directory already exists in the list
         if (scanDirectories.includes(directory)) {

@@ -1017,11 +1017,15 @@
                     <div class="directory-section">
                         <h3>Add Individual Project Directory</h3>
                         <div class="add-directory-form">
-                            <input type="text" id="newDirectoryPath" placeholder="/path/to/specific-project" class="directory-input">
+                            <input type="text" id="newDirectoryPath" placeholder="Enter path (Windows or Linux format)" class="directory-input">
                             <button type="button" onclick="addDirectory()" class="add-btn">➕ Add Project</button>
                         </div>
                         <p class="help-text">
-                            ℹ️ Add the path to a specific project directory (e.g., /home/user/my-web-app), not parent directories containing multiple projects.
+                            ℹ️ <strong>Cross-platform paths supported:</strong><br>
+                            • Linux/macOS: <code>/home/user/my-project</code><br>
+                            • Windows: <code>C:\Users\User\my-project</code> or <code>C:/Users/User/my-project</code><br>
+                            • Relative: <code>../my-project</code> or <code>./projects/my-app</code><br>
+                            Add the path to a specific project directory, not parent directories containing multiple projects.
                         </p>
                     </div>
 
@@ -2112,9 +2116,31 @@
             `).join('');
         }
 
+        // Simple client-side path normalization
+        function normalizePath(inputPath) {
+            let path = inputPath.trim();
+            
+            // Handle common Windows issues
+            if (path.includes('\\')) {
+                // Convert backslashes to forward slashes for consistency
+                path = path.replace(/\\/g, '/');
+            }
+            
+            // Remove trailing slashes
+            path = path.replace(/\/+$/, '');
+            
+            // Remove quotes if user wrapped path in quotes
+            if ((path.startsWith('"') && path.endsWith('"')) || 
+                (path.startsWith("'") && path.endsWith("'"))) {
+                path = path.slice(1, -1);
+            }
+            
+            return path;
+        }
+
         async function addDirectory() {
             const input = document.getElementById('newDirectoryPath');
-            const directory = input.value.trim();
+            let directory = normalizePath(input.value);
 
             if (!directory) {
                 showNotification('❌ Please enter a directory path', 'error');
