@@ -825,6 +825,16 @@
         .claude-btn:hover {
             background: #45a049;
         }
+        
+        .github-btn {
+            background: #24292e;
+            color: white;
+        }
+        
+        .github-btn:hover {
+            background: #1b1f23;
+        }
+        
         .venv-btn {
             background: #FF5722;
             color: white;
@@ -1454,8 +1464,8 @@
                             <div class="info-value">${project.hasClaudeDir ? '⚙️ Yes' : '❌ No'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Permissions</div>
-                            <div class="info-value">${project.permissionCount} rules</div>
+                            <div class="info-label">Last Commit</div>
+                            <div class="info-value">${project.lastCommitDate ? new Date(project.lastCommitDate).toLocaleDateString() : '❓ Unknown'}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Activity</div>
@@ -1467,6 +1477,7 @@
                         <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
                         ${project.hasClaudeFile ? `<button class="action-btn view-readme" onclick="viewClaudeFile('${project.path}')">📄 CLAUDE.md</button>` : ''}
                         <button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🚀 Launch Claude</button>
+                        ${project.isGitHub ? `<button class="action-btn github-btn" onclick="openGitHub('${project.gitHubUrl}')">🔗 GitHub</button>` : ''}
                         ${project.hasClaudeDir ? `<button class="action-btn settings-btn" onclick="viewClaudeSettings('${project.path}')">⚙️ Settings</button>` : ''}
                         <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
                         <button class="action-btn ignore-btn" onclick="ignoreDirectory('${project.path}')" title="Remove this directory from scan list">🚫 Ignore</button>
@@ -1600,6 +1611,15 @@
             // Copy README path to clipboard since browsers can't open local files
             const readmePath = `${path}/README.md`;
             copyToClipboard(readmePath, 'README path copied to clipboard! Open in your editor.');
+        }
+
+        function openGitHub(gitHubUrl) {
+            if (gitHubUrl) {
+                window.open(gitHubUrl, '_blank');
+                showNotification('🔗 Opening GitHub repository in new window', 'success');
+            } else {
+                showNotification('❌ No GitHub URL available', 'error');
+            }
         }
 
         function copyPath(path) {

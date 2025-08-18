@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **🔗 GitHub Repository Integration**: Complete GitHub repository detection and access
+  - GitHub repository URL detection for all projects with git remotes
+  - New "🔗 GitHub" button on project cards for GitHub repositories
+  - Opens GitHub repositories in new browser window/tab
+  - GitHub-themed button styling with hover effects
+  - Automatic conversion of git URLs to web URLs
+  - Visual notifications when opening GitHub repositories
+
+- **📅 Last Commit Date Display**: Real-time git commit information
+  - Replaced Virtual Environment info field with Last Commit date
+  - Shows relative time since last commit (e.g., "43 minutes ago", "3 days ago")
+  - Displays "❓ Unknown" for projects without git repositories
+  - Integrated with existing GitAnalyzer for accurate commit detection
+  - Available in both Project Tracker and Claude Tracker interfaces
+
 - **⭐ Favorites System**: Complete favorites functionality with persistent storage
   - Star icon in upper right corner of each project card (☆ empty, ★ filled gold)
   - Click to toggle favorite status with instant visual feedback

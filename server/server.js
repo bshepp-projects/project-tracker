@@ -209,6 +209,30 @@ class ProjectAnalyzer {
             const stats = await fs.stat(projectPath);
             const lastModified = stats.mtime.getFullYear().toString();
             
+            // Check for GitHub repository and last commit
+            const gitPath = path.join(projectPath, '.git');
+            let gitHubUrl = null;
+            let isGitHub = false;
+            let lastCommitDate = null;
+            try {
+                if (await ProjectAnalyzer.fileExists(gitPath)) {
+                    const remoteUrl = await GitAnalyzer.getRemoteUrl(projectPath);
+                    if (GitAnalyzer.isGitHubRepo(remoteUrl)) {
+                        isGitHub = true;
+                        gitHubUrl = remoteUrl
+                            .replace('git@github.com:', 'https://github.com/')
+                            .replace('.git', '');
+                    }
+                    // Get last commit date for all git repos
+                    const lastCommit = await GitAnalyzer.getLastCommit(projectPath);
+                    if (lastCommit && lastCommit.date) {
+                        lastCommitDate = lastCommit.date;
+                    }
+                }
+            } catch (error) {
+                // Ignore git errors, project just won't have GitHub info
+            }
+            
             return {
                 name: projectName,
                 path: projectPath,
@@ -220,7 +244,9 @@ class ProjectAnalyzer {
                 hasReadme: hasReadme,
                 hasClaude: hasClaude,
                 hasVenv: hasVenv,
-
+                isGitHub: isGitHub,
+                gitHubUrl: gitHubUrl,
+                lastCommitDate: lastCommitDate,
                 lastUpdated: lastModified,
                 isScanned: true,
                 dateScanned: new Date().toISOString()
@@ -486,6 +512,15 @@ class ProjectAnalyzer {
         }
         
         return Array.from(tags);
+    }
+    
+    static async fileExists(filePath) {
+        try {
+            await fs.access(filePath);
+            return true;
+        } catch {
+            return false;
+        }
     }
 }
 

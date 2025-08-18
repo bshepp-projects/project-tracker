@@ -155,6 +155,9 @@ Projects returned by `/api/projects` include basic Claude detection:
 - `hasClaudeDir`: Boolean indicating if .claude directory exists
 - `claudeRole`: Extracted role from CLAUDE.md metadata
 - `permissions`: Array of Claude permissions from settings
+- `isGitHub`: Boolean indicating if project has GitHub remote repository
+- `gitHubUrl`: String with GitHub repository web URL (null if not GitHub)
+- `lastCommitDate`: String with relative time since last commit (null if no git repo)
 
 #### Detection Logic
 - **File Detection**: Looks for CLAUDE.md files and .claude directories

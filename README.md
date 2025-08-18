@@ -31,6 +31,8 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **🔀 Git Integration**: Comprehensive repository status tracking and GitHub integration
 - **🌿 Branch Management**: Current branch, ahead/behind status, working tree analysis
 - **⚡ GitHub Actions**: Workflow status and last run information
+- **🔗 GitHub Repository Access**: Direct GitHub repository opening in new browser windows
+- **📅 Last Commit Tracking**: Real-time display of last commit dates for all projects
 - **📊 Multi-Tab Interface**: Project Tracker, Claude Tracker, and Git Tracker in unified navigation
 - **🏷️ Comprehensive Tag System**: 19 tag categories with smart auto-detection and individual project saves
 
@@ -42,8 +44,8 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - Last modified information
 - README availability
 - **🤖 CLAUDE.md presence** - Shows if project has Claude integration
-- **🐍 Virtual environment status** - Shows if project has Python venv
-
+- **📅 Last commit date** - Shows when the project was last worked on (replaces virtual env display)
+- **🔗 GitHub repository** - Direct access to GitHub repositories via button
 - Project category and type
 - **🏷️ Smart Tags**: Auto-assigned tags including quantum, research, creative, gaming, science, environmental, security, business, education, experimental, framework, data, frontend, backend, tool, ai, web, production, development
 
@@ -152,7 +154,7 @@ Note: The standalone frontend will use fallback project data when the backend is
    - Click "🤖 Claude" to copy `claude --continue` command (for projects with CLAUDE.md)
 
    - Click "🐍 Activate" to copy virtual environment activation commands
-   - Click "🔗 GitHub" to copy GitHub repository URL
+   - Click "🔗 GitHub" to open GitHub repository in new browser window
    - Click "📋 Copy" to copy the full path to clipboard
    - Click "🚫 Remove" to remove the project from tracking
 9. **Manage Projects**: Click "⚙️ Manage Directories" to add/remove individual project directories
