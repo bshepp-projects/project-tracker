@@ -33,6 +33,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **⚡ GitHub Actions**: Workflow status and last run information
 - **🔗 GitHub Repository Access**: Direct GitHub repository opening in new browser windows
 - **📅 Last Commit Tracking**: Real-time display of last commit dates for all projects
+- **🌍 Cross-Platform Path Support**: Universal directory path compatibility for Windows, Linux, and macOS with automatic path normalization
 - **📊 Multi-Tab Interface**: Project Tracker, Claude Tracker, and Git Tracker in unified navigation
 - **🏷️ Comprehensive Tag System**: 19 tag categories with smart auto-detection and individual project saves
 
@@ -158,6 +159,8 @@ Note: The standalone frontend will use fallback project data when the backend is
    - Click "📋 Copy" to copy the full path to clipboard
    - Click "🚫 Remove" to remove the project from tracking
 9. **Manage Projects**: Click "⚙️ Manage Directories" to add/remove individual project directories
+   - **Cross-Platform Paths**: Directory input accepts both Windows (`C:\path\to\project`) and Unix (`/home/user/project`) format paths
+   - **Automatic Normalization**: Paths are automatically converted and cleaned for proper handling
 10. **Refresh**: Click "🔄 Refresh Projects" or press Ctrl+R to rescan and update the view
 
 ### Developer Workflow Integration
