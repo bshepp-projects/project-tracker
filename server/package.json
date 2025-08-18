@@ -1,6 +1,6 @@
 {
   "name": "project-tracker-server",
-  "version": "1.0.0",
+  "version": "1.5.2",
   "description": "Backend service for Project Tracker filesystem scanning",
   "main": "server.js",
   "scripts": {

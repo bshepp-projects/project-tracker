@@ -97,9 +97,17 @@ The project includes comprehensive automated testing via GitHub Actions:
 - `GET /api/config` - Get current configuration
 
 ### Directory Management
-- `POST /api/directories` - Add new scan directory
+- `POST /api/directories` - Add new scan directory (accepts cross-platform path formats)
 - `DELETE /api/directories` - Remove scan directory
 - `PUT /api/directories` - Update entire directory list
+
+#### Cross-Platform Path Support
+- **Windows Paths**: `C:\Users\Name\Projects\my-app` or `C:/Users/Name/Projects/my-app`
+- **Unix/Linux Paths**: `/home/user/projects/my-app`
+- **macOS Paths**: `/Users/name/projects/my-app`
+- **Relative Paths**: `../projects/my-app` or `./my-app`
+- **Backend Normalization**: All paths automatically resolved using Node.js `path.resolve()`
+- **Client Cleanup**: Frontend removes quotes, trailing slashes, and normalizes separators
 
 ### Tag Management
 - `GET /api/tags` - Get all unique tags from scanned projects

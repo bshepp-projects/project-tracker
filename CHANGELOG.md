@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integrated with existing GitAnalyzer for accurate commit detection
   - Available in both Project Tracker and Claude Tracker interfaces
 
+- **🌍 Cross-Platform Directory Path Support**: Universal path compatibility
+  - Backend path normalization using Node.js path.resolve() for proper handling
+  - Support for Windows backslash (C:\path\to\project) and forward slash paths
+  - Support for Linux/macOS absolute paths (/home/user/project)
+  - Support for relative paths (../project, ./projects/my-app)
+  - Client-side path normalization removes quotes, trailing slashes, converts separators
+  - Enhanced UI guidance with cross-platform examples in all tracker interfaces
+  - Automatic path resolution eliminates format confusion
+
 - **⭐ Favorites System**: Complete favorites functionality with persistent storage
   - Star icon in upper right corner of each project card (☆ empty, ★ filled gold)
   - Click to toggle favorite status with instant visual feedback
