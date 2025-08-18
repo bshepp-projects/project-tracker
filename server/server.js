@@ -4,7 +4,8 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
+const HOST = process.env.HOST || 'localhost';
 
 // Enable CORS for frontend access
 app.use(cors());
@@ -211,7 +212,7 @@ class ProjectAnalyzer {
             return {
                 name: projectName,
                 path: projectPath,
-                description: `Auto-detected project: ${projectName}`,
+                description: projectName,
                 status: status,
                 technologies: technologies,
                 category: category,
@@ -1179,11 +1180,11 @@ async function startServer() {
     // Load directories from file on startup
     await loadDirectoriesFromFile();
     
-    app.listen(PORT, () => {
-        console.log(`🚀 Project Tracker Backend running on http://localhost:${PORT}`);
+    app.listen(PORT, HOST, () => {
+        console.log(`🚀 Project Tracker Backend running on http://${HOST}:${PORT}`);
         console.log(`📂 Scanning directories: ${scanDirectories.length} configured`);
-        console.log(`🔍 Access projects API at: http://localhost:${PORT}/api/projects`);
-        console.log(`🏷️ Access tags API at: http://localhost:${PORT}/api/tags`);
+        console.log(`🔍 Access projects API at: http://${HOST}:${PORT}/api/projects`);
+        console.log(`🏷️ Access tags API at: http://${HOST}:${PORT}/api/tags`);
     });
 }
 

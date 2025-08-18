@@ -23,6 +23,7 @@ Project Tracker is a local tool to find and organize your projects. It has:
 - Two main analysis classes: `ProjectAnalyzer` and `ClaudeAnalyzer`
 - Configurable directory scanning with persistence in `directories.json`
 - RESTful API endpoints for project discovery and configuration
+- Environment configuration support via `PORT` and `HOST` variables
 
 ## Development Commands
 
@@ -36,10 +37,13 @@ cd server && npm install
 
 # Start backend server
 cd server && npm start
-# Server runs on http://localhost:3001
+# Server runs on http://localhost:3001 (configurable via PORT/HOST env vars)
 
 # Development mode with auto-restart
 cd server && npm run dev
+
+# Custom port/host configuration
+PORT=8080 HOST=0.0.0.0 npm start
 ```
 
 ### Frontend Development
@@ -121,18 +125,11 @@ The project includes comprehensive automated testing via GitHub Actions:
 
 ## Default Scan Directories
 
-The backend scans these directories by default (configured in `server.js:14-26`):
-- `/mnt/f/utility-projects`
-- `/mnt/f/consciousness-projects`
-- `/mnt/f/dark-forest-labs-projects`
-- `/mnt/f/experimental-projects`
-- `/mnt/f/science-projects`
-- `/mnt/f/art-projects`
-- `/mnt/f/environmental_projects`
-- `/mnt/f/video-game-projects`
-- `/mnt/f/ensemble_project`
-- `/mnt/f/archive_family`
-- `/mnt/f/webpages`
+The backend scans these directories by default (configured in `server.js:15-18`):
+- `/mnt/f/utility-projects/project-tracker`
+- `/mnt/f/utility-projects/fundo-matic`
+
+Additional directories are loaded from `server/directories.json` configuration file and can be managed via the API endpoints.
 
 ## Key File Detection Patterns
 
