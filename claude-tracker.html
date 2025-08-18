@@ -1465,7 +1465,7 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Commit</div>
-                            <div class="info-value">${project.lastCommitDate ? new Date(project.lastCommitDate).toLocaleDateString() : '❓ Unknown'}</div>
+                            <div class="info-value">${project.lastCommitDate || '❓ Unknown'}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Activity</div>
