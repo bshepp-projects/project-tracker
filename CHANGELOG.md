@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2] - 2025-08-18
+
 ### Added
 - **🔗 GitHub Repository Integration**: Complete GitHub repository detection and access
   - GitHub repository URL detection for all projects with git remotes
