@@ -1101,7 +1101,28 @@ app.post('/api/directories', async (req, res) => {
         }
         
         // Normalize path for cross-platform compatibility
-        directory = path.resolve(directory.trim());
+        directory = directory.trim();
+        
+        // Handle Windows paths in WSL environment
+        if (process.platform === 'linux') {
+            // Check if it's a Windows path (C:\ or C:/)
+            const windowsDriveMatch = directory.match(/^([A-Za-z]):[\\\/]/);
+            if (windowsDriveMatch) {
+                // Convert Windows path to WSL path
+                const driveLetter = windowsDriveMatch[1].toLowerCase();
+                const pathWithoutDrive = directory.substring(2).replace(/\\/g, '/');
+                directory = `/mnt/${driveLetter}${pathWithoutDrive}`;
+            }
+        }
+        
+        // Handle tilde expansion for home directory
+        if (directory.startsWith('~/')) {
+            const homeDir = process.env.HOME || process.env.USERPROFILE;
+            directory = path.join(homeDir, directory.substring(2));
+        }
+        
+        // Now resolve to absolute path
+        directory = path.resolve(directory);
         
         // Check if directory already exists in the list
         if (scanDirectories.includes(directory)) {
