@@ -2167,6 +2167,10 @@
                 showNotification('❌ Please enter a directory path', 'error');
                 return;
             }
+            
+            // Show user the normalized path for clarity
+            console.log('Original path:', input.value);
+            console.log('Normalized path:', directory);
 
             try {
                 const response = await fetch(`${API_BASE_URL}/directories`, {
