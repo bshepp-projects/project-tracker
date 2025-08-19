@@ -1797,8 +1797,29 @@
         // Load projects from backend API
         async function loadProjectsFromAPI() {
             try {
-                showNotification('🔍 Scanning filesystem...', 'info');
-
+                // First, try to load cached data for instant display
+                const cachedResponse = await fetch(`${API_BASE_URL}/projects/cached`);
+                
+                if (cachedResponse.ok) {
+                    const cachedData = await cachedResponse.json();
+                    if (cachedData.success && cachedData.projects.length > 0) {
+                        // Display cached data immediately
+                        projectsData = cachedData.projects;
+                        displayProjects(projectsData);
+                        updateStats();
+                        
+                        if (cachedData.scanning) {
+                            showNotification('🔄 Loading cached data, updating in background...', 'info');
+                        } else if (cachedData.fromCache && cachedData.cacheAge < 60000) {
+                            showNotification(`✅ Loaded ${cachedData.projects.length} projects (cached)`, 'success');
+                            return; // Cache is fresh enough, no need to re-scan
+                        }
+                    }
+                }
+                
+                // If cache is old or missing, do a full scan
+                showNotification('🔍 Scanning filesystem for updates...', 'info');
+                
                 const response = await fetch(`${API_BASE_URL}/projects`);
 
                 if (!response.ok) {

@@ -50,6 +50,109 @@ async function saveDirectoriesToFile() {
     }
 }
 
+// Cache management for project data
+const PROJECTS_CACHE_FILE = path.join(__dirname, 'projects-cache.json');
+const CACHE_VERSION = '1.0.0';
+const CACHE_MAX_AGE = 1000 * 60 * 60; // 1 hour default cache validity
+
+class CacheManager {
+    static cache = {
+        version: CACHE_VERSION,
+        timestamp: null,
+        projects: [],
+        claudeProjects: [],
+        gitRepos: [],
+        tags: new Set()
+    };
+
+    static isScanning = false;
+    static lastScanRequest = null;
+
+    static async loadCache() {
+        try {
+            const data = await fs.readFile(PROJECTS_CACHE_FILE, 'utf8');
+            const loaded = JSON.parse(data);
+            
+            // Validate cache version
+            if (loaded.version === CACHE_VERSION) {
+                this.cache = loaded;
+                // Convert tags array back to Set
+                this.cache.tags = new Set(loaded.tags || []);
+                console.log(`📦 Loaded cache with ${this.cache.projects.length} projects (age: ${this.getCacheAge()}ms)`);
+                return true;
+            }
+        } catch (error) {
+            console.log('📦 No valid cache found, will scan on first request');
+        }
+        return false;
+    }
+
+    static async saveCache() {
+        try {
+            const toSave = {
+                ...this.cache,
+                tags: Array.from(this.cache.tags), // Convert Set to array for JSON
+                timestamp: Date.now()
+            };
+            await fs.writeFile(PROJECTS_CACHE_FILE, JSON.stringify(toSave, null, 2));
+            console.log(`💾 Saved cache with ${this.cache.projects.length} projects`);
+        } catch (error) {
+            console.error('Error saving cache:', error);
+        }
+    }
+
+    static getCacheAge() {
+        if (!this.cache.timestamp) return Infinity;
+        return Date.now() - this.cache.timestamp;
+    }
+
+    static isCacheValid(maxAge = CACHE_MAX_AGE) {
+        return this.cache.projects.length > 0 && this.getCacheAge() < maxAge;
+    }
+
+    static async updateProjectsCache(projects) {
+        this.cache.projects = projects;
+        this.cache.timestamp = Date.now();
+        
+        // Update tags from all projects
+        this.cache.tags = new Set();
+        projects.forEach(project => {
+            if (project.tags && Array.isArray(project.tags)) {
+                project.tags.forEach(tag => this.cache.tags.add(tag));
+            }
+        });
+
+        await this.saveCache();
+    }
+
+    static async updateClaudeCache(claudeProjects) {
+        this.cache.claudeProjects = claudeProjects;
+        await this.saveCache();
+    }
+
+    static async updateGitCache(gitRepos) {
+        this.cache.gitRepos = gitRepos;
+        await this.saveCache();
+    }
+
+    static async invalidateCache() {
+        this.cache = {
+            version: CACHE_VERSION,
+            timestamp: null,
+            projects: [],
+            claudeProjects: [],
+            gitRepos: [],
+            tags: new Set()
+        };
+        try {
+            await fs.unlink(PROJECTS_CACHE_FILE);
+            console.log('🗑️ Cache invalidated');
+        } catch (error) {
+            // File might not exist
+        }
+    }
+}
+
 // Claude project analysis functions
 class ClaudeAnalyzer {
     static async analyzeClaudeProject(projectPath, projectName) {
@@ -778,6 +881,93 @@ class GitAnalyzer {
 }
 
 // API Routes
+
+// Fast cached endpoint - returns immediately with cached data
+app.get('/api/projects/cached', async (req, res) => {
+    try {
+        const forceRefresh = req.query.refresh === 'true';
+        
+        // Return cached data if valid
+        if (!forceRefresh && CacheManager.isCacheValid()) {
+            console.log('📦 Returning cached projects');
+            return res.json({
+                success: true,
+                projects: CacheManager.cache.projects,
+                fromCache: true,
+                cacheAge: CacheManager.getCacheAge(),
+                scanTime: new Date(CacheManager.cache.timestamp).toISOString(),
+                scannedDirectories: scanDirectories
+            });
+        }
+
+        // If no cache or force refresh, trigger background scan
+        if (!CacheManager.isScanning) {
+            CacheManager.isScanning = true;
+            console.log('🔄 Starting background scan...');
+            
+            // Don't await - let it run in background
+            scanProjectsInBackground().then(() => {
+                CacheManager.isScanning = false;
+            }).catch(error => {
+                console.error('Background scan error:', error);
+                CacheManager.isScanning = false;
+            });
+        }
+
+        // Return existing cache (even if stale) or empty array
+        res.json({
+            success: true,
+            projects: CacheManager.cache.projects || [],
+            fromCache: true,
+            scanning: true,
+            cacheAge: CacheManager.getCacheAge(),
+            scanTime: CacheManager.cache.timestamp ? new Date(CacheManager.cache.timestamp).toISOString() : null,
+            scannedDirectories: scanDirectories
+        });
+
+    } catch (error) {
+        console.error('Error with cached projects:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Background scanning function
+async function scanProjectsInBackground() {
+    console.log('🔍 Background scan starting...');
+    const allProjects = [];
+    
+    for (const scanDir of scanDirectories) {
+        try {
+            const stats = await fs.stat(scanDir);
+            if (stats.isDirectory()) {
+                const dirName = path.basename(scanDir);
+                if (dirName.startsWith('$Temp') || 
+                    dirName.endsWith('.tmp') ||
+                    dirName === '$RECYCLE.BIN' || 
+                    dirName === 'System Volume Information' ||
+                    (dirName.startsWith('.') && dirName !== '.claude')) {
+                    continue;
+                }
+                
+                const project = await ProjectAnalyzer.analyzeProject(scanDir, dirName);
+                if (project) {
+                    allProjects.push(project);
+                }
+            }
+        } catch (error) {
+            console.warn(`Could not scan directory ${scanDir}:`, error.message);
+        }
+    }
+    
+    await CacheManager.updateProjectsCache(allProjects);
+    console.log(`✅ Background scan complete: ${allProjects.length} projects cached`);
+    return allProjects;
+}
+
+// Original endpoint - now uses cache but waits for fresh scan
 app.get('/api/projects', async (req, res) => {
     try {
         console.log('🔍 Scanning for projects...');
@@ -810,6 +1000,10 @@ app.get('/api/projects', async (req, res) => {
         }
         
         console.log(`✅ Found ${allProjects.length} projects`);
+        
+        // Update cache with fresh data
+        await CacheManager.updateProjectsCache(allProjects);
+        
         res.json({
             success: true,
             projects: allProjects,
@@ -940,6 +1134,9 @@ app.post('/api/directories', async (req, res) => {
         // Save to file
         await saveDirectoriesToFile();
         
+        // Invalidate cache when directories change
+        await CacheManager.invalidateCache();
+        
         console.log(`✅ Added directory: ${directory}`);
         res.json({
             success: true,
@@ -980,6 +1177,9 @@ app.delete('/api/directories', async (req, res) => {
         
         // Save to file
         await saveDirectoriesToFile();
+        
+        // Invalidate cache when directories change
+        await CacheManager.invalidateCache();
         
         console.log(`🗑️ Removed directory: ${directory}`);
         res.json({
@@ -1035,6 +1235,9 @@ app.put('/api/directories', async (req, res) => {
         
         // Save to file
         await saveDirectoriesToFile();
+        
+        // Invalidate cache when directories change
+        await CacheManager.invalidateCache();
         
         console.log(`🔄 Updated directories: ${scanDirectories.length} total`);
         res.json({
@@ -1218,10 +1421,15 @@ async function startServer() {
     // Load directories from file on startup
     await loadDirectoriesFromFile();
     
+    // Load cache from file on startup
+    await CacheManager.loadCache();
+    
     app.listen(PORT, HOST, () => {
         console.log(`🚀 Project Tracker Backend running on http://${HOST}:${PORT}`);
         console.log(`📂 Scanning directories: ${scanDirectories.length} configured`);
+        console.log(`📦 Cache: ${CacheManager.cache.projects.length} projects loaded`);
         console.log(`🔍 Access projects API at: http://${HOST}:${PORT}/api/projects`);
+        console.log(`⚡ Fast cached API at: http://${HOST}:${PORT}/api/projects/cached`);
         console.log(`🏷️ Access tags API at: http://${HOST}:${PORT}/api/tags`);
     });
 }
