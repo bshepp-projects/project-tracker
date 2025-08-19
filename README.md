@@ -14,7 +14,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## ✨ Features
 
-### Current Features (v1.5)
+### Current Features (v1.5.2)
 - **📊 Project Dashboard**: Visual overview of all projects with statistics
 - **🔍 Dynamic Project Scanning**: Real-time project discovery from your filesystem
 - **🤖 Intelligent Auto-Detection**: Automatic detection of CLAUDE.md, virtual environments, and README files
@@ -73,7 +73,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 **Quick Setup:**
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/project-tracker.git
+git clone https://github.com/bshepp-projects/project-tracker.git
 cd project-tracker
 
 # Run the setup script (macOS/Linux)
@@ -91,7 +91,7 @@ start project-tracker.html # Windows
 **Manual Setup:**
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/project-tracker.git
+git clone https://github.com/bshepp-projects/project-tracker.git
 cd project-tracker
 
 # Install backend dependencies
@@ -114,7 +114,7 @@ start project-tracker.html
 #### Option 2: Standalone Frontend Only
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/project-tracker.git
+git clone https://github.com/bshepp-projects/project-tracker.git
 cd project-tracker
 
 # Open the tracker in your browser
