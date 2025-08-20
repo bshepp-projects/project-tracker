@@ -1512,12 +1512,12 @@
                             <div class="info-value">${project.technologies}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">README</div>
-                            <div class="info-value">${project.hasReadme ? '✅ Yes' : '❌ No'}</div>
+                            <div class="info-label">CI/CD</div>
+                            <div class="info-value">${getCICDStatus(project)}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">CLAUDE.md</div>
-                            <div class="info-value">${project.hasClaude === true ? '🤖 Yes' : (project.hasClaude === false ? '❌ No' : '❓ Unknown')}</div>
+                            <div class="info-label">Sync</div>
+                            <div class="info-value">${getSyncStatus(project)}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Commit</div>
@@ -1688,6 +1688,67 @@
             copyToClipboard(readmePath, 'README path copied to clipboard! Open in your editor.');
         }
 
+        function getCICDStatus(project) {
+            // Check if project has GitHub Actions CI/CD info
+            if (!project.githubActions) {
+                return '➖ N/A';
+            }
+            
+            const actions = project.githubActions;
+            
+            // Check for in-progress runs
+            if (actions.inProgress) {
+                return '🔄 Running';
+            }
+            
+            // Check conclusion of last run
+            if (actions.conclusion === 'success') {
+                return '✅ Passing';
+            } else if (actions.conclusion === 'failure') {
+                // Show failure count if multiple recent failures
+                if (actions.recentFailures > 1) {
+                    return `❌ Failing (${actions.recentFailures})`;
+                }
+                return '❌ Failing';
+            } else if (actions.conclusion === 'cancelled') {
+                return '⚠️ Cancelled';
+            }
+            
+            return '❓ Unknown';
+        }
+        
+        function getSyncStatus(project) {
+            // Check if project has local vs remote sync info
+            if (!project.localVsRemote) {
+                return '➖ Local';
+            }
+            
+            const sync = project.localVsRemote;
+            
+            // Check sync status
+            if (sync.isSynced) {
+                return '✅ Synced';
+            }
+            
+            // Build status string with specific issues
+            const parts = [];
+            if (sync.unpushedCommits > 0) {
+                parts.push(`↑${sync.unpushedCommits}`);
+            }
+            if (sync.unmergedCommits > 0) {
+                parts.push(`↓${sync.unmergedCommits}`);
+            }
+            if (sync.hasUncommittedChanges) {
+                parts.push('📝');
+            }
+            
+            if (parts.length > 0) {
+                return `⚠️ ${parts.join(' ')}`;
+            }
+            
+            return '❓ Unknown';
+        }
+        
         function openGitHub(gitHubUrl) {
             if (gitHubUrl) {
                 window.open(gitHubUrl, '_blank');

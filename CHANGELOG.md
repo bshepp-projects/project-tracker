@@ -17,6 +17,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Cache invalidation on directory changes
   - `/api/projects/cached` endpoint for instant response
 
+- **🔄 CI/CD Status Indicators**: Replace README/CLAUDE.md indicators with actionable CI/CD status
+  - GitHub Actions status detection (✅ Passing, ❌ Failing, 🔄 Running)
+  - Recent failure count tracking
+  - In-progress build detection
+  
+- **📊 Repository Sync Status**: Local vs remote repository comparison
+  - Unpushed commits indicator (↑)
+  - Unmerged commits indicator (↓)  
+  - Uncommitted changes indicator (📝)
+  - Comprehensive sync status (✅ Synced, ⚠️ Out of sync)
+
+- **🚀 Production Deployment Ready**: Docker configuration for AWS deployment
+  - Dockerfile with production optimizations
+  - Environment-based host configuration
+  - Docker ignore file for clean builds
+
 ### Fixed
 - **🐛 Display Bug**: Fixed undefined `displayProjects()` function call
 - **🌍 Path Handling**: Improved cross-platform path support in WSL
@@ -27,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **📈 Performance**: Projects now load instantly from cache (<100ms)
 - **🔄 Background Updates**: Scans run in background while showing cached data
+- **🎯 Actionable Information**: CI/CD and sync status more useful than static file indicators
 
 ## [1.5.2] - 2025-08-18
 

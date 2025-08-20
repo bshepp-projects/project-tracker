@@ -5,7 +5,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const HOST = process.env.HOST || 'localhost';
+const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost');
 
 // Enable CORS for frontend access
 app.use(cors());
@@ -317,6 +317,8 @@ class ProjectAnalyzer {
             let gitHubUrl = null;
             let isGitHub = false;
             let lastCommitDate = null;
+            let githubActions = null;
+            let localVsRemote = null;
             try {
                 if (await ProjectAnalyzer.fileExists(gitPath)) {
                     const remoteUrl = await GitAnalyzer.getRemoteUrl(projectPath);
@@ -325,11 +327,17 @@ class ProjectAnalyzer {
                         gitHubUrl = remoteUrl
                             .replace('git@github.com:', 'https://github.com/')
                             .replace('.git', '');
+                        // Get GitHub Actions CI/CD status
+                        githubActions = await GitAnalyzer.getGitHubActions(projectPath);
                     }
                     // Get last commit date for all git repos
                     const lastCommit = await GitAnalyzer.getLastCommit(projectPath);
                     if (lastCommit && lastCommit.date) {
                         lastCommitDate = lastCommit.date;
+                    }
+                    // Get local vs remote status for repos with remotes
+                    if (remoteUrl) {
+                        localVsRemote = await GitAnalyzer.getLocalVsRemoteStatus(projectPath);
                     }
                 }
             } catch (error) {
@@ -350,6 +358,8 @@ class ProjectAnalyzer {
                 isGitHub: isGitHub,
                 gitHubUrl: gitHubUrl,
                 lastCommitDate: lastCommitDate,
+                githubActions: githubActions,
+                localVsRemote: localVsRemote,
                 lastUpdated: lastModified,
                 isScanned: true,
                 dateScanned: new Date().toISOString()
@@ -650,8 +660,14 @@ class GitAnalyzer {
             
             // Get GitHub-specific information if applicable
             let githubActions = null;
+            let localVsRemote = null;
             if (isGitHub) {
                 githubActions = await this.getGitHubActions(projectPath);
+            }
+            
+            // Get local vs remote status for all git repos
+            if (remoteUrl) {
+                localVsRemote = await this.getLocalVsRemoteStatus(projectPath);
             }
             
             return {
@@ -672,6 +688,7 @@ class GitAnalyzer {
                 totalBranches: totalBranches,
                 lastActivity: lastActivity,
                 githubActions: githubActions,
+                localVsRemote: localVsRemote,
                 dateScanned: new Date().toISOString()
             };
         } catch (error) {
@@ -826,12 +843,66 @@ class GitAnalyzer {
         }
     }
     
+    static async getLocalVsRemoteStatus(projectPath) {
+        try {
+            // First fetch to get latest remote info (dry run to not modify local)
+            await this.executeGitCommand(projectPath, 'fetch --dry-run');
+            
+            // Check if local is ahead or behind remote
+            const statusResult = await this.executeGitCommand(projectPath, 'status -uno');
+            const statusText = statusResult.stdout;
+            
+            // Check for unpushed commits
+            const unpushedResult = await this.executeGitCommand(projectPath, 'log @{u}.. --oneline');
+            const unpushedCommits = unpushedResult.stdout ? unpushedResult.stdout.split('\n').filter(l => l.trim()).length : 0;
+            
+            // Check for unmerged commits from remote
+            const unmergedResult = await this.executeGitCommand(projectPath, 'log ..@{u} --oneline');
+            const unmergedCommits = unmergedResult.stdout ? unmergedResult.stdout.split('\n').filter(l => l.trim()).length : 0;
+            
+            // Check for uncommitted changes
+            const changesResult = await this.executeGitCommand(projectPath, 'status --porcelain');
+            const hasUncommittedChanges = changesResult.stdout.trim().length > 0;
+            
+            return {
+                unpushedCommits: unpushedCommits,
+                unmergedCommits: unmergedCommits,
+                hasUncommittedChanges: hasUncommittedChanges,
+                isSynced: unpushedCommits === 0 && unmergedCommits === 0 && !hasUncommittedChanges,
+                needsPush: unpushedCommits > 0,
+                needsPull: unmergedCommits > 0,
+                statusSummary: this.getStatusSummary(unpushedCommits, unmergedCommits, hasUncommittedChanges)
+            };
+        } catch (error) {
+            return {
+                unpushedCommits: 0,
+                unmergedCommits: 0,
+                hasUncommittedChanges: false,
+                isSynced: null,
+                needsPush: false,
+                needsPull: false,
+                statusSummary: 'Unknown'
+            };
+        }
+    }
+    
+    static getStatusSummary(unpushed, unmerged, hasChanges) {
+        const parts = [];
+        if (unpushed > 0) parts.push(`${unpushed} unpushed`);
+        if (unmerged > 0) parts.push(`${unmerged} unmerged`);
+        if (hasChanges) parts.push('uncommitted changes');
+        
+        if (parts.length === 0) return 'Synced';
+        return parts.join(', ');
+    }
+    
     static async getGitHubActions(projectPath) {
         try {
             // Check if GitHub CLI is available and we can get workflow status
             const { exec } = require('child_process');
             return new Promise((resolve) => {
-                const command = `cd "${projectPath}" && gh run list --limit 1 --json status,workflowName,createdAt 2>/dev/null`;
+                // Get more comprehensive CI/CD status including conclusion (pass/fail)
+                const command = `cd "${projectPath}" && gh run list --limit 5 --json status,conclusion,workflowName,createdAt,headBranch,workflowDatabaseId 2>/dev/null`;
                 
                 exec(command, { timeout: 5000 }, (error, stdout) => {
                     if (error || !stdout.trim()) {
@@ -842,11 +913,26 @@ class GitAnalyzer {
                     try {
                         const runs = JSON.parse(stdout);
                         if (runs && runs.length > 0) {
-                            const lastRun = runs[0];
+                            // Get the most recent completed run to check pass/fail
+                            const lastCompletedRun = runs.find(r => r.status === 'completed') || runs[0];
+                            
+                            // Count recent failures
+                            const recentFailures = runs.filter(r => 
+                                r.status === 'completed' && r.conclusion === 'failure'
+                            ).length;
+                            
+                            // Check if there's a run in progress
+                            const inProgressRun = runs.find(r => r.status === 'in_progress');
+                            
                             return resolve({
-                                status: lastRun.status === 'completed' ? 'success' : lastRun.status,
-                                workflowName: lastRun.workflowName,
-                                lastRun: this.formatDate(lastRun.createdAt)
+                                status: lastCompletedRun.status,
+                                conclusion: lastCompletedRun.conclusion, // success, failure, cancelled, etc.
+                                workflowName: lastCompletedRun.workflowName,
+                                lastRun: this.formatDate(lastCompletedRun.createdAt),
+                                recentFailures: recentFailures,
+                                totalRuns: runs.length,
+                                inProgress: !!inProgressRun,
+                                branch: lastCompletedRun.headBranch
                             });
                         }
                     } catch (parseError) {
