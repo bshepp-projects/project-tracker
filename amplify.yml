@@ -1,0 +1,33 @@
+version: 1
+backend:
+  phases:
+    preBuild:
+      commands:
+        - cd server
+        - npm ci
+    build:
+      commands:
+        - npm run build 2>/dev/null || echo "No build script found, using existing files"
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Frontend build started"
+        - echo "Installing any frontend dependencies..."
+        # No frontend dependencies needed - single HTML file
+    build:
+      commands:
+        - echo "Building frontend..."
+        # Copy frontend files to build output
+        - cp project-tracker.html $AWS_BRANCH/project-tracker.html || cp project-tracker.html ./project-tracker.html
+        - cp claude-tracker.html $AWS_BRANCH/claude-tracker.html || cp claude-tracker.html ./claude-tracker.html  
+        - cp git-tracker.html $AWS_BRANCH/git-tracker.html || cp git-tracker.html ./git-tracker.html
+        - cp favicon*.* $AWS_BRANCH/ || cp favicon*.* ./
+        - echo "Frontend build completed"
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - server/node_modules/**/*
