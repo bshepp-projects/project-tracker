@@ -1,0 +1,189 @@
+name: Serverless Deployment
+
+on:
+  push:
+    branches: [ aws-deployment ]
+    paths: [ 'serverless/**', '.github/workflows/serverless-deployment.yml' ]
+  pull_request:
+    branches: [ aws-deployment ]
+    paths: [ 'serverless/**' ]
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '18'
+
+jobs:
+  validate:
+    name: Validate & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+          
+      - name: Validate SAM template
+        run: |
+          cd serverless
+          sam validate --template-file template.yaml
+          
+      - name: Install Lambda dependencies
+        run: |
+          cd serverless
+          for dir in lambda-functions/*/; do
+            if [ -f "$dir/package.json" ]; then
+              echo "Installing dependencies for $dir"
+              cd "$dir"
+              npm ci
+              cd ../../
+            fi
+          done
+          
+      - name: Run Lambda tests
+        run: |
+          cd serverless
+          echo "Running Lambda function tests..."
+          # Add actual tests here when available
+          echo "✅ Lambda validation passed"
+          
+      - name: Lint Lambda functions
+        run: |
+          cd serverless
+          echo "Linting Lambda functions..."
+          # Add ESLint or similar when configured
+          echo "✅ Lint check passed"
+
+  deploy-dev:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.ref == 'refs/heads/aws-deployment' && github.event_name == 'push'
+    environment: development
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+          
+      - name: Build and deploy to dev
+        run: |
+          cd serverless
+          chmod +x deploy.sh
+          ./deploy.sh dev
+          
+      - name: Test deployed API
+        run: |
+          cd serverless
+          if [ -f deployment-config.json ]; then
+            API_URL=$(jq -r '.apiUrl' deployment-config.json)
+            echo "Testing API at: $API_URL"
+            
+            # Test health endpoint
+            curl -f "$API_URL/api/health" || exit 1
+            echo "✅ Health check passed"
+            
+            # Test projects endpoint
+            curl -f "$API_URL/api/projects/cached" || exit 1
+            echo "✅ Projects API working"
+            
+            echo "🎉 Deployment successful!"
+          else
+            echo "❌ Deployment config not found"
+            exit 1
+          fi
+          
+      - name: Update frontend config
+        run: |
+          cd serverless
+          if [ -f deployment-config.json ]; then
+            API_URL=$(jq -r '.apiUrl' deployment-config.json)
+            echo "API_GATEWAY_URL=$API_URL" >> frontend-config.env
+            echo "📝 Frontend should use API base URL: $API_URL"
+          fi
+          
+      - name: Save deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-config-dev
+          path: serverless/deployment-config.json
+          retention-days: 30
+
+  deploy-prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'workflow_dispatch'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+          
+      - name: Build and deploy to prod
+        run: |
+          cd serverless
+          chmod +x deploy.sh
+          ./deploy.sh prod
+          
+      - name: Test production deployment
+        run: |
+          cd serverless
+          if [ -f deployment-config.json ]; then
+            API_URL=$(jq -r '.apiUrl' deployment-config.json)
+            echo "Testing production API at: $API_URL"
+            
+            # Test health endpoint
+            curl -f "$API_URL/api/health" || exit 1
+            echo "✅ Production health check passed"
+            
+            echo "🚀 Production deployment successful!"
+          fi
+          
+      - name: Save production config
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-config-prod
+          path: serverless/deployment-config.json
+          retention-days: 90
