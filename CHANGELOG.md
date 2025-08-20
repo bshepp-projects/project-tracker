@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.3] - 2025-08-20
+
+### Added
+- **⚡ Industry-Standard Caching**: Fast project loading with persistent cache
+  - CacheManager class for centralized cache operations
+  - File-based cache persistence (projects-cache.json)
+  - Background scanning with immediate cached results
+  - Cache invalidation on directory changes
+  - `/api/projects/cached` endpoint for instant response
+
+### Fixed
+- **🐛 Display Bug**: Fixed undefined `displayProjects()` function call
+- **🌍 Path Handling**: Improved cross-platform path support in WSL
+  - Windows path to WSL path conversion (C:\ → /mnt/c/)
+  - Tilde expansion for home directory paths
+  - Support for both backslash and forward slash formats
+
+### Changed
+- **📈 Performance**: Projects now load instantly from cache (<100ms)
+- **🔄 Background Updates**: Scans run in background while showing cached data
+
 ## [1.5.2] - 2025-08-18
 
 ### Added
@@ -448,4 +469,4 @@ All changes should be documented in this changelog following the format:
 
 ---
 
-*Last updated: August 9, 2025*
+*Last updated: August 20, 2025*
