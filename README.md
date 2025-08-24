@@ -61,12 +61,30 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## 🚀 Quick Start
 
-### Requirements
-- Any modern web browser
-- Node.js 16+ (for backend API)
-- Local file system access
+Project Tracker offers two deployment options:
 
-### Installation & Setup
+### 🏠 Local Development (Recommended for personal use)
+```bash
+git clone https://github.com/bshepp-projects/project-tracker.git
+cd project-tracker
+./setup.sh
+cd server && npm start
+# Open project-tracker.html in your browser
+```
+
+### ⚡ AWS Serverless (Recommended for teams/production)
+```bash
+git clone https://github.com/bshepp-projects/project-tracker.git
+cd project-tracker/serverless
+./deploy.sh dev
+# Follow deployment guide for frontend configuration
+```
+
+## 📚 Full Deployment Instructions
+
+**👉 See [DEPLOYMENT.md](DEPLOYMENT.md) for complete setup instructions for both local and AWS deployments.**
+
+### Quick Local Setup
 
 #### Option 1: With Backend API (Recommended)
 

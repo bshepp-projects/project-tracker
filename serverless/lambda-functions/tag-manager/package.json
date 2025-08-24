@@ -1,0 +1,12 @@
+{
+  "name": "project-tracker-tag-manager",
+  "version": "2.0.0",
+  "description": "Tag management for Project Tracker",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1691.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
