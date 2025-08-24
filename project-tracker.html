@@ -986,6 +986,19 @@
                 align-items: stretch;
             }
         }
+        
+        /* Fix for HTML validation - replace inline styles */
+        .tag-instruction {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .changes-summary {
+            flex: 1;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -1114,7 +1127,7 @@
 
                     <div class="directory-section">
                         <h3>Project Tag Assignment</h3>
-                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
+                        <p class="tag-instruction">
                             Select projects and assign/remove tags. Click on tags to toggle selection.
                         </p>
                         <div id="projectTagAssignment">
@@ -1123,7 +1136,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div style="flex: 1; color: var(--text-secondary); font-size: 14px;" id="changesSummary">
+                    <div class="changes-summary" id="changesSummary">
                         No unsaved changes
                     </div>
                     <button type="button" onclick="saveTagChanges()" class="finish-btn">💾 Save All Changes</button>
