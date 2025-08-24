@@ -1,0 +1,75 @@
+# Serverless .gitignore
+# AWS SAM and Lambda-specific files
+
+# ===========================
+# SAM Build Artifacts
+# ===========================
+.aws-sam/
+samconfig.toml
+packaged-template.yaml
+template-output.yaml
+
+# ===========================
+# Lambda Deployment Packages
+# ===========================
+*.zip
+deployment-package.zip
+lambda-deployment-*.zip
+
+# ===========================
+# Lambda Function Dependencies
+# ===========================
+lambda-functions/*/node_modules/
+lambda-functions/*/package-lock.json
+lambda-functions/*/yarn.lock
+lambda-functions/*/.env
+lambda-functions/*/.env.*
+
+# ===========================
+# AWS Configuration
+# ===========================
+.aws/
+aws-exports.js
+.aws-credentials
+aws-config.json
+
+# ===========================
+# Serverless Framework
+# ===========================
+.serverless/
+.env.yml
+serverless.yml.bak
+
+# ===========================
+# Environment Files
+# ===========================
+.env
+.env.*
+env.json
+environment.json
+
+# ===========================
+# Build and Cache Files
+# ===========================
+.cache/
+build/
+dist/
+out/
+
+# ===========================
+# Logs and Temporary Files
+# ===========================
+*.log
+logs/
+tmp/
+temp/
+.tmp/
+
+# ===========================
+# IDE Files
+# ===========================
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+Thumbs.db

@@ -1,0 +1,138 @@
+# Project Tracker .agentignore
+# Files and directories that AI agents should ignore
+
+# ===========================
+# Dependencies and Binaries
+# ===========================
+node_modules/
+venv/
+.venv/
+env/
+ENV/
+
+# ===========================
+# Cache and Generated Files
+# ===========================
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+.nyc_output/
+coverage/
+server/projects-cache.json
+projects-cache.json
+*.log
+
+# ===========================
+# Build and Distribution
+# ===========================
+dist/
+build/
+out/
+.aws-sam/
+*.zip
+packaged-template.yaml
+
+# ===========================
+# IDE and Editor Files
+# ===========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# ===========================
+# System Files
+# ===========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.lnk
+
+# ===========================
+# Secrets and Credentials
+# ===========================
+.env
+.env.*
+*.pem
+*.key
+*.cert
+secrets/
+.aws-credentials
+aws-config.json
+
+# ===========================
+# Large Media Files
+# ===========================
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+*.gif
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.tiff
+*.ico
+*.svg
+
+# ===========================
+# Archive and Backup Files
+# ===========================
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.bak
+*.backup
+*.orig
+archive/
+backups/
+
+# ===========================
+# Documentation Drafts
+# ===========================
+DRAFT_*.md
+TODO_PRIVATE.md
+NOTES_*.md
+scratch/
+temp/
+tmp/
+
+# ===========================
+# Testing and Development
+# ===========================
+test-output/
+e2e-results/
+benchmark-results/
+profile/
+*.prof
+
+# ===========================
+# Version Control
+# ===========================
+.git/
+.gitignore
+.gitattributes
+
+# ===========================
+# Package Manager Files
+# ===========================
+package-lock.json
+yarn.lock
+poetry.lock
+Pipfile.lock
+requirements.txt
+
+# ===========================
+# Cloud and Deployment
+# ===========================
+.serverless/
+terraform.tfstate
+terraform.tfstate.*
+.terraform/
+samconfig.toml

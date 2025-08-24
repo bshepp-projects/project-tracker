@@ -1,0 +1,92 @@
+# AWS SAM .samignore
+# Files to exclude from SAM build and deployment
+
+# ===========================
+# Development Files
+# ===========================
+README.md
+*.md
+docs/
+examples/
+.vscode/
+.idea/
+
+# ===========================
+# Testing Files
+# ===========================
+tests/
+test/
+spec/
+__tests__/
+*.test.js
+*.spec.js
+*.test.json
+*.spec.json
+
+# ===========================
+# Git and Version Control
+# ===========================
+.git/
+.gitignore
+.gitattributes
+
+# ===========================
+# Node.js Development
+# ===========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+.npm
+.yarn/
+
+# ===========================
+# Python Development
+# ===========================
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.pytest_cache/
+
+# ===========================
+# Build Artifacts
+# ===========================
+.aws-sam/
+*.zip
+deployment-package.zip
+packaged-template.yaml
+
+# ===========================
+# Environment and Config
+# ===========================
+.env
+.env.*
+config.local.json
+*.local
+
+# ===========================
+# IDE and Editor Files
+# ===========================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ===========================
+# Logs and Cache
+# ===========================
+*.log
+.cache/
+temp/
+tmp/
+.tmp/
+
+# ===========================
+# Source Maps and Build Tools
+# ===========================
+*.map
+.eslintrc*
+.prettier*
+webpack.config.js
+rollup.config.js
