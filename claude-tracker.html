@@ -784,12 +784,15 @@
         }
 
         .action-btn {
-            padding: 6px 12px;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.8em;
             transition: background 0.2s;
+            height: 32px;
+            min-width: 100px;
+            box-sizing: border-box;
         }
 
         .open-folder {
@@ -824,6 +827,28 @@
         }
         .claude-btn:hover {
             background: #45a049;
+        }
+        
+        .yolo-btn {
+            background: #f44336;
+            color: white;
+        }
+        .yolo-btn:hover {
+            background: #d32f2f;
+        }
+        
+        .refresh-btn {
+            background: #17a2b8;
+            color: white;
+            width: 100px;
+            min-width: 100px;
+        }
+        .refresh-btn:hover {
+            background: #138496;
+        }
+        .refresh-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
         }
         
         .github-btn {
@@ -1455,19 +1480,19 @@
                     <div class="project-info">
                         <div class="info-item">
                             <div class="info-label">Status</div>
-                            <div class="info-value">${project.status}</div>
+                            <div class="info-value" title="Project development status (Production, Development, or Research)">${project.status}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Project Type</div>
-                            <div class="info-value">${project.projectType}</div>
+                            <div class="info-value" title="Project category and type based on detected files and Claude configuration">${project.projectType}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">CI/CD</div>
-                            <div class="info-value">${getCICDStatus(project)}</div>
+                            <div class="info-value" title="${getCICDStatus(project).tooltip}">${getCICDStatus(project).text}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Sync</div>
-                            <div class="info-value">${getSyncStatus(project)}</div>
+                            <div class="info-value" title="${getSyncStatus(project).tooltip}">${getSyncStatus(project).text}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Commit</div>
@@ -1480,12 +1505,14 @@
                     </div>
                     
                     <div class="project-actions">
-                        <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
-                        ${project.hasClaudeFile ? `<button class="action-btn view-readme" onclick="viewClaudeFile('${project.path}')">📄 CLAUDE.md</button>` : ''}
-                        <button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🚀 Launch Claude</button>
-                        ${project.isGitHub ? `<button class="action-btn github-btn" onclick="openGitHub('${project.gitHubUrl}')">🔗 GitHub</button>` : ''}
-                        ${project.hasClaudeDir ? `<button class="action-btn settings-btn" onclick="viewClaudeSettings('${project.path}')">⚙️ Settings</button>` : ''}
-                        <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
+                        <button class="action-btn refresh-btn" onclick="refreshProject('${project.path}')" title="Refresh this Claude project's data from filesystem">🔄 Refresh</button>
+                        <button class="action-btn open-folder" onclick="openFolder('${project.path}')" title="Open project directory in file explorer">📁 Open</button>
+                        ${project.hasClaudeFile ? `<button class="action-btn view-readme" onclick="viewClaudeFile('${project.path}')" title="View CLAUDE.md configuration file">📄 CLAUDE.md</button>` : ''}
+                        <button class="action-btn claude-btn" onclick="launchClaude('${project.path}')" title="Launch Claude in this project directory with virtual environment">🚀 Launch Claude</button>
+                        <button class="action-btn yolo-btn" onclick="launchClaudeYOLO('${project.path}')" title="Launch Claude with --dangerously-skip-permissions flag">💀 YOLO</button>
+                        ${project.isGitHub ? `<button class="action-btn github-btn" onclick="openGitHub('${project.gitHubUrl}')" title="Open GitHub repository in browser">🔗 GitHub</button>` : ''}
+                        ${project.hasClaudeDir ? `<button class="action-btn settings-btn" onclick="viewClaudeSettings('${project.path}')" title="View Claude project settings and configuration">⚙️ Settings</button>` : ''}
+                        <button class="action-btn copy-path" onclick="copyPath('${project.path}')" title="Copy full project path to clipboard">📋 Copy</button>
                         <button class="action-btn ignore-btn" onclick="ignoreDirectory('${project.path}')" title="Remove this directory from scan list">🚫 Ignore</button>
                     </div>
                 </div>
@@ -1622,62 +1649,72 @@
         function getCICDStatus(project) {
             // Check if project has GitHub Actions CI/CD info
             if (!project.githubActions) {
-                return '➖ N/A';
+                return { text: '➖ N/A', tooltip: 'No CI/CD pipeline detected or not a GitHub repository' };
             }
             
             const actions = project.githubActions;
             
             // Check for in-progress runs
             if (actions.inProgress) {
-                return '🔄 Running';
+                return { text: '🔄 Running', tooltip: 'CI/CD pipeline is currently running' };
             }
             
             // Check conclusion of last run
             if (actions.conclusion === 'success') {
-                return '✅ Passing';
+                return { text: '✅ Passing', tooltip: 'Latest CI/CD pipeline run completed successfully' };
             } else if (actions.conclusion === 'failure') {
                 // Show failure count if multiple recent failures
                 if (actions.recentFailures > 1) {
-                    return `❌ Failing (${actions.recentFailures})`;
+                    return { 
+                        text: `❌ Failing (${actions.recentFailures})`, 
+                        tooltip: `CI/CD pipeline failing - ${actions.recentFailures} recent failures` 
+                    };
                 }
-                return '❌ Failing';
+                return { text: '❌ Failing', tooltip: 'Latest CI/CD pipeline run failed' };
             } else if (actions.conclusion === 'cancelled') {
-                return '⚠️ Cancelled';
+                return { text: '⚠️ Cancelled', tooltip: 'Latest CI/CD pipeline run was cancelled' };
             }
             
-            return '❓ Unknown';
+            return { text: '❓ Unknown', tooltip: 'Unable to determine CI/CD pipeline status' };
         }
         
         function getSyncStatus(project) {
             // Check if project has local vs remote sync info
             if (!project.localVsRemote) {
-                return '➖ Local';
+                return { text: '➖ Local', tooltip: 'Local repository only (no remote configured)' };
             }
             
             const sync = project.localVsRemote;
             
             // Check sync status
             if (sync.isSynced) {
-                return '✅ Synced';
+                return { text: '✅ Synced', tooltip: 'Local repository is fully synchronized with remote' };
             }
             
             // Build status string with specific issues
             const parts = [];
+            const tooltipParts = [];
             if (sync.unpushedCommits > 0) {
                 parts.push(`↑${sync.unpushedCommits}`);
+                tooltipParts.push(`${sync.unpushedCommits} unpushed commits`);
             }
             if (sync.unmergedCommits > 0) {
                 parts.push(`↓${sync.unmergedCommits}`);
+                tooltipParts.push(`${sync.unmergedCommits} unmerged commits from remote`);
             }
             if (sync.hasUncommittedChanges) {
                 parts.push('📝');
+                tooltipParts.push('uncommitted local changes');
             }
             
             if (parts.length > 0) {
-                return `⚠️ ${parts.join(' ')}`;
+                return { 
+                    text: `⚠️ ${parts.join(' ')}`, 
+                    tooltip: `Repository out of sync: ${tooltipParts.join(', ')}`
+                };
             }
             
-            return '❓ Unknown';
+            return { text: '❓ Unknown', tooltip: 'Unable to determine sync status' };
         }
         
         function openGitHub(gitHubUrl) {
@@ -1708,7 +1745,7 @@
         function launchClaude(path) {
             // For now, show a notification with the command
             // In the future, this will integrate with a backend service
-            const command = `cd "${path}" && claude --continue`;
+            const command = `cd "${path}" && source venv/bin/activate && claude`;
             
             const button = event.target;
             const originalText = button.textContent;
@@ -1731,6 +1768,75 @@
                     button.style.background = '#4CAF50';
                 }, 2000);
             });
+        }
+
+        function launchClaudeYOLO(path) {
+            const command = `cd "${path}" && source venv/bin/activate && claude --dangerously-skip-permissions`;
+
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '💀 YOLO...';
+            button.style.background = '#d32f2f';
+
+            navigator.clipboard.writeText(command).then(() => {
+                setTimeout(() => {
+                    button.textContent = '📋 Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#f44336';
+                    }, 1500);
+                }, 500);
+            }).catch(() => {
+                alert(`Command copied to clipboard: ${command}`);
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#f44336';
+                }, 2000);
+            });
+        }
+
+        function refreshProject(path) {
+            const button = event.target;
+            const originalText = button.textContent;
+            const originalWidth = button.offsetWidth;
+            
+            // Set fixed width to prevent layout jumping
+            button.style.width = originalWidth + 'px';
+            button.textContent = '🔄 Refreshing...';
+            button.style.background = '#2196F3';
+            button.disabled = true;
+
+            // Call API to refresh just this project
+            fetch(`${API_BASE_URL}/claude/projects?path=${encodeURIComponent(path)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update just this project in the global array
+                    const projectIndex = projects.findIndex(p => p.path === path);
+                    if (projectIndex !== -1 && data.length > 0) {
+                        projects[projectIndex] = data[0];
+                        filterProjects(); // Re-render to show updated data
+                    }
+                    
+                    setTimeout(() => {
+                        button.textContent = '✅ Updated!';
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.background = '#17a2b8';
+                            button.style.width = ''; // Remove fixed width
+                            button.disabled = false;
+                        }, 1500);
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error refreshing project:', error);
+                    button.textContent = '❌ Error';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#17a2b8';
+                        button.style.width = ''; // Remove fixed width
+                        button.disabled = false;
+                    }, 2000);
+                });
         }
 
         function viewClaudeFile(projectPath) {

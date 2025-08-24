@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.4] - 2025-08-23
+
+### Added
+- **🔄 Individual Project Refresh Buttons**: Each project card now has its own refresh button
+  - Refresh single projects without affecting others
+  - Visual feedback with smooth state transitions
+  - API integration for targeted project updates
+  - Available across Project Tracker, Claude Tracker, and Git Tracker
+
+- **💀 YOLO Button for Claude Projects**: Added dangerous permissions bypass option
+  - New YOLO button alongside regular Claude button
+  - Executes `claude --dangerously-skip-permissions` command
+  - Red styling to indicate danger level
+  - Available on projects with Claude integration
+
+- **💬 Comprehensive Tooltip System**: Added helpful tooltips throughout the interface
+  - Button tooltips explaining each action
+  - Status indicator tooltips for sync, CI/CD, and project info
+  - Detailed explanations for cryptic symbols and icons
+  - Hover-triggered white popup boxes with clear descriptions
+
+### Enhanced
+- **⚡ Smooth Button Transitions**: Eliminated jarring layout shifts during button state changes
+  - Fixed-width transitions prevent button jumping
+  - Smooth CSS animations with 0.3s easing
+  - Width locking during text changes
+  - Professional-looking state transitions
+
+- **🏷️ Refined Button Labels**: Shortened button text for better UI density
+  - "Open Folder" → "Open"
+  - "Launch Claude" → "Claude"  
+  - "Activate Venv" → "Venv"
+  - "Claude YOLO" → "YOLO"
+  - Maintained tooltips for full context
+
+### Fixed
+- **📐 Button Consistency**: Standardized button heights and spacing
+  - All action buttons now 32px height
+  - Consistent min-width and padding
+  - Uniform styling across all three tracker interfaces
+  - Better visual alignment and professional appearance
+
 ## [1.5.3] - 2025-08-20
 
 ### Added

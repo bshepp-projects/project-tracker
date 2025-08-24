@@ -252,4 +252,8 @@ scratch/
 archive/
 exports/
 backups/
-*.archiveserver/projects-cache.json
+*.archive
+
+# Project cache files  
+server/projects-cache.json
+projects-cache.json
