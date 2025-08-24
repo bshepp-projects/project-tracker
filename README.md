@@ -1,4 +1,4 @@
-# Project Tracker
+# Project Tracker - Testing CI/CD
 
 A local web-based tool to help developers track and organize their projects across multiple directories.
 
