@@ -36,6 +36,9 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 - **🌍 Cross-Platform Path Support**: Universal directory path compatibility for Windows, Linux, and macOS with automatic path normalization
 - **📊 Multi-Tab Interface**: Project Tracker, Claude Tracker, and Git Tracker in unified navigation
 - **🏷️ Comprehensive Tag System**: 19 tag categories with smart auto-detection and individual project saves
+- **🔄 Individual Project Refresh**: Each project card has its own refresh button for targeted updates
+- **💀 YOLO Mode**: Dangerous permissions bypass button for Claude projects (--dangerously-skip-permissions)
+- **💬 Comprehensive Tooltips**: Helpful explanations for all buttons, status indicators, and UI elements
 
 ### Project Information Displayed
 - Project name and description

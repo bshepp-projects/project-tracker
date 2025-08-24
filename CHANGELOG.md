@@ -34,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Cleaned up duplicate Claude settings files with name conflicts
   - Prevented future accidental commits of cache/log files
 
+- **🔄 UI Improvements Recovery**: Restored UI enhancements from git history
+  - Recovered individual refresh buttons for each project card
+  - Restored YOLO mode (💀) for Claude projects with --dangerously-skip-permissions
+  - Rebuilt comprehensive tooltip system for all buttons and status indicators
+  - Maintained enhanced transitions and professional styling
+
 ### Security
 - **🛡️ Enhanced Security**: Comprehensive protection against credential exposure
   - AWS credentials and configuration files
