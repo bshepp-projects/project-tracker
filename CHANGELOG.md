@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2025-08-24
+
+### 🧹 Project Cleanup & Infrastructure Improvements
+
+### Added
+- **📁 Comprehensive Ignore File System**: Complete audit and creation of ignore files
+  - `.agentignore`: Optimized for AI agents (Claude Code) to ignore large files, dependencies, secrets
+  - `serverless/.gitignore`: SAM artifacts, Lambda packages, AWS configurations
+  - `serverless/.samignore`: Deployment exclusions for SAM packaging
+  - Lambda function `.gitignore` files: Individual dependency management for each function
+
+### Enhanced
+- **🔧 .gitignore Improvements**: Added AWS/serverless patterns and server runtime files
+  - AWS and serverless deployment artifacts (`.aws-sam/`, `samconfig.toml`, etc.)
+  - Server runtime files (`projects-cache.json`, `server.log`, `directories.json`)
+  - Updated package-lock.json handling for CI/CD compatibility
+
+- **🐳 .dockerignore Optimization**: Comprehensive container build exclusions
+  - Organized sections for development, documentation, and deployment files
+  - Better performance for Docker builds by excluding unnecessary files
+
+### Fixed
+- **🗑️ Runtime File Cleanup**: Removed auto-generated cache files from git tracking
+  - Removed `server/projects-cache.json` from version control
+  - Cleaned up duplicate Claude settings files with name conflicts
+  - Prevented future accidental commits of cache/log files
+
+### Security
+- **🛡️ Enhanced Security**: Comprehensive protection against credential exposure
+  - AWS credentials and configuration files
+  - Environment variables and secrets
+  - API keys and certificates
+
 ## [1.6.0] - 2025-08-24
 
 ### 🎯 Major Release: Complete Serverless Architecture & CI/CD Fixes

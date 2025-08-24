@@ -14,7 +14,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## ✨ Features
 
-### Current Features (v1.5.3)
+### Current Features (v1.6.1)
 - **📊 Project Dashboard**: Visual overview of all projects with statistics
 - **🔍 Dynamic Project Scanning**: Real-time project discovery from your filesystem
 - **🤖 Intelligent Auto-Detection**: Automatic detection of CLAUDE.md, virtual environments, and README files
@@ -214,18 +214,52 @@ Example of what it can track:
 
 ```
 project-tracker/
-├── project-tracker.html          # Main Project Tracker application
-├── claude-tracker.html           # Claude project tracking interface
-├── git-tracker.html              # Git repository status dashboard
-├── server/                       # Backend API service
-│   ├── server.js                # Express server with GitAnalyzer, ClaudeAnalyzer, ProjectAnalyzer
-│   ├── package.json             # Backend dependencies
-│   ├── directories.json         # Persistent directory configuration
-│   └── node_modules/            # Backend node modules
-├── README.md                     # This file
-├── FUTURE_IMPROVEMENTS.md        # Roadmap and planned features
-├── CHANGELOG.md                  # Version history
-└── favicon.svg                   # Custom favicon
+├── 📄 Frontend Files
+│   ├── project-tracker.html          # Main Project Tracker application
+│   ├── claude-tracker.html           # Claude project tracking interface  
+│   ├── git-tracker.html              # Git repository status dashboard
+│   ├── favicon.svg                   # Custom favicon
+│   └── favicon-32x32.png             # Favicon PNG format
+│
+├── 🖥️ Backend API Service
+│   └── server/
+│       ├── server.js              # Express server with GitAnalyzer, ClaudeAnalyzer, ProjectAnalyzer
+│       ├── package.json           # Backend dependencies (v1.6.0)
+│       ├── package-lock.json      # Dependency lock file
+│       └── directories.json       # Persistent directory configuration (runtime)
+│
+├── ⚡ AWS Serverless Architecture
+│   └── serverless/
+│       ├── template.yaml          # SAM CloudFormation template
+│       ├── deploy.sh              # Deployment script
+│       ├── update-frontend.js     # Frontend API configuration
+│       └── lambda-functions/      # Lambda function source code
+│           ├── project-scanner/   # Filesystem scanning function
+│           ├── claude-analyzer/   # Claude project analysis
+│           ├── config-manager/    # Configuration management
+│           ├── tag-manager/       # Tag operations
+│           ├── health-check/      # System health monitoring
+│           └── git-analyzer/      # Git repository analysis
+│
+├── ⚙️ CI/CD & Configuration
+│   ├── .github/workflows/ci.yml   # GitHub Actions CI/CD pipeline
+│   ├── .gitignore                 # Git ignore patterns
+│   ├── .dockerignore             # Docker build exclusions
+│   ├── .agentignore              # AI agent ignore patterns
+│   └── setup.sh                  # Quick setup script
+│
+├── 📚 Documentation
+│   ├── README.md                  # This file
+│   ├── DEPLOYMENT.md              # Local & AWS deployment guide
+│   ├── CHANGELOG.md               # Version history
+│   ├── CONTRIBUTING.md            # Contribution guidelines
+│   ├── FUTURE_IMPROVEMENTS.md     # Roadmap and planned features
+│   └── CLAUDE.md                  # Claude Code integration guide
+│
+└── 📋 Project Management
+    ├── LICENSE                    # Open source license
+    ├── .env.example              # Environment variables template
+    └── .claude/                   # Claude Code configuration
 ```
 
 ## 🔧 Customization
