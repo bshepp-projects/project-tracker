@@ -750,12 +750,29 @@
         }
 
         .action-btn {
-            padding: 6px 12px;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.8em;
             transition: background 0.2s;
+            height: 32px;
+            min-width: 100px;
+            box-sizing: border-box;
+        }
+
+        .refresh-btn {
+            background: #17a2b8;
+            color: white;
+            width: 100px;
+            min-width: 100px;
+        }
+        .refresh-btn:hover {
+            background: #138496;
+        }
+        .refresh-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
         }
 
         .open-github {
@@ -1058,11 +1075,12 @@
                     </div>
                     
                     <div class="repo-actions">
-                        <button class="action-btn open-github" onclick="openFolder('${repo.path}')">📁 Open</button>
-                        ${repo.isGitHub ? `<button class="action-btn open-github" onclick="openGitHub('${repo.remoteUrl}')">🔗 GitHub</button>` : ''}
-                        <button class="action-btn fetch-btn" onclick="gitFetch('${repo.path}')">📥 Fetch</button>
-                        ${repo.aheadCount > 0 ? `<button class="action-btn push-btn" onclick="gitPush('${repo.path}')">📤 Push</button>` : ''}
-                        ${repo.behindCount > 0 ? `<button class="action-btn pull-btn" onclick="gitPull('${repo.path}')">📥 Pull</button>` : ''}
+                        <button class="action-btn refresh-btn" onclick="refreshRepo('${repo.path}')" title="Refresh this repository's git status and information">🔄 Refresh</button>
+                        <button class="action-btn open-github" onclick="openFolder('${repo.path}')" title="Open repository directory in file explorer">📁 Open</button>
+                        ${repo.isGitHub ? `<button class="action-btn open-github" onclick="openGitHub('${repo.remoteUrl}')" title="Open GitHub repository in browser">🔗 GitHub</button>` : ''}
+                        <button class="action-btn fetch-btn" onclick="gitFetch('${repo.path}')" title="Copy 'git fetch' command to clipboard">📥 Fetch</button>
+                        ${repo.aheadCount > 0 ? `<button class="action-btn push-btn" onclick="gitPush('${repo.path}')" title="Copy 'git push' command to clipboard">📤 Push</button>` : ''}
+                        ${repo.behindCount > 0 ? `<button class="action-btn pull-btn" onclick="gitPull('${repo.path}')" title="Copy 'git pull' command to clipboard">📥 Pull</button>` : ''}
                     </div>
                 </div>
             `;
@@ -1296,6 +1314,50 @@
                     showNotification('🔗 GitHub URL copied to clipboard', 'success');
                 });
             }
+        }
+
+        function refreshRepo(path) {
+            const button = event.target;
+            const originalText = button.textContent;
+            const originalWidth = button.offsetWidth;
+            
+            // Set fixed width to prevent layout jumping
+            button.style.width = originalWidth + 'px';
+            button.textContent = '🔄 Refreshing...';
+            button.style.background = '#2196F3';
+            button.disabled = true;
+
+            // Call API to refresh just this repository
+            fetch(`${API_BASE_URL}/git/repos?path=${encodeURIComponent(path)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update just this repo in the global array
+                    const repoIndex = repositories.findIndex(r => r.path === path);
+                    if (repoIndex !== -1 && data.length > 0) {
+                        repositories[repoIndex] = data[0];
+                        filterRepositories(); // Re-render to show updated data
+                    }
+                    
+                    setTimeout(() => {
+                        button.textContent = '✅ Updated!';
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.background = '#17a2b8';
+                            button.style.width = ''; // Remove fixed width
+                            button.disabled = false;
+                        }, 1500);
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error refreshing repository:', error);
+                    button.textContent = '❌ Error';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#17a2b8';
+                        button.style.width = ''; // Remove fixed width
+                        button.disabled = false;
+                    }, 2000);
+                });
         }
 
         function gitFetch(path) {

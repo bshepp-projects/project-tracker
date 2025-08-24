@@ -249,16 +249,6 @@
             background: var(--card-bg);
             border-radius: 0 0 12px 12px;
         }
-        .tag-assignment-help {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        .changes-summary {
-            flex: 1;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
         .finish-btn {
             background: #4CAF50;
             color: white;
@@ -700,12 +690,15 @@
         }
 
         .action-btn {
-            padding: 6px 12px;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.8em;
             transition: background 0.2s;
+            height: 32px;
+            min-width: 100px;
+            box-sizing: border-box;
         }
 
         .open-folder {
@@ -740,6 +733,28 @@
         }
         .claude-btn:hover {
             background: #45a049;
+        }
+        
+        .yolo-btn {
+            background: #f44336;
+            color: white;
+        }
+        .yolo-btn:hover {
+            background: #d32f2f;
+        }
+        
+        .refresh-btn {
+            background: #17a2b8;
+            color: white;
+            width: 100px;
+            min-width: 100px;
+        }
+        .refresh-btn:hover {
+            background: #138496;
+        }
+        .refresh-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
         }
         
         .github-btn {
@@ -1099,7 +1114,7 @@
 
                     <div class="directory-section">
                         <h3>Project Tag Assignment</h3>
-                        <p class="tag-assignment-help">
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
                             Select projects and assign/remove tags. Click on tags to toggle selection.
                         </p>
                         <div id="projectTagAssignment">
@@ -1108,7 +1123,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="changes-summary" id="changesSummary">
+                    <div style="flex: 1; color: var(--text-secondary); font-size: 14px;" id="changesSummary">
                         No unsaved changes
                     </div>
                     <button type="button" onclick="saveTagChanges()" class="finish-btn">💾 Save All Changes</button>
@@ -1511,23 +1526,23 @@
                     <div class="project-info">
                         <div class="info-item">
                             <div class="info-label">Status</div>
-                            <div class="info-value">${project.status}</div>
+                            <div class="info-value" title="Project development status (Production, Development, or Research)">${project.status}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Category</div>
-                            <div class="info-value">${project.category}</div>
+                            <div class="info-value" title="Project category based on detected files and structure">${project.category}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Technologies</div>
-                            <div class="info-value">${project.technologies}</div>
+                            <div class="info-value" title="Programming languages and technologies detected in this project">${project.technologies}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">README</div>
-                            <div class="info-value">${project.hasReadme ? '✅ Yes' : '❌ No'}</div>
+                            <div class="info-label">CI/CD</div>
+                            <div class="info-value" title="${getCICDStatus(project).tooltip}">${getCICDStatus(project).text}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">CLAUDE.md</div>
-                            <div class="info-value">${project.hasClaude === true ? '🤖 Yes' : (project.hasClaude === false ? '❌ No' : '❓ Unknown')}</div>
+                            <div class="info-label">Sync</div>
+                            <div class="info-value" title="${getSyncStatus(project).tooltip}">${getSyncStatus(project).text}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Commit</div>
@@ -1536,12 +1551,14 @@
                     </div>
 
                     <div class="project-actions">
-                        <button class="action-btn open-folder" onclick="openFolder('${project.path}')">📁 Open</button>
-                        ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')">📄 README</button>` : ''}
-                        ${project.hasClaude === true ? `<button class="action-btn claude-btn" onclick="launchClaude('${project.path}')">🤖 Claude</button>` : ''}
-                        ${project.isGitHub ? `<button class="action-btn github-btn" onclick="openGitHub('${project.gitHubUrl}')">🔗 GitHub</button>` : ''}
-                        ${project.hasVenv === true ? `<button class="action-btn venv-btn" onclick="activateVenv('${project.path}')">🐍 Activate</button>` : ''}
-                        <button class="action-btn copy-path" onclick="copyPath('${project.path}')">📋 Copy</button>
+                        <button class="action-btn refresh-btn" onclick="refreshProject('${project.path}')" title="Refresh this project's data from filesystem">🔄 Refresh</button>
+                        <button class="action-btn open-folder" onclick="openFolder('${project.path}')" title="Open project directory in file explorer">📁 Open</button>
+                        ${project.hasReadme ? `<button class="action-btn view-readme" onclick="viewReadme('${project.path}')" title="View project README file">📄 README</button>` : ''}
+                        ${project.hasClaude === true ? `<button class="action-btn claude-btn" onclick="launchClaude('${project.path}')" title="Launch Claude in this project directory with virtual environment">🤖 Claude</button>` : ''}
+                        ${project.hasClaude === true ? `<button class="action-btn yolo-btn" onclick="launchClaudeYOLO('${project.path}')" title="Launch Claude with --dangerously-skip-permissions flag">💀 YOLO</button>` : ''}
+                        ${project.isGitHub ? `<button class="action-btn github-btn" onclick="openGitHub('${project.gitHubUrl}')" title="Open GitHub repository in browser">🔗 GitHub</button>` : ''}
+                        ${project.hasVenv === true ? `<button class="action-btn venv-btn" onclick="activateVenv('${project.path}')" title="Copy virtual environment activation command to clipboard">🐍 Venv</button>` : ''}
+                        <button class="action-btn copy-path" onclick="copyPath('${project.path}')" title="Copy full project path to clipboard">📋 Copy</button>
                         <button class="action-btn ignore-btn" onclick="ignoreDirectory('${project.path}')" title="Remove this project from tracker">🚫 Remove</button>
                     </div>
                 </div>
@@ -1698,6 +1715,77 @@
             copyToClipboard(readmePath, 'README path copied to clipboard! Open in your editor.');
         }
 
+        function getCICDStatus(project) {
+            // Check if project has GitHub Actions CI/CD info
+            if (!project.githubActions) {
+                return { text: '➖ N/A', tooltip: 'No CI/CD pipeline detected or not a GitHub repository' };
+            }
+            
+            const actions = project.githubActions;
+            
+            // Check for in-progress runs
+            if (actions.inProgress) {
+                return { text: '🔄 Running', tooltip: 'CI/CD pipeline is currently running' };
+            }
+            
+            // Check conclusion of last run
+            if (actions.conclusion === 'success') {
+                return { text: '✅ Passing', tooltip: 'Latest CI/CD pipeline run completed successfully' };
+            } else if (actions.conclusion === 'failure') {
+                // Show failure count if multiple recent failures
+                if (actions.recentFailures > 1) {
+                    return { 
+                        text: `❌ Failing (${actions.recentFailures})`, 
+                        tooltip: `CI/CD pipeline failing - ${actions.recentFailures} recent failures` 
+                    };
+                }
+                return { text: '❌ Failing', tooltip: 'Latest CI/CD pipeline run failed' };
+            } else if (actions.conclusion === 'cancelled') {
+                return { text: '⚠️ Cancelled', tooltip: 'Latest CI/CD pipeline run was cancelled' };
+            }
+            
+            return { text: '❓ Unknown', tooltip: 'Unable to determine CI/CD pipeline status' };
+        }
+        
+        function getSyncStatus(project) {
+            // Check if project has local vs remote sync info
+            if (!project.localVsRemote) {
+                return { text: '➖ Local', tooltip: 'Local repository only (no remote configured)' };
+            }
+            
+            const sync = project.localVsRemote;
+            
+            // Check sync status
+            if (sync.isSynced) {
+                return { text: '✅ Synced', tooltip: 'Local repository is fully synchronized with remote' };
+            }
+            
+            // Build status string with specific issues
+            const parts = [];
+            const tooltipParts = [];
+            if (sync.unpushedCommits > 0) {
+                parts.push(`↑${sync.unpushedCommits}`);
+                tooltipParts.push(`${sync.unpushedCommits} unpushed commits`);
+            }
+            if (sync.unmergedCommits > 0) {
+                parts.push(`↓${sync.unmergedCommits}`);
+                tooltipParts.push(`${sync.unmergedCommits} unmerged commits from remote`);
+            }
+            if (sync.hasUncommittedChanges) {
+                parts.push('📝');
+                tooltipParts.push('uncommitted local changes');
+            }
+            
+            if (parts.length > 0) {
+                return { 
+                    text: `⚠️ ${parts.join(' ')}`, 
+                    tooltip: `Repository out of sync: ${tooltipParts.join(', ')}`
+                };
+            }
+            
+            return { text: '❓ Unknown', tooltip: 'Unable to determine sync status' };
+        }
+        
         function openGitHub(gitHubUrl) {
             if (gitHubUrl) {
                 window.open(gitHubUrl, '_blank');
@@ -1726,7 +1814,7 @@
         function launchClaude(path) {
             // For now, show a notification with the command
             // In the future, this will integrate with a backend service
-            const command = `cd "${path}" && claude --continue`;
+            const command = `cd "${path}" && source venv/bin/activate && claude`;
 
             const button = event.target;
             const originalText = button.textContent;
@@ -1751,7 +1839,74 @@
             });
         }
 
+        function launchClaudeYOLO(path) {
+            const command = `cd "${path}" && source venv/bin/activate && claude --dangerously-skip-permissions`;
 
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '💀 YOLO...';
+            button.style.background = '#d32f2f';
+
+            navigator.clipboard.writeText(command).then(() => {
+                setTimeout(() => {
+                    button.textContent = '📋 Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#f44336';
+                    }, 1500);
+                }, 500);
+            }).catch(() => {
+                alert(`Command copied to clipboard: ${command}`);
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#f44336';
+                }, 2000);
+            });
+        }
+
+        function refreshProject(path) {
+            const button = event.target;
+            const originalText = button.textContent;
+            const originalWidth = button.offsetWidth;
+            
+            // Set fixed width to prevent layout jumping
+            button.style.width = originalWidth + 'px';
+            button.textContent = '🔄 Refreshing...';
+            button.style.background = '#2196F3';
+            button.disabled = true;
+
+            // Call API to refresh just this project
+            fetch(`${API_BASE_URL}/projects?path=${encodeURIComponent(path)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update just this project in the global array
+                    const projectIndex = projects.findIndex(p => p.path === path);
+                    if (projectIndex !== -1 && data.length > 0) {
+                        projects[projectIndex] = data[0];
+                        filterProjects(); // Re-render to show updated data
+                    }
+                    
+                    setTimeout(() => {
+                        button.textContent = '✅ Updated!';
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.background = '#17a2b8';
+                            button.style.width = ''; // Remove fixed width
+                            button.disabled = false;
+                        }, 1500);
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error refreshing project:', error);
+                    button.textContent = '❌ Error';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '#17a2b8';
+                        button.style.width = ''; // Remove fixed width
+                        button.disabled = false;
+                    }, 2000);
+                });
+        }
 
         function activateVenv(path) {
             // For now, show the activation command
