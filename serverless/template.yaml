@@ -1,0 +1,287 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Project Tracker - Serverless Architecture'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, prod]
+    Description: Environment name
+  
+  DomainName:
+    Type: String
+    Default: ""
+    Description: Custom domain name for API (optional)
+
+Globals:
+  Function:
+    Runtime: nodejs18.x
+    Timeout: 30
+    MemorySize: 512
+    Environment:
+      Variables:
+        ENVIRONMENT: !Ref Environment
+        PROJECTS_TABLE: !Ref ProjectsTable
+        CONFIG_TABLE: !Ref ConfigTable
+        TAGS_TABLE: !Ref TagsTable
+
+Resources:
+  # DynamoDB Tables
+  ProjectsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'project-tracker-projects-${Environment}'
+      AttributeDefinitions:
+        - AttributeName: projectPath
+          AttributeType: S
+      KeySchema:
+        - AttributeName: projectPath
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: ProjectTracker
+        - Key: Environment
+          Value: !Ref Environment
+
+  ConfigTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'project-tracker-config-${Environment}'
+      AttributeDefinitions:
+        - AttributeName: configKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: configKey
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: Application
+          Value: ProjectTracker
+        - Key: Environment
+          Value: !Ref Environment
+
+  TagsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'project-tracker-tags-${Environment}'
+      AttributeDefinitions:
+        - AttributeName: tagName
+          AttributeType: S
+        - AttributeName: projectPath
+          AttributeType: S
+      KeySchema:
+        - AttributeName: tagName
+          KeyType: HASH
+        - AttributeName: projectPath
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: Application
+          Value: ProjectTracker
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Lambda Functions
+  ProjectScannerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'project-tracker-scanner-${Environment}'
+      CodeUri: lambda-functions/project-scanner/
+      Handler: index.handler
+      MemorySize: 1024
+      Timeout: 60
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ProjectsTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref ProjectsTable
+      Events:
+        ProjectsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/projects
+            Method: get
+        CachedProjectsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/projects/cached
+            Method: get
+
+  ClaudeAnalyzerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'project-tracker-claude-${Environment}'
+      CodeUri: lambda-functions/claude-analyzer/
+      Handler: index.handler
+      MemorySize: 512
+      Timeout: 30
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ProjectsTable
+      Events:
+        ClaudeProjectsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/claude/projects
+            Method: get
+
+  GitAnalyzerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'project-tracker-git-${Environment}'
+      CodeUri: lambda-functions/git-analyzer/
+      Handler: index.handler
+      MemorySize: 512
+      Timeout: 45
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ProjectsTable
+      Events:
+        GitReposApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/git/repos
+            Method: get
+
+  ConfigManagerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'project-tracker-config-${Environment}'
+      CodeUri: lambda-functions/config-manager/
+      Handler: index.handler
+      MemorySize: 256
+      Timeout: 15
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConfigTable
+      Events:
+        ConfigGetApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/config
+            Method: get
+        DirectoriesPostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/directories
+            Method: post
+        DirectoriesDeleteApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/directories
+            Method: delete
+        DirectoriesPutApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/directories
+            Method: put
+
+  TagManagerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'project-tracker-tags-${Environment}'
+      CodeUri: lambda-functions/tag-manager/
+      Handler: index.handler
+      MemorySize: 256
+      Timeout: 15
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TagsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ProjectsTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref ProjectsTable
+      Events:
+        TagsGetApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/tags
+            Method: get
+        ProjectTagsPostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/project-tags
+            Method: post
+        TagsDeleteApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/tags/{tagName}
+            Method: delete
+
+  HealthCheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'project-tracker-health-${Environment}'
+      CodeUri: lambda-functions/health-check/
+      Handler: index.handler
+      MemorySize: 128
+      Timeout: 5
+      Events:
+        HealthApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /api/health
+            Method: get
+
+  # API Gateway
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub 'project-tracker-api-${Environment}'
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+      CacheClusterEnabled: true
+      CacheClusterSize: '0.5'
+      MethodSettings:
+        - ResourcePath: '/api/projects'
+          HttpMethod: GET
+          CachingEnabled: true
+          CacheTtlInSeconds: 300
+        - ResourcePath: '/api/projects/cached'
+          HttpMethod: GET
+          CachingEnabled: true
+          CacheTtlInSeconds: 300
+        - ResourcePath: '/api/claude/projects'
+          HttpMethod: GET
+          CachingEnabled: true
+          CacheTtlInSeconds: 300
+
+Outputs:
+  ApiGatewayUrl:
+    Description: 'API Gateway endpoint URL'
+    Value: !Sub 'https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiUrl'
+  
+  ProjectsTableName:
+    Description: 'DynamoDB Projects Table Name'
+    Value: !Ref ProjectsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-ProjectsTable'
+      
+  Region:
+    Description: 'AWS Region'
+    Value: !Ref AWS::Region
+    Export:
+      Name: !Sub '${AWS::StackName}-Region'

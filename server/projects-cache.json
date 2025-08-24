@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "timestamp": 1756061860662,
+  "timestamp": 1756068328948,
   "projects": [
     {
       "name": "project-tracker",
@@ -20,29 +20,29 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/bshepp-projects/project-tracker",
-      "lastCommitDate": "5 days ago",
+      "lastCommitDate": "70 seconds ago",
       "githubActions": {
         "status": "completed",
-        "conclusion": "failure",
+        "conclusion": "success",
         "workflowName": "CI",
         "lastRun": "Today",
-        "recentFailures": 4,
+        "recentFailures": 2,
         "totalRuns": 5,
         "inProgress": false,
         "branch": "develop"
       },
       "localVsRemote": {
-        "unpushedCommits": 0,
+        "unpushedCommits": 3,
         "unmergedCommits": 0,
-        "hasUncommittedChanges": true,
+        "hasUncommittedChanges": false,
         "isSynced": false,
-        "needsPush": false,
+        "needsPush": true,
         "needsPull": false,
-        "statusSummary": "uncommitted changes"
+        "statusSummary": "3 unpushed"
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:12.281Z"
+      "dateScanned": "2025-08-24T20:43:06.500Z"
     },
     {
       "name": "fundo-matic",
@@ -75,14 +75,14 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:19.124Z"
+      "dateScanned": "2025-08-24T20:43:08.749Z"
     },
     {
       "name": "archive_family",
       "path": "/mnt/f/archive_family",
       "description": "archive_family",
       "status": "Development",
-      "technologies": "TypeScript, JavaScript, CSS, HTML, React, Python, Node.js",
+      "technologies": "TypeScript, JavaScript, CSS, React, HTML, Python, Node.js",
       "category": "Web Application",
       "tags": [
         "development",
@@ -100,7 +100,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:19.717Z"
+      "dateScanned": "2025-08-24T20:43:09.019Z"
     },
     {
       "name": "quantum-art",
@@ -134,7 +134,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:21.955Z"
+      "dateScanned": "2025-08-24T20:43:10.969Z"
     },
     {
       "name": "q-art",
@@ -154,7 +154,7 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/bshepp-projects/qartist",
-      "lastCommitDate": "6 days ago",
+      "lastCommitDate": "7 days ago",
       "githubActions": {
         "status": "completed",
         "conclusion": "success",
@@ -176,7 +176,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:25.173Z"
+      "dateScanned": "2025-08-24T20:43:14.075Z"
     },
     {
       "name": "q-art-web",
@@ -219,7 +219,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:28.060Z"
+      "dateScanned": "2025-08-24T20:43:16.466Z"
     },
     {
       "name": "every-haiku",
@@ -253,7 +253,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:30.295Z"
+      "dateScanned": "2025-08-24T20:43:18.855Z"
     },
     {
       "name": "curator",
@@ -285,7 +285,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:32.433Z"
+      "dateScanned": "2025-08-24T20:43:21.329Z"
     },
     {
       "name": "sphere",
@@ -317,7 +317,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:34.425Z"
+      "dateScanned": "2025-08-24T20:43:23.374Z"
     },
     {
       "name": "biofield-memory-research",
@@ -336,7 +336,7 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/bshepp/mneme",
-      "lastCommitDate": "6 days ago",
+      "lastCommitDate": "7 days ago",
       "githubActions": {
         "status": "completed",
         "conclusion": "success",
@@ -358,7 +358,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:37.078Z"
+      "dateScanned": "2025-08-24T20:43:25.802Z"
     },
     {
       "name": "digital-sanctuary-design",
@@ -400,7 +400,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:39.689Z"
+      "dateScanned": "2025-08-24T20:43:28.362Z"
     },
     {
       "name": "entropy-garden",
@@ -433,7 +433,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:41.715Z"
+      "dateScanned": "2025-08-24T20:43:30.266Z"
     },
     {
       "name": "n-morphicfields",
@@ -465,7 +465,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:43.992Z"
+      "dateScanned": "2025-08-24T20:43:32.299Z"
     },
     {
       "name": "p_functions",
@@ -497,7 +497,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:45.625Z"
+      "dateScanned": "2025-08-24T20:43:33.664Z"
     },
     {
       "name": "s_want",
@@ -530,7 +530,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:50.455Z"
+      "dateScanned": "2025-08-24T20:43:38.576Z"
     },
     {
       "name": "sentience_analysis",
@@ -556,7 +556,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:50.720Z"
+      "dateScanned": "2025-08-24T20:43:38.813Z"
     },
     {
       "name": "the-singing-connection",
@@ -597,7 +597,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:53.196Z"
+      "dateScanned": "2025-08-24T20:43:41.376Z"
     },
     {
       "name": "darkforestlabs.com",
@@ -639,7 +639,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:55.817Z"
+      "dateScanned": "2025-08-24T20:43:43.914Z"
     },
     {
       "name": "lemurlex.com",
@@ -673,7 +673,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:55:58.521Z"
+      "dateScanned": "2025-08-24T20:43:46.045Z"
     },
     {
       "name": "nohcaptcha",
@@ -715,7 +715,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:01.481Z"
+      "dateScanned": "2025-08-24T20:43:49.879Z"
     },
     {
       "name": "nohcaptcha-frontend",
@@ -759,7 +759,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:04.184Z"
+      "dateScanned": "2025-08-24T20:43:52.799Z"
     },
     {
       "name": "qstudio-backend",
@@ -778,7 +778,7 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/darkforest-labs/qstudio-api",
-      "lastCommitDate": "12 hours ago",
+      "lastCommitDate": "14 hours ago",
       "githubActions": {
         "status": "completed",
         "conclusion": "skipped",
@@ -800,7 +800,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:08.355Z"
+      "dateScanned": "2025-08-24T20:43:57.030Z"
     },
     {
       "name": "qstudio-website",
@@ -820,7 +820,7 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/darkforest-labs/qstudio",
-      "lastCommitDate": "13 hours ago",
+      "lastCommitDate": "15 hours ago",
       "githubActions": {
         "status": "completed",
         "conclusion": "success",
@@ -842,7 +842,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:11.212Z"
+      "dateScanned": "2025-08-24T20:43:59.354Z"
     },
     {
       "name": "agent_swarm",
@@ -865,7 +865,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:11.525Z"
+      "dateScanned": "2025-08-24T20:43:59.525Z"
     },
     {
       "name": "ai-agency-context-research",
@@ -897,7 +897,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:13.910Z"
+      "dateScanned": "2025-08-24T20:44:01.688Z"
     },
     {
       "name": "anthropic_claude_code_expert",
@@ -922,7 +922,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:14.210Z"
+      "dateScanned": "2025-08-24T20:44:01.959Z"
     },
     {
       "name": "architecture",
@@ -945,7 +945,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:14.219Z"
+      "dateScanned": "2025-08-24T20:44:01.969Z"
     },
     {
       "name": "atlas-cognitive-architecture",
@@ -964,7 +964,7 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/bshepp/atlas-cognitive-architecture",
-      "lastCommitDate": "26 minutes ago",
+      "lastCommitDate": "2 hours ago",
       "githubActions": null,
       "localVsRemote": {
         "unpushedCommits": 1,
@@ -977,7 +977,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:19.649Z"
+      "dateScanned": "2025-08-24T20:44:06.110Z"
     },
     {
       "name": "cognitive_architecture_template",
@@ -1009,7 +1009,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:25.174Z"
+      "dateScanned": "2025-08-24T20:44:11.243Z"
     },
     {
       "name": "entity-dashboard",
@@ -1033,7 +1033,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:25.182Z"
+      "dateScanned": "2025-08-24T20:44:11.249Z"
     },
     {
       "name": "historian-entity",
@@ -1064,7 +1064,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:29.494Z"
+      "dateScanned": "2025-08-24T20:44:15.619Z"
     },
     {
       "name": "integration_guidelines",
@@ -1094,7 +1094,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:31.294Z"
+      "dateScanned": "2025-08-24T20:44:17.548Z"
     },
     {
       "name": "midwife",
@@ -1116,7 +1116,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:31.297Z"
+      "dateScanned": "2025-08-24T20:44:17.551Z"
     },
     {
       "name": "nn_and_kg",
@@ -1147,7 +1147,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:33.279Z"
+      "dateScanned": "2025-08-24T20:44:19.711Z"
     },
     {
       "name": "rpsf-platform",
@@ -1178,7 +1178,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:35.308Z"
+      "dateScanned": "2025-08-24T20:44:21.447Z"
     },
     {
       "name": "voice_of_ensemble",
@@ -1218,7 +1218,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:38.930Z"
+      "dateScanned": "2025-08-24T20:44:25.285Z"
     },
     {
       "name": "runoff",
@@ -1261,7 +1261,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:41.980Z"
+      "dateScanned": "2025-08-24T20:44:28.169Z"
     },
     {
       "name": "analogue_AI",
@@ -1285,7 +1285,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:41.992Z"
+      "dateScanned": "2025-08-24T20:44:28.180Z"
     },
     {
       "name": "ndimension-ai",
@@ -1317,7 +1317,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:44.117Z"
+      "dateScanned": "2025-08-24T20:44:30.439Z"
     },
     {
       "name": "quantum_ai",
@@ -1343,7 +1343,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:44.374Z"
+      "dateScanned": "2025-08-24T20:44:30.691Z"
     },
     {
       "name": "sense-guard",
@@ -1375,7 +1375,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:46.465Z"
+      "dateScanned": "2025-08-24T20:44:33.288Z"
     },
     {
       "name": "tiny-ml-game",
@@ -1410,7 +1410,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:48.784Z"
+      "dateScanned": "2025-08-24T20:44:35.305Z"
     },
     {
       "name": "knowledge_connector",
@@ -1452,7 +1452,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:55.598Z"
+      "dateScanned": "2025-08-24T20:44:39.335Z"
     },
     {
       "name": "llm_coq_pipeline",
@@ -1485,7 +1485,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:56:58.038Z"
+      "dateScanned": "2025-08-24T20:44:44.151Z"
     },
     {
       "name": "photon_web_reality",
@@ -1529,7 +1529,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:01.308Z"
+      "dateScanned": "2025-08-24T20:44:47.082Z"
     },
     {
       "name": "prover-automatique",
@@ -1571,7 +1571,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:04.110Z"
+      "dateScanned": "2025-08-24T20:44:50.211Z"
     },
     {
       "name": "qsim",
@@ -1597,7 +1597,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:04.192Z"
+      "dateScanned": "2025-08-24T20:44:50.295Z"
     },
     {
       "name": "raisr-master-kepler-images",
@@ -1639,7 +1639,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:06.488Z"
+      "dateScanned": "2025-08-24T20:44:53.386Z"
     },
     {
       "name": "topological_robotics",
@@ -1663,7 +1663,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:06.499Z"
+      "dateScanned": "2025-08-24T20:44:53.402Z"
     },
     {
       "name": "data_retreival",
@@ -1705,7 +1705,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:09.251Z"
+      "dateScanned": "2025-08-24T20:44:57.214Z"
     },
     {
       "name": "repo_analyzer_agent",
@@ -1729,7 +1729,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:09.642Z"
+      "dateScanned": "2025-08-24T20:44:57.504Z"
     },
     {
       "name": "ruins-finder",
@@ -1754,7 +1754,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:10.080Z"
+      "dateScanned": "2025-08-24T20:44:57.849Z"
     },
     {
       "name": "shop_AI_assist",
@@ -1787,7 +1787,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:12.449Z"
+      "dateScanned": "2025-08-24T20:45:00.014Z"
     },
     {
       "name": "thing-counter",
@@ -1828,7 +1828,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:15.268Z"
+      "dateScanned": "2025-08-24T20:45:02.554Z"
     },
     {
       "name": "games-ai",
@@ -1852,7 +1852,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:15.764Z"
+      "dateScanned": "2025-08-24T20:45:02.929Z"
     },
     {
       "name": "icecube-neutrinos-in-deep-ice",
@@ -1885,7 +1885,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:17.732Z"
+      "dateScanned": "2025-08-24T20:45:04.839Z"
     },
     {
       "name": "2014_CS102",
@@ -1905,29 +1905,29 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/bshepp/2014_CS102",
-      "lastCommitDate": "12 hours ago",
+      "lastCommitDate": "33 minutes ago",
       "githubActions": {
         "status": "completed",
-        "conclusion": "failure",
+        "conclusion": "success",
         "workflowName": "🐳 Docker Image CI",
         "lastRun": "Today",
         "recentFailures": 2,
         "totalRuns": 5,
         "inProgress": false,
-        "branch": "develop"
+        "branch": "main"
       },
       "localVsRemote": {
         "unpushedCommits": 0,
         "unmergedCommits": 0,
-        "hasUncommittedChanges": true,
-        "isSynced": false,
+        "hasUncommittedChanges": false,
+        "isSynced": true,
         "needsPush": false,
         "needsPull": false,
-        "statusSummary": "uncommitted changes"
+        "statusSummary": "Synced"
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:28.305Z"
+      "dateScanned": "2025-08-24T20:45:12.188Z"
     },
     {
       "name": "scout",
@@ -1945,7 +1945,7 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/bshepp/scout-ai-assistant",
-      "lastCommitDate": "6 days ago",
+      "lastCommitDate": "7 days ago",
       "githubActions": null,
       "localVsRemote": {
         "unpushedCommits": 0,
@@ -1958,7 +1958,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:30.675Z"
+      "dateScanned": "2025-08-24T20:45:17.012Z"
     },
     {
       "name": "cal_storm_water",
@@ -2000,7 +2000,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:33.258Z"
+      "dateScanned": "2025-08-24T20:45:19.702Z"
     },
     {
       "name": "na-gpt",
@@ -2033,7 +2033,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:35.772Z"
+      "dateScanned": "2025-08-24T20:45:22.149Z"
     },
     {
       "name": "alarm-clock-ai",
@@ -2064,7 +2064,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:37.882Z"
+      "dateScanned": "2025-08-24T20:45:24.262Z"
     },
     {
       "name": "cascade",
@@ -2083,7 +2083,7 @@
       "hasVenv": true,
       "isGitHub": true,
       "gitHubUrl": "https://github.com/darkforest-labs/cascade",
-      "lastCommitDate": "10 days ago",
+      "lastCommitDate": "11 days ago",
       "githubActions": null,
       "localVsRemote": {
         "unpushedCommits": 0,
@@ -2096,7 +2096,7 @@
       },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:40.194Z"
+      "dateScanned": "2025-08-24T20:45:26.327Z"
     },
     {
       "name": "external-reality-validation",
@@ -2118,7 +2118,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:40.196Z"
+      "dateScanned": "2025-08-24T20:45:26.330Z"
     },
     {
       "name": "research-continuity-system",
@@ -2142,7 +2142,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:40.199Z"
+      "dateScanned": "2025-08-24T20:45:26.333Z"
     },
     {
       "name": "skeptical-technical-auditor",
@@ -2164,7 +2164,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:40.203Z"
+      "dateScanned": "2025-08-24T20:45:26.336Z"
     },
     {
       "name": "the-insane",
@@ -2186,7 +2186,7 @@
       "localVsRemote": null,
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:40.206Z"
+      "dateScanned": "2025-08-24T20:45:26.339Z"
     },
     {
       "name": "voice-mcp-server",
@@ -2203,14 +2203,31 @@
       "hasReadme": true,
       "hasClaude": true,
       "hasVenv": true,
-      "isGitHub": false,
-      "gitHubUrl": null,
-      "lastCommitDate": null,
-      "githubActions": null,
-      "localVsRemote": null,
+      "isGitHub": true,
+      "gitHubUrl": "https://github.com/bshepp-projects/voice-mcp-server",
+      "lastCommitDate": "33 minutes ago",
+      "githubActions": {
+        "status": "completed",
+        "conclusion": "failure",
+        "workflowName": "CI",
+        "lastRun": "Today",
+        "recentFailures": 4,
+        "totalRuns": 5,
+        "inProgress": false,
+        "branch": "main"
+      },
+      "localVsRemote": {
+        "unpushedCommits": 0,
+        "unmergedCommits": 0,
+        "hasUncommittedChanges": false,
+        "isSynced": true,
+        "needsPush": false,
+        "needsPull": false,
+        "statusSummary": "Synced"
+      },
       "lastUpdated": "2025",
       "isScanned": true,
-      "dateScanned": "2025-08-24T18:57:40.662Z"
+      "dateScanned": "2025-08-24T20:45:28.948Z"
     }
   ],
   "claudeProjects": [],
