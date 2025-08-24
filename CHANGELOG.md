@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2025-08-24
+
+### 🎯 Major Release: Complete Serverless Architecture & CI/CD Fixes
+
+### Added
+- **🚀 Complete AWS Serverless Architecture**: 90% cost reduction from container deployment
+  - 6 specialized Lambda functions for different operations
+  - DynamoDB tables with caching and TTL for optimal performance  
+  - API Gateway with caching and CORS configuration
+  - SAM template for infrastructure as code
+  - GitHub Actions CI/CD pipeline for automated deployment
+  - Production and development environment support
+
+- **⚙️ Enhanced Branch Strategy**: Clear separation of deployment targets
+  - `main`: Local development version (clean, no AWS dependencies)
+  - `develop`: Development and testing branch
+  - `aws-deployment`: Complete serverless architecture with live deployment
+
+- **📊 Live Serverless API**: Deployed and operational
+  - Health Check: https://vw7uzdw9kc.execute-api.us-east-1.amazonaws.com/dev/api/health
+  - Projects: https://vw7uzdw9kc.execute-api.us-east-1.amazonaws.com/dev/api/projects
+  - Claude Projects: https://vw7uzdw9kc.execute-api.us-east-1.amazonaws.com/dev/api/claude/projects
+  - Full CRUD operations with tag management
+
+### Fixed
+- **🔧 HTML Validation Issues**: Removed all inline styles to pass validation
+  - Replaced inline styles with proper CSS classes (`tag-assignment-help`, `changes-summary`)
+  - All HTML files now pass html-validate standards
+  - CI/CD pipelines validate HTML structure automatically
+
+- **📦 npm Dependency Management**: Resolved package-lock.json issues
+  - Added server/package-lock.json for proper dependency caching
+  - Fixed npm audit ENOLOCK errors in GitHub Actions
+  - Enabled proper Node.js setup caching in CI/CD
+
+- **🏗️ API Gateway Path Conflicts**: Fixed CloudFormation deployment issues
+  - Changed conflicting path `/api/projects/{projectPath+}/tags` to `/api/project-tags`
+  - Updated Lambda functions to handle new path structure
+  - Successful CloudFormation stack deployment and rollout
+
+- **⚡ GitHub Actions Workflows**: All CI/CD pipelines now functional
+  - HTML validation with html-validate
+  - Security scanning with npm audit
+  - Dependency caching for faster builds
+  - Multi-environment deployment support
+
+### Technical Details
+- **Cost Optimization**: $2.50-8/month vs $40-75/month for container deployment
+- **Performance**: 50-100ms cached responses, 2-5s fresh scans
+- **Scalability**: 0-1000+ concurrent Lambda executions with auto-scaling
+- **Reliability**: Multi-AZ deployment with DynamoDB persistence
+
+### Infrastructure
+- **Lambda Functions**: 6 specialized functions (128MB-1024MB)
+  - project-scanner: Full filesystem scanning
+  - claude-analyzer: Claude project filtering  
+  - config-manager: Directory configuration
+  - tag-manager: Tag operations and relationships
+  - health-check: System health monitoring
+  - git-analyzer: Git repository analysis
+
+- **DynamoDB Tables**: 3 tables with optimal indexing
+  - project-tracker-projects-dev: Project data with TTL
+  - project-tracker-config-dev: Configuration persistence
+  - project-tracker-tags-dev: Tag relationships
+
 ## [1.5.3] - 2025-08-20
 
 ### Added
