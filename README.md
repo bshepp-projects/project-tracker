@@ -14,7 +14,7 @@ Project Tracker solves these problems by providing a centralized, visual interfa
 
 ## ✨ Features
 
-### Current Features (v1.6.1)
+### Current Features (v1.6.2)
 - **📊 Project Dashboard**: Visual overview of all projects with statistics
 - **🔍 Dynamic Project Scanning**: Real-time project discovery from your filesystem
 - **🤖 Intelligent Auto-Detection**: Automatic detection of CLAUDE.md, virtual environments, and README files
