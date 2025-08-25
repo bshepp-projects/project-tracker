@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.2] - 2025-08-24
+
+### 🔧 HTML Validation & CI/CD Fixes
+
+### Fixed
+- **✅ GitHub Actions CI/CD Pipeline**: Resolved HTML validation failures
+  - Removed final inline styles from tag management modal
+  - Replaced `style` attributes with proper CSS classes (`tag-assignment-help`, `changes-summary`)
+  - All HTML files now pass html-validate standards completely
+  - GitHub Actions workflows now pass all validation tests
+
+### Technical
+- Updated server package version to v1.6.2
+- Complete elimination of inline styles across all HTML files
+- Enhanced CI/CD reliability with consistent HTML validation
+
 ## [1.6.1] - 2025-08-24
 
 ### 🧹 Project Cleanup & Infrastructure Improvements

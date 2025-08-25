@@ -5,7 +5,7 @@ This document outlines planned enhancements and future development ideas for the
 
 ## Recently Completed
 
-### ✅ Favorites System (v1.6.1) 
+### ✅ Favorites System (v1.6.2) 
 **Status**: COMPLETED 2025-08-17
 - [x] Star icon in upper right corner of project cards (☆ empty, ★ filled gold)
 - [x] Click to toggle favorite status with instant visual feedback
