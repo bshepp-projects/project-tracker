@@ -687,6 +687,7 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .action-btn {
@@ -695,10 +696,18 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.8em;
+            font-weight: 500;
             transition: background 0.2s;
             height: 32px;
-            min-width: 100px;
+            min-width: 80px;
+            max-width: 120px;
             box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
 
         .open-folder {
@@ -746,8 +755,6 @@
         .refresh-btn {
             background: #17a2b8;
             color: white;
-            width: 100px;
-            min-width: 100px;
         }
         .refresh-btn:hover {
             background: #138496;
@@ -1724,27 +1731,32 @@
             const actions = project.githubActions;
             
             // Check for in-progress runs
-            if (actions.inProgress) {
-                return { text: '🔄 Running', tooltip: 'CI/CD pipeline is currently running' };
+            if (actions.status === 'in_progress' || actions.status === 'queued') {
+                return { text: '🔄 Running', tooltip: `CI/CD pipeline "${actions.workflowName}" is currently running` };
             }
             
-            // Check conclusion of last run
-            if (actions.conclusion === 'success') {
-                return { text: '✅ Passing', tooltip: 'Latest CI/CD pipeline run completed successfully' };
-            } else if (actions.conclusion === 'failure') {
-                // Show failure count if multiple recent failures
-                if (actions.recentFailures > 1) {
-                    return { 
-                        text: `❌ Failing (${actions.recentFailures})`, 
-                        tooltip: `CI/CD pipeline failing - ${actions.recentFailures} recent failures` 
-                    };
-                }
-                return { text: '❌ Failing', tooltip: 'Latest CI/CD pipeline run failed' };
-            } else if (actions.conclusion === 'cancelled') {
-                return { text: '⚠️ Cancelled', tooltip: 'Latest CI/CD pipeline run was cancelled' };
+            // Check status of last run
+            if (actions.status === 'success') {
+                return { 
+                    text: '✅ Passing', 
+                    tooltip: `Latest "${actions.workflowName}" pipeline completed successfully (${actions.lastRun})` 
+                };
+            } else if (actions.status === 'failure') {
+                return { 
+                    text: '❌ Failing', 
+                    tooltip: `Latest "${actions.workflowName}" pipeline failed (${actions.lastRun})` 
+                };
+            } else if (actions.status === 'cancelled') {
+                return { 
+                    text: '⚠️ Cancelled', 
+                    tooltip: `Latest "${actions.workflowName}" pipeline was cancelled (${actions.lastRun})` 
+                };
             }
             
-            return { text: '❓ Unknown', tooltip: 'Unable to determine CI/CD pipeline status' };
+            return { 
+                text: '❓ Unknown', 
+                tooltip: `CI/CD pipeline status unknown for "${actions.workflowName || 'Unknown workflow'}"` 
+            };
         }
         
         function getSyncStatus(project) {
@@ -1755,35 +1767,43 @@
             
             const sync = project.localVsRemote;
             
-            // Check sync status
-            if (sync.isSynced) {
-                return { text: '✅ Synced', tooltip: 'Local repository is fully synchronized with remote' };
+            // Handle "No upstream" case (local branch not tracking remote)
+            if (sync.description === 'No upstream') {
+                return { text: '🔗 No upstream', tooltip: 'Local branch is not tracking any remote branch' };
             }
             
-            // Build status string with specific issues
+            // Build status parts for display
             const parts = [];
             const tooltipParts = [];
-            if (sync.unpushedCommits > 0) {
-                parts.push(`↑${sync.unpushedCommits}`);
-                tooltipParts.push(`${sync.unpushedCommits} unpushed commits`);
+            
+            if (sync.aheadCount > 0) {
+                parts.push(`↑${sync.aheadCount}`);
+                tooltipParts.push(`${sync.aheadCount} unpushed commits`);
             }
-            if (sync.unmergedCommits > 0) {
-                parts.push(`↓${sync.unmergedCommits}`);
-                tooltipParts.push(`${sync.unmergedCommits} unmerged commits from remote`);
+            if (sync.behindCount > 0) {
+                parts.push(`↓${sync.behindCount}`);
+                tooltipParts.push(`${sync.behindCount} commits behind remote`);
             }
             if (sync.hasUncommittedChanges) {
                 parts.push('📝');
                 tooltipParts.push('uncommitted local changes');
             }
             
+            // If there are any issues, show them
             if (parts.length > 0) {
-                return { 
+                return {
                     text: `⚠️ ${parts.join(' ')}`, 
-                    tooltip: `Repository out of sync: ${tooltipParts.join(', ')}`
+                    tooltip: `Repository issues: ${tooltipParts.join(', ')} (${sync.description})`
                 };
             }
             
-            return { text: '❓ Unknown', tooltip: 'Unable to determine sync status' };
+            // If no issues detected, check computed sync status
+            if (sync.isSynced) {
+                return { text: '✅ Synced', tooltip: 'Local repository is fully synchronized with remote' };
+            }
+            
+            // Fallback to unknown if we can't determine status
+            return { text: '❓ Unknown', tooltip: `Unable to determine sync status: ${sync.description || 'Unknown'}` };
         }
         
         function openGitHub(gitHubUrl) {
