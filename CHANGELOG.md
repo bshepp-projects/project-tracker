@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.3] - 2025-08-26
+
+### 🔧 Fixed
+- **Sync Status Detection**: Completely overhauled sync status logic to show accurate repository information
+  - Fixed backend `GitAnalyzer.getBranchStatus()` to include `isSynced` field and compatibility aliases  
+  - Improved frontend `getSyncStatus()` to prioritize specific issues over generic "Unknown" status
+  - Added proper handling for "No upstream" branches
+  - Projects now show accurate sync information instead of confusing "❓ Unknown" status
+
+### ✨ Enhanced  
+- **Claude Tracker Feature Parity**: Added missing features to match main Project Tracker
+  - ⭐ **Favorites System**: Complete favorites functionality with star icons and localStorage persistence
+  - 📊 **Permission Display**: Shows permission count in Claude project info cards
+  - 🔄 **Individual Refresh**: Fixed to properly use Claude API endpoint for accurate project updates
+  - 🎯 **Favorites-First Sorting**: Favorite projects automatically appear at top of lists
+
+### 📚 Documentation
+- **Version Consistency**: Updated README.md and FUTURE_IMPROVEMENTS.md version references from v1.6.0 to v1.6.2
+- **File Size Claims**: Replaced inaccurate "under 50KB" claim with realistic description
+
 ## [1.6.2] - 2025-08-24
 
 ### 🔧 HTML Validation & CI/CD Fixes
