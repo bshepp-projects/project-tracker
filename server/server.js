@@ -317,6 +317,8 @@ class ProjectAnalyzer {
             let gitHubUrl = null;
             let isGitHub = false;
             let lastCommitDate = null;
+            let githubActions = null;
+            let localVsRemote = null;
             try {
                 if (await ProjectAnalyzer.fileExists(gitPath)) {
                     const remoteUrl = await GitAnalyzer.getRemoteUrl(projectPath);
@@ -325,12 +327,27 @@ class ProjectAnalyzer {
                         gitHubUrl = remoteUrl
                             .replace('git@github.com:', 'https://github.com/')
                             .replace('.git', '');
+                        
+                        // Get GitHub Actions CI/CD status
+                        githubActions = await GitAnalyzer.getGitHubActions(projectPath);
                     }
                     // Get last commit date for all git repos
                     const lastCommit = await GitAnalyzer.getLastCommit(projectPath);
                     if (lastCommit && lastCommit.date) {
                         lastCommitDate = lastCommit.date;
                     }
+                    
+                    // Get local vs remote sync status
+                    const workingTreeStatus = await GitAnalyzer.getWorkingTreeStatus(projectPath);
+                    const branchStatus = await GitAnalyzer.getBranchStatus(projectPath);
+                    
+                    localVsRemote = {
+                        isSynced: workingTreeStatus.isClean && branchStatus.isSynced,
+                        hasUncommittedChanges: !workingTreeStatus.isClean,
+                        aheadCount: branchStatus.aheadCount || 0,
+                        behindCount: branchStatus.behindCount || 0,
+                        description: branchStatus.description || 'Unknown status'
+                    };
                 }
             } catch (error) {
                 // Ignore git errors, project just won't have GitHub info
@@ -350,6 +367,8 @@ class ProjectAnalyzer {
                 isGitHub: isGitHub,
                 gitHubUrl: gitHubUrl,
                 lastCommitDate: lastCommitDate,
+                githubActions: githubActions,
+                localVsRemote: localVsRemote,
                 lastUpdated: lastModified,
                 isScanned: true,
                 dateScanned: new Date().toISOString()
@@ -666,7 +685,7 @@ class GitAnalyzer {
                 branchStatus: branchStatus.description,
                 aheadCount: branchStatus.ahead,
                 behindCount: branchStatus.behind,
-                workingTreeClean: workingTreeStatus.clean,
+                workingTreeClean: workingTreeStatus.isClean,
                 uncommittedChanges: workingTreeStatus.modified,
                 untrackedFiles: workingTreeStatus.untracked,
                 totalBranches: totalBranches,
@@ -775,9 +794,26 @@ class GitAnalyzer {
                 }
             }
             
-            return { ahead, behind, description };
+            // Calculate if synced (no commits ahead or behind)
+            const isSynced = ahead === 0 && behind === 0;
+            
+            return { 
+                ahead, 
+                behind, 
+                aheadCount: ahead,    // Add alias for frontend compatibility
+                behindCount: behind,  // Add alias for frontend compatibility
+                isSynced,             // Add computed sync status
+                description 
+            };
         } catch {
-            return { ahead: 0, behind: 0, description: 'Unknown' };
+            return { 
+                ahead: 0, 
+                behind: 0, 
+                aheadCount: 0,
+                behindCount: 0,
+                isSynced: false,
+                description: 'Git command failed' 
+            };
         }
     }
     
@@ -798,12 +834,12 @@ class GitAnalyzer {
             }
             
             return {
-                clean: lines.length === 0,
+                isClean: lines.length === 0,
                 modified: modified,
                 untracked: untracked
             };
         } catch {
-            return { clean: null, modified: 0, untracked: 0 };
+            return { isClean: null, modified: 0, untracked: 0 };
         }
     }
     
