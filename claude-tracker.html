@@ -681,6 +681,32 @@
             padding: 20px;
             background: var(--card-bg);
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .favorite-star {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s ease;
+            user-select: none;
+            border-radius: 50%;
+        }
+
+        .favorite-star:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: scale(1.1);
+        }
+
+        .favorite-star.favorited {
+            color: #FFD700;
+        }
+
+        .favorite-star:not(.favorited) {
+            color: var(--text-secondary);
         }
 
         .project-card:hover {
@@ -1477,6 +1503,9 @@
             
             projectsContainer.innerHTML = filteredProjects.map(project => `
                 <div class="project-card">
+                    <div class="favorite-star ${isFavorite(project.path) ? 'favorited' : ''}" onclick="toggleFavorite('${project.path.replace(/'/g, "\\'"))}'); event.stopPropagation();" title="Add to favorites">
+                        ${isFavorite(project.path) ? '★' : '☆'}
+                    </div>
                     <div class="project-title">🤖 ${project.name}</div>
                     <div class="project-path">${project.path}</div>
                     <div class="project-description">${project.claudeRole || 'Claude-enabled project'}</div>
@@ -1506,6 +1535,10 @@
                         <div class="info-item">
                             <div class="info-label">Last Commit</div>
                             <div class="info-value">${project.lastCommitDate || '❓ Unknown'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Permissions</div>
+                            <div class="info-value" title="Number of Claude permissions configured for this project">${project.permissionCount || 0} permissions</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Activity</div>
@@ -1547,6 +1580,16 @@
                     (currentFilter === 'web' && project.projectType.includes('Web'));
                 
                 return matchesSearch && matchesFilter;
+            }).sort((a, b) => {
+                // Sort favorites to the top
+                const aIsFavorite = isFavorite(a.path);
+                const bIsFavorite = isFavorite(b.path);
+                
+                if (aIsFavorite && !bIsFavorite) return -1;
+                if (!aIsFavorite && bIsFavorite) return 1;
+                
+                // If both are favorites or both are not favorites, sort alphabetically by name
+                return a.name.localeCompare(b.name);
             });
             
             console.log(`After filtering: ${filteredProjects.length} projects match`);
@@ -1598,6 +1641,21 @@
                 tagDiv.addEventListener('click', () => filterByTag(tag));
                 statsContainer.appendChild(tagDiv);
             });
+        }
+
+        function isFavorite(projectPath) {
+            return favorites.includes(projectPath);
+        }
+
+        function toggleFavorite(projectPath) {
+            const index = favorites.indexOf(projectPath);
+            if (index === -1) {
+                favorites.push(projectPath);
+            } else {
+                favorites.splice(index, 1);
+            }
+            localStorage.setItem('claudeProjectFavorites', JSON.stringify(favorites));
+            renderProjects(); // Re-render to update star and sorting
         }
         
         function filterByTag(tag) {
@@ -1820,15 +1878,22 @@
             button.style.background = '#2196F3';
             button.disabled = true;
 
-            // Call API to refresh just this project
-            fetch(`${API_BASE_URL}/claude/projects?path=${encodeURIComponent(path)}`)
+            // For Claude projects, refresh all Claude projects and update the specific one
+            // (Claude API doesn't support single project refresh by path)
+            fetch(`${API_BASE_URL}/claude/projects`)
                 .then(response => response.json())
                 .then(data => {
-                    // Update just this project in the global array
-                    const projectIndex = projects.findIndex(p => p.path === path);
-                    if (projectIndex !== -1 && data.length > 0) {
-                        projects[projectIndex] = data[0];
-                        filterProjects(); // Re-render to show updated data
+                    if (data.projects) {
+                        // Find the updated project in the response
+                        const updatedProject = data.projects.find(p => p.path === path);
+                        if (updatedProject) {
+                            // Update just this project in the global array
+                            const projectIndex = projects.findIndex(p => p.path === path);
+                            if (projectIndex !== -1) {
+                                projects[projectIndex] = updatedProject;
+                                filterProjects(); // Re-render to show updated data
+                            }
+                        }
                     }
                     
                     setTimeout(() => {
@@ -2432,6 +2497,7 @@
         let allTags = new Set();
         let activeTagFilter = null;
         let projectTagChanges = new Map();
+        let favorites = JSON.parse(localStorage.getItem('claudeProjectFavorites') || '[]');
 
         function toggleTagManager() {
             const modal = document.getElementById('tagModal');
