@@ -1,0 +1,67 @@
+{
+    "Stacks": [
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:290318879194:stack/project-tracker-serverless-dev/5ccbc8f0-8119-11f0-9bb2-120a8085b6ed",
+            "StackName": "project-tracker-serverless-dev",
+            "ChangeSetId": "arn:aws:cloudformation:us-east-1:290318879194:changeSet/samcli-deploy1756060637/111ae53c-d23d-44c5-ad35-ebecfdfd02e0",
+            "Description": "Project Tracker - Serverless Architecture",
+            "Parameters": [
+                {
+                    "ParameterKey": "DomainName",
+                    "ParameterValue": ""
+                },
+                {
+                    "ParameterKey": "Environment",
+                    "ParameterValue": "dev"
+                }
+            ],
+            "CreationTime": "2025-08-24T18:37:18.088000+00:00",
+            "LastUpdatedTime": "2025-08-24T18:37:28.970000+00:00",
+            "RollbackConfiguration": {},
+            "StackStatus": "CREATE_COMPLETE",
+            "DisableRollback": false,
+            "NotificationARNs": [],
+            "Capabilities": [
+                "CAPABILITY_IAM"
+            ],
+            "Outputs": [
+                {
+                    "OutputKey": "ApiGatewayUrl",
+                    "OutputValue": "https://vw7uzdw9kc.execute-api.us-east-1.amazonaws.com/dev",
+                    "Description": "API Gateway endpoint URL",
+                    "ExportName": "project-tracker-serverless-dev-ApiUrl"
+                },
+                {
+                    "OutputKey": "ProjectsTableName",
+                    "OutputValue": "project-tracker-projects-dev",
+                    "Description": "DynamoDB Projects Table Name",
+                    "ExportName": "project-tracker-serverless-dev-ProjectsTable"
+                },
+                {
+                    "OutputKey": "Region",
+                    "OutputValue": "us-east-1",
+                    "Description": "AWS Region",
+                    "ExportName": "project-tracker-serverless-dev-Region"
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "ManagedBy",
+                    "Value": "SAM"
+                },
+                {
+                    "Key": "Environment",
+                    "Value": "dev"
+                },
+                {
+                    "Key": "Application",
+                    "Value": "ProjectTracker"
+                }
+            ],
+            "EnableTerminationProtection": false,
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ✨ Added
+- **⬆️ Back to Top Button**: Added back-to-top navigation button in all tracker interfaces
+  - Positioned next to theme toggle in navigation bar with consistent styling
+  - Smooth scrolling animation with hover effects
+  - Available in Project Tracker, Claude Tracker, and Git Tracker HTML files
+  - Enhances navigation experience for long project lists
+
 ## [1.6.3] - 2025-08-26
 
 ### 🔧 Fixed

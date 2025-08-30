@@ -1,0 +1,1913 @@
+{
+    "TemplateBody": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "Project Tracker - Serverless Architecture",
+        "Parameters": {
+            "Environment": {
+                "Type": "String",
+                "Default": "dev",
+                "AllowedValues": [
+                    "dev",
+                    "prod"
+                ],
+                "Description": "Environment name"
+            },
+            "DomainName": {
+                "Type": "String",
+                "Default": "",
+                "Description": "Custom domain name for API (optional)"
+            }
+        },
+        "Outputs": {
+            "ApiGatewayUrl": {
+                "Description": "API Gateway endpoint URL",
+                "Value": {
+                    "Fn::Sub": "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+                },
+                "Export": {
+                    "Name": {
+                        "Fn::Sub": "${AWS::StackName}-ApiUrl"
+                    }
+                }
+            },
+            "ProjectsTableName": {
+                "Description": "DynamoDB Projects Table Name",
+                "Value": {
+                    "Ref": "ProjectsTable"
+                },
+                "Export": {
+                    "Name": {
+                        "Fn::Sub": "${AWS::StackName}-ProjectsTable"
+                    }
+                }
+            },
+            "Region": {
+                "Description": "AWS Region",
+                "Value": {
+                    "Ref": "AWS::Region"
+                },
+                "Export": {
+                    "Name": {
+                        "Fn::Sub": "${AWS::StackName}-Region"
+                    }
+                }
+            }
+        },
+        "Resources": {
+            "ConfigManagerFunctionDirectoriesDeleteApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "ConfigManagerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/DELETE/api/directories",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ConfigManagerFunctionRole": {
+                "Type": "AWS::IAM::Role",
+                "Properties": {
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "sts:AssumeRole"
+                                ],
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [
+                                        "lambda.amazonaws.com"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "ManagedPolicyArns": [
+                        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                    ],
+                    "Policies": [
+                        {
+                            "PolicyName": "ConfigManagerFunctionRolePolicy0",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:GetItem",
+                                            "dynamodb:DeleteItem",
+                                            "dynamodb:PutItem",
+                                            "dynamodb:Scan",
+                                            "dynamodb:Query",
+                                            "dynamodb:UpdateItem",
+                                            "dynamodb:BatchWriteItem",
+                                            "dynamodb:BatchGetItem",
+                                            "dynamodb:DescribeTable",
+                                            "dynamodb:ConditionCheckItem"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ConfigTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ConfigTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "TagManagerFunction": {
+                "Type": "AWS::Lambda::Function",
+                "Metadata": {
+                    "SamResourceId": "TagManagerFunction"
+                },
+                "Properties": {
+                    "Code": {
+                        "S3Bucket": "project-tracker-sam-artifacts-us-east-1",
+                        "S3Key": "d3af6552f0073e300aa5b46764afd251"
+                    },
+                    "FunctionName": {
+                        "Fn::Sub": "project-tracker-tags-${Environment}"
+                    },
+                    "Handler": "index.handler",
+                    "MemorySize": 256,
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "TagManagerFunctionRole",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x",
+                    "Timeout": 15,
+                    "Environment": {
+                        "Variables": {
+                            "ENVIRONMENT": {
+                                "Ref": "Environment"
+                            },
+                            "PROJECTS_TABLE": {
+                                "Ref": "ProjectsTable"
+                            },
+                            "CONFIG_TABLE": {
+                                "Ref": "ConfigTable"
+                            },
+                            "TAGS_TABLE": {
+                                "Ref": "TagsTable"
+                            }
+                        }
+                    },
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "TagsTable": {
+                "Type": "AWS::DynamoDB::Table",
+                "Properties": {
+                    "TableName": {
+                        "Fn::Sub": "project-tracker-tags-${Environment}"
+                    },
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "tagName",
+                            "AttributeType": "S"
+                        },
+                        {
+                            "AttributeName": "projectPath",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "tagName",
+                            "KeyType": "HASH"
+                        },
+                        {
+                            "AttributeName": "projectPath",
+                            "KeyType": "RANGE"
+                        }
+                    ],
+                    "BillingMode": "PAY_PER_REQUEST",
+                    "Tags": [
+                        {
+                            "Key": "Application",
+                            "Value": "ProjectTracker"
+                        },
+                        {
+                            "Key": "Environment",
+                            "Value": {
+                                "Ref": "Environment"
+                            }
+                        }
+                    ]
+                },
+                "Metadata": {
+                    "SamResourceId": "TagsTable"
+                }
+            },
+            "ProjectScannerFunction": {
+                "Type": "AWS::Lambda::Function",
+                "Metadata": {
+                    "SamResourceId": "ProjectScannerFunction"
+                },
+                "Properties": {
+                    "Code": {
+                        "S3Bucket": "project-tracker-sam-artifacts-us-east-1",
+                        "S3Key": "bcf2171a9fc003caf90bc72c3217c833"
+                    },
+                    "FunctionName": {
+                        "Fn::Sub": "project-tracker-scanner-${Environment}"
+                    },
+                    "Handler": "index.handler",
+                    "MemorySize": 1024,
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "ProjectScannerFunctionRole",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x",
+                    "Timeout": 60,
+                    "Environment": {
+                        "Variables": {
+                            "ENVIRONMENT": {
+                                "Ref": "Environment"
+                            },
+                            "PROJECTS_TABLE": {
+                                "Ref": "ProjectsTable"
+                            },
+                            "CONFIG_TABLE": {
+                                "Ref": "ConfigTable"
+                            },
+                            "TAGS_TABLE": {
+                                "Ref": "TagsTable"
+                            }
+                        }
+                    },
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "TagManagerFunctionTagsGetApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "TagManagerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/tags",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ConfigTable": {
+                "Type": "AWS::DynamoDB::Table",
+                "Properties": {
+                    "TableName": {
+                        "Fn::Sub": "project-tracker-config-${Environment}"
+                    },
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "configKey",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "configKey",
+                            "KeyType": "HASH"
+                        }
+                    ],
+                    "BillingMode": "PAY_PER_REQUEST",
+                    "Tags": [
+                        {
+                            "Key": "Application",
+                            "Value": "ProjectTracker"
+                        },
+                        {
+                            "Key": "Environment",
+                            "Value": {
+                                "Ref": "Environment"
+                            }
+                        }
+                    ]
+                },
+                "Metadata": {
+                    "SamResourceId": "ConfigTable"
+                }
+            },
+            "ApiGatewayStage": {
+                "Type": "AWS::ApiGateway::Stage",
+                "Properties": {
+                    "CacheClusterEnabled": true,
+                    "CacheClusterSize": "0.5",
+                    "DeploymentId": {
+                        "Ref": "ApiGatewayDeployment7d47e40912"
+                    },
+                    "RestApiId": {
+                        "Ref": "ApiGateway"
+                    },
+                    "StageName": {
+                        "Ref": "Environment"
+                    },
+                    "MethodSettings": [
+                        {
+                            "HttpMethod": "GET",
+                            "CachingEnabled": true,
+                            "ResourcePath": "/api/projects",
+                            "CacheTtlInSeconds": 300
+                        },
+                        {
+                            "HttpMethod": "GET",
+                            "CachingEnabled": true,
+                            "ResourcePath": "/api/projects/cached",
+                            "CacheTtlInSeconds": 300
+                        },
+                        {
+                            "HttpMethod": "GET",
+                            "CachingEnabled": true,
+                            "ResourcePath": "/api/claude/projects",
+                            "CacheTtlInSeconds": 300
+                        }
+                    ]
+                }
+            },
+            "TagManagerFunctionRole": {
+                "Type": "AWS::IAM::Role",
+                "Properties": {
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "sts:AssumeRole"
+                                ],
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [
+                                        "lambda.amazonaws.com"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "ManagedPolicyArns": [
+                        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                    ],
+                    "Policies": [
+                        {
+                            "PolicyName": "TagManagerFunctionRolePolicy0",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:GetItem",
+                                            "dynamodb:DeleteItem",
+                                            "dynamodb:PutItem",
+                                            "dynamodb:Scan",
+                                            "dynamodb:Query",
+                                            "dynamodb:UpdateItem",
+                                            "dynamodb:BatchWriteItem",
+                                            "dynamodb:BatchGetItem",
+                                            "dynamodb:DescribeTable",
+                                            "dynamodb:ConditionCheckItem"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "TagsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "TagsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "PolicyName": "TagManagerFunctionRolePolicy1",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:GetItem",
+                                            "dynamodb:Scan",
+                                            "dynamodb:Query",
+                                            "dynamodb:BatchGetItem",
+                                            "dynamodb:DescribeTable"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "PolicyName": "TagManagerFunctionRolePolicy2",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:PutItem",
+                                            "dynamodb:UpdateItem",
+                                            "dynamodb:BatchWriteItem"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "ConfigManagerFunctionDirectoriesPutApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "ConfigManagerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/PUT/api/directories",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "GitAnalyzerFunctionGitReposApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "GitAnalyzerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/git/repos",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "HealthCheckFunctionRole": {
+                "Type": "AWS::IAM::Role",
+                "Properties": {
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "sts:AssumeRole"
+                                ],
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [
+                                        "lambda.amazonaws.com"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "ManagedPolicyArns": [
+                        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                    ],
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "ProjectScannerFunctionRole": {
+                "Type": "AWS::IAM::Role",
+                "Properties": {
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "sts:AssumeRole"
+                                ],
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [
+                                        "lambda.amazonaws.com"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "ManagedPolicyArns": [
+                        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                    ],
+                    "Policies": [
+                        {
+                            "PolicyName": "ProjectScannerFunctionRolePolicy0",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:GetItem",
+                                            "dynamodb:Scan",
+                                            "dynamodb:Query",
+                                            "dynamodb:BatchGetItem",
+                                            "dynamodb:DescribeTable"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "PolicyName": "ProjectScannerFunctionRolePolicy1",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:PutItem",
+                                            "dynamodb:UpdateItem",
+                                            "dynamodb:BatchWriteItem"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "ConfigManagerFunctionConfigGetApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "ConfigManagerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/config",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ProjectsTable": {
+                "Type": "AWS::DynamoDB::Table",
+                "Properties": {
+                    "TableName": {
+                        "Fn::Sub": "project-tracker-projects-${Environment}"
+                    },
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "projectPath",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "projectPath",
+                            "KeyType": "HASH"
+                        }
+                    ],
+                    "BillingMode": "PAY_PER_REQUEST",
+                    "TimeToLiveSpecification": {
+                        "AttributeName": "ttl",
+                        "Enabled": true
+                    },
+                    "Tags": [
+                        {
+                            "Key": "Application",
+                            "Value": "ProjectTracker"
+                        },
+                        {
+                            "Key": "Environment",
+                            "Value": {
+                                "Ref": "Environment"
+                            }
+                        }
+                    ]
+                },
+                "Metadata": {
+                    "SamResourceId": "ProjectsTable"
+                }
+            },
+            "HealthCheckFunction": {
+                "Type": "AWS::Lambda::Function",
+                "Metadata": {
+                    "SamResourceId": "HealthCheckFunction"
+                },
+                "Properties": {
+                    "Code": {
+                        "S3Bucket": "project-tracker-sam-artifacts-us-east-1",
+                        "S3Key": "39bbc439bf99bac6f6188b3e9cdc4f1a"
+                    },
+                    "FunctionName": {
+                        "Fn::Sub": "project-tracker-health-${Environment}"
+                    },
+                    "Handler": "index.handler",
+                    "MemorySize": 128,
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "HealthCheckFunctionRole",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x",
+                    "Timeout": 5,
+                    "Environment": {
+                        "Variables": {
+                            "ENVIRONMENT": {
+                                "Ref": "Environment"
+                            },
+                            "PROJECTS_TABLE": {
+                                "Ref": "ProjectsTable"
+                            },
+                            "CONFIG_TABLE": {
+                                "Ref": "ConfigTable"
+                            },
+                            "TAGS_TABLE": {
+                                "Ref": "TagsTable"
+                            }
+                        }
+                    },
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "ClaudeAnalyzerFunctionClaudeProjectsApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "ClaudeAnalyzerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/claude/projects",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ApiGateway": {
+                "Type": "AWS::ApiGateway::RestApi",
+                "Metadata": {
+                    "SamResourceId": "ApiGateway"
+                },
+                "Properties": {
+                    "Body": {
+                        "info": {
+                            "version": "1.0",
+                            "title": {
+                                "Ref": "AWS::StackName"
+                            }
+                        },
+                        "paths": {
+                            "/api/directories": {
+                                "put": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConfigManagerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                },
+                                "post": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConfigManagerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                },
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "delete": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConfigManagerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/claude/projects": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "get": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ClaudeAnalyzerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/config": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "get": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConfigManagerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/health": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "get": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${HealthCheckFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/project-tags": {
+                                "post": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TagManagerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                },
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                }
+                            },
+                            "/api/projects": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "get": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProjectScannerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/git/repos": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "get": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GitAnalyzerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/tags": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "get": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TagManagerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/projects/cached": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "get": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProjectScannerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            },
+                            "/api/tags/{tagName}": {
+                                "options": {
+                                    "x-amazon-apigateway-integration": {
+                                        "type": "mock",
+                                        "requestTemplates": {
+                                            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+                                        },
+                                        "responses": {
+                                            "default": {
+                                                "statusCode": "200",
+                                                "responseTemplates": {
+                                                    "application/json": "{}\n"
+                                                },
+                                                "responseParameters": {
+                                                    "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                                    "method.response.header.Access-Control-Max-Age": "'600'",
+                                                    "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                                                    "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "consumes": [
+                                        "application/json"
+                                    ],
+                                    "summary": "CORS support",
+                                    "responses": {
+                                        "200": {
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Headers": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Allow-Methods": {
+                                                    "type": "string"
+                                                },
+                                                "Access-Control-Max-Age": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "description": "Default response for CORS method"
+                                        }
+                                    },
+                                    "produces": [
+                                        "application/json"
+                                    ]
+                                },
+                                "delete": {
+                                    "x-amazon-apigateway-integration": {
+                                        "httpMethod": "POST",
+                                        "type": "aws_proxy",
+                                        "uri": {
+                                            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TagManagerFunction.Arn}/invocations"
+                                        }
+                                    },
+                                    "responses": {}
+                                }
+                            }
+                        },
+                        "swagger": "2.0"
+                    },
+                    "Name": {
+                        "Fn::Sub": "project-tracker-api-${Environment}"
+                    }
+                }
+            },
+            "GitAnalyzerFunction": {
+                "Type": "AWS::Lambda::Function",
+                "Metadata": {
+                    "SamResourceId": "GitAnalyzerFunction"
+                },
+                "Properties": {
+                    "Code": {
+                        "S3Bucket": "project-tracker-sam-artifacts-us-east-1",
+                        "S3Key": "219c6a23476340680af912b4f26f4a53"
+                    },
+                    "FunctionName": {
+                        "Fn::Sub": "project-tracker-git-${Environment}"
+                    },
+                    "Handler": "index.handler",
+                    "MemorySize": 512,
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "GitAnalyzerFunctionRole",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x",
+                    "Timeout": 45,
+                    "Environment": {
+                        "Variables": {
+                            "ENVIRONMENT": {
+                                "Ref": "Environment"
+                            },
+                            "PROJECTS_TABLE": {
+                                "Ref": "ProjectsTable"
+                            },
+                            "CONFIG_TABLE": {
+                                "Ref": "ConfigTable"
+                            },
+                            "TAGS_TABLE": {
+                                "Ref": "TagsTable"
+                            }
+                        }
+                    },
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "TagManagerFunctionTagsDeleteApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "TagManagerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/DELETE/api/tags/*",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ProjectScannerFunctionProjectsApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "ProjectScannerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/projects",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ClaudeAnalyzerFunctionRole": {
+                "Type": "AWS::IAM::Role",
+                "Properties": {
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "sts:AssumeRole"
+                                ],
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [
+                                        "lambda.amazonaws.com"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "ManagedPolicyArns": [
+                        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                    ],
+                    "Policies": [
+                        {
+                            "PolicyName": "ClaudeAnalyzerFunctionRolePolicy0",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:GetItem",
+                                            "dynamodb:Scan",
+                                            "dynamodb:Query",
+                                            "dynamodb:BatchGetItem",
+                                            "dynamodb:DescribeTable"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "ProjectScannerFunctionCachedProjectsApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "ProjectScannerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/projects/cached",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ConfigManagerFunction": {
+                "Type": "AWS::Lambda::Function",
+                "Metadata": {
+                    "SamResourceId": "ConfigManagerFunction"
+                },
+                "Properties": {
+                    "Code": {
+                        "S3Bucket": "project-tracker-sam-artifacts-us-east-1",
+                        "S3Key": "0cd2f69d58722e181e3deb8b206c1bd0"
+                    },
+                    "FunctionName": {
+                        "Fn::Sub": "project-tracker-config-${Environment}"
+                    },
+                    "Handler": "index.handler",
+                    "MemorySize": 256,
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "ConfigManagerFunctionRole",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x",
+                    "Timeout": 15,
+                    "Environment": {
+                        "Variables": {
+                            "ENVIRONMENT": {
+                                "Ref": "Environment"
+                            },
+                            "PROJECTS_TABLE": {
+                                "Ref": "ProjectsTable"
+                            },
+                            "CONFIG_TABLE": {
+                                "Ref": "ConfigTable"
+                            },
+                            "TAGS_TABLE": {
+                                "Ref": "TagsTable"
+                            }
+                        }
+                    },
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "GitAnalyzerFunctionRole": {
+                "Type": "AWS::IAM::Role",
+                "Properties": {
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "sts:AssumeRole"
+                                ],
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [
+                                        "lambda.amazonaws.com"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "ManagedPolicyArns": [
+                        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                    ],
+                    "Policies": [
+                        {
+                            "PolicyName": "GitAnalyzerFunctionRolePolicy0",
+                            "PolicyDocument": {
+                                "Statement": [
+                                    {
+                                        "Action": [
+                                            "dynamodb:GetItem",
+                                            "dynamodb:Scan",
+                                            "dynamodb:Query",
+                                            "dynamodb:BatchGetItem",
+                                            "dynamodb:DescribeTable"
+                                        ],
+                                        "Effect": "Allow",
+                                        "Resource": [
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Sub": [
+                                                    "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*",
+                                                    {
+                                                        "tableName": {
+                                                            "Ref": "ProjectsTable"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "ClaudeAnalyzerFunction": {
+                "Type": "AWS::Lambda::Function",
+                "Metadata": {
+                    "SamResourceId": "ClaudeAnalyzerFunction"
+                },
+                "Properties": {
+                    "Code": {
+                        "S3Bucket": "project-tracker-sam-artifacts-us-east-1",
+                        "S3Key": "ee6573b471b4449166cd0729b8a17eae"
+                    },
+                    "FunctionName": {
+                        "Fn::Sub": "project-tracker-claude-${Environment}"
+                    },
+                    "Handler": "index.handler",
+                    "MemorySize": 512,
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "ClaudeAnalyzerFunctionRole",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x",
+                    "Timeout": 30,
+                    "Environment": {
+                        "Variables": {
+                            "ENVIRONMENT": {
+                                "Ref": "Environment"
+                            },
+                            "PROJECTS_TABLE": {
+                                "Ref": "ProjectsTable"
+                            },
+                            "CONFIG_TABLE": {
+                                "Ref": "ConfigTable"
+                            },
+                            "TAGS_TABLE": {
+                                "Ref": "TagsTable"
+                            }
+                        }
+                    },
+                    "Tags": [
+                        {
+                            "Key": "lambda:createdBy",
+                            "Value": "SAM"
+                        }
+                    ]
+                }
+            },
+            "ApiGatewayDeployment7d47e40912": {
+                "Type": "AWS::ApiGateway::Deployment",
+                "Properties": {
+                    "Description": "RestApi deployment id: 7d47e40912dc176fcd25fa397c907b9cb2f394de",
+                    "RestApiId": {
+                        "Ref": "ApiGateway"
+                    },
+                    "StageName": "Stage"
+                }
+            },
+            "HealthCheckFunctionHealthApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "HealthCheckFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/health",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ConfigManagerFunctionDirectoriesPostApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "ConfigManagerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/directories",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            },
+            "TagManagerFunctionProjectTagsPostApiPermissionStage": {
+                "Type": "AWS::Lambda::Permission",
+                "Properties": {
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {
+                        "Ref": "TagManagerFunction"
+                    },
+                    "Principal": "apigateway.amazonaws.com",
+                    "SourceArn": {
+                        "Fn::Sub": [
+                            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/project-tags",
+                            {
+                                "__ApiId__": {
+                                    "Ref": "ApiGateway"
+                                },
+                                "__Stage__": "*"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "StagesAvailable": [
+        "Original",
+        "Processed"
+    ]
+}
