@@ -161,18 +161,22 @@
             border-color: var(--button-primary);
         }
 
-        .theme-toggle {
+        .theme-toggle, .back-to-top-btn {
             background: var(--button-secondary);
             border: 2px solid var(--border-color);
             border-radius: 6px;
             padding: 8px 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-left: auto;
             font-size: 16px;
         }
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
 
-        .theme-toggle:hover {
+        .theme-toggle:hover, .back-to-top-btn:hover {
             background: var(--button-primary);
             color: white;
             border-color: var(--button-primary);
@@ -878,9 +882,14 @@
             <a href="project-tracker.html" class="nav-item">🗂️ Project Tracker</a>
             <a href="claude-tracker.html" class="nav-item">🤖 Claude Tracker</a>
             <a href="git-tracker.html" class="nav-item active">🔀 Git Tracker</a>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
-                <span class="theme-icon">🌙</span>
-            </button>
+            <div class="nav-buttons">
+                <button type="button" class="back-to-top-btn" onclick="scrollToTop()" title="Back to top">
+                    ⬆️
+                </button>
+                <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1435,6 +1444,10 @@
             if (themeIcon) {
                 themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
             }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Initialize the page
