@@ -23,6 +23,36 @@ let scanDirectories = [...DEFAULT_SCAN_DIRECTORIES];
 
 // Persistence functions
 const DIRECTORIES_CONFIG_FILE = path.join(__dirname, 'directories.json');
+const USER_DATA_FILE = path.join(__dirname, 'user-data.json');
+
+// User data (tags and favorites) persistence
+let userData = {
+    tags: {},      // { projectPath: ['tag1', 'tag2'] }
+    favorites: []  // [projectPath1, projectPath2]
+};
+
+async function loadUserData() {
+    try {
+        const data = await fs.readFile(USER_DATA_FILE, 'utf8');
+        const loaded = JSON.parse(data);
+        userData = {
+            tags: loaded.tags || {},
+            favorites: loaded.favorites || []
+        };
+        console.log(`👤 Loaded user data: ${Object.keys(userData.tags).length} projects with custom tags, ${userData.favorites.length} favorites`);
+    } catch (error) {
+        console.log(`👤 No user data file found, starting fresh`);
+    }
+}
+
+async function saveUserData() {
+    try {
+        await fs.writeFile(USER_DATA_FILE, JSON.stringify(userData, null, 2));
+        console.log(`💾 Saved user data`);
+    } catch (error) {
+        console.error('Error saving user data:', error);
+    }
+}
 
 async function loadDirectoriesFromFile() {
     try {
@@ -353,6 +383,11 @@ class ProjectAnalyzer {
                 // Ignore git errors, project just won't have GitHub info
             }
             
+            // Merge auto-generated tags with user-saved tags
+            const autoTags = this.generateTags(status, technologies, category, projectName, projectPath);
+            const userTags = userData.tags[projectPath] || [];
+            const mergedTags = [...new Set([...autoTags, ...userTags])];
+            
             return {
                 name: projectName,
                 path: projectPath,
@@ -360,7 +395,8 @@ class ProjectAnalyzer {
                 status: status,
                 technologies: technologies,
                 category: category,
-                tags: this.generateTags(status, technologies, category, projectName, projectPath),
+                tags: mergedTags,
+                userTags: userTags,  // Send user tags separately so frontend knows which are custom
                 hasReadme: hasReadme,
                 hasClaude: hasClaude,
                 hasVenv: hasVenv,
@@ -370,6 +406,7 @@ class ProjectAnalyzer {
                 githubActions: githubActions,
                 localVsRemote: localVsRemote,
                 lastUpdated: lastModified,
+                isFavorite: userData.favorites.includes(projectPath),
                 isScanned: true,
                 dateScanned: new Date().toISOString()
             };
@@ -1430,19 +1467,117 @@ app.post('/api/projects/:projectPath/tags', async (req, res) => {
             });
         }
         
-        // Here you would typically save tags to a database or metadata file
-        // For now, we'll just return success since tags are managed client-side
-        console.log(`🏷️ Updated tags for ${decodedPath}: ${tags.join(', ')}`);
+        // Save tags to user data file
+        userData.tags[decodedPath] = tags;
+        await saveUserData();
+        
+        console.log(`🏷️ Saved tags for ${decodedPath}: ${tags.join(', ')}`);
         
         res.json({
             success: true,
-            message: 'Tags updated successfully',
+            message: 'Tags saved successfully',
             projectPath: decodedPath,
             tags: tags
         });
         
     } catch (error) {
         console.error('Error updating project tags:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Get tags for a specific project
+app.get('/api/projects/:projectPath/tags', async (req, res) => {
+    try {
+        const { projectPath } = req.params;
+        const decodedPath = decodeURIComponent(projectPath);
+        
+        const tags = userData.tags[decodedPath] || [];
+        
+        res.json({
+            success: true,
+            projectPath: decodedPath,
+            tags: tags
+        });
+        
+    } catch (error) {
+        console.error('Error getting project tags:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Favorites endpoints
+app.get('/api/favorites', (req, res) => {
+    res.json({
+        success: true,
+        favorites: userData.favorites
+    });
+});
+
+app.post('/api/favorites', async (req, res) => {
+    try {
+        const { projectPath } = req.body;
+        
+        if (!projectPath || typeof projectPath !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Project path is required'
+            });
+        }
+        
+        if (!userData.favorites.includes(projectPath)) {
+            userData.favorites.push(projectPath);
+            await saveUserData();
+            console.log(`⭐ Added favorite: ${projectPath}`);
+        }
+        
+        res.json({
+            success: true,
+            message: 'Favorite added',
+            favorites: userData.favorites
+        });
+        
+    } catch (error) {
+        console.error('Error adding favorite:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.delete('/api/favorites', async (req, res) => {
+    try {
+        const { projectPath } = req.body;
+        
+        if (!projectPath || typeof projectPath !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Project path is required'
+            });
+        }
+        
+        const index = userData.favorites.indexOf(projectPath);
+        if (index > -1) {
+            userData.favorites.splice(index, 1);
+            await saveUserData();
+            console.log(`⭐ Removed favorite: ${projectPath}`);
+        }
+        
+        res.json({
+            success: true,
+            message: 'Favorite removed',
+            favorites: userData.favorites
+        });
+        
+    } catch (error) {
+        console.error('Error removing favorite:', error);
         res.status(500).json({
             success: false,
             error: error.message
@@ -1478,6 +1613,9 @@ async function startServer() {
     // Load directories from file on startup
     await loadDirectoriesFromFile();
     
+    // Load user data (tags, favorites) on startup
+    await loadUserData();
+    
     // Load cache from file on startup
     await CacheManager.loadCache();
     
@@ -1485,9 +1623,7 @@ async function startServer() {
         console.log(`🚀 Project Tracker Backend running on http://${HOST}:${PORT}`);
         console.log(`📂 Scanning directories: ${scanDirectories.length} configured`);
         console.log(`📦 Cache: ${CacheManager.cache.projects.length} projects loaded`);
-        console.log(`🔍 Access projects API at: http://${HOST}:${PORT}/api/projects`);
-        console.log(`⚡ Fast cached API at: http://${HOST}:${PORT}/api/projects/cached`);
-        console.log(`🏷️ Access tags API at: http://${HOST}:${PORT}/api/tags`);
+        console.log(`👤 User data: ${Object.keys(userData.tags).length} projects with tags, ${userData.favorites.length} favorites`);
     });
 }
 

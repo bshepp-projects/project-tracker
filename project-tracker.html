@@ -1617,6 +1617,23 @@
         let activeTagFilter = null;
         let favorites = JSON.parse(localStorage.getItem('projectFavorites') || '[]');
 
+        // Load favorites from server (merges with localStorage as fallback)
+        async function loadFavoritesFromServer() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/favorites`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.favorites) {
+                        // Merge server favorites with local (server takes priority)
+                        favorites = data.favorites;
+                        localStorage.setItem('projectFavorites', JSON.stringify(favorites));
+                    }
+                }
+            } catch (error) {
+                console.log('Using localStorage favorites (server unavailable)');
+            }
+        }
+
         function updateStats() {
             const statsContainer = document.getElementById('stats');
             
@@ -1682,15 +1699,32 @@
             return favorites.includes(projectPath);
         }
 
-        function toggleFavorite(projectPath) {
+        async function toggleFavorite(projectPath) {
             const index = favorites.indexOf(projectPath);
-            if (index === -1) {
+            const adding = index === -1;
+            
+            // Update local state immediately for responsive UI
+            if (adding) {
                 favorites.push(projectPath);
             } else {
                 favorites.splice(index, 1);
             }
             localStorage.setItem('projectFavorites', JSON.stringify(favorites));
             renderProjects(); // Re-render to update star and sorting
+            
+            // Sync with server in background
+            try {
+                const response = await fetch(`${API_BASE_URL}/favorites`, {
+                    method: adding ? 'POST' : 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectPath })
+                });
+                if (!response.ok) {
+                    console.warn('Failed to sync favorite with server');
+                }
+            } catch (error) {
+                console.log('Server sync failed, favorites saved locally');
+            }
         }
 
         function openFolder(path) {
@@ -2260,6 +2294,9 @@
                 hideInitialLoader();
             }, 10000); // Hide after 10 seconds max
 
+            // Load favorites from server (will merge with localStorage)
+            await loadFavoritesFromServer();
+            
             // Load projects from API on page load
             await loadProjectsFromAPI();
             // Set initial active filter
@@ -2732,7 +2769,7 @@
 
             try {
                 const encodedPath = encodeURIComponent(projectPath);
-                const response = await fetch(`${API_BASE_URL}/api/projects/${encodedPath}/tags`, {
+                const response = await fetch(`${API_BASE_URL}/projects/${encodedPath}/tags`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2770,7 +2807,7 @@
                 // Save tag changes to backend
                 const savePromises = Object.entries(tagChanges).map(async ([projectPath, projectData]) => {
                     const encodedPath = encodeURIComponent(projectPath);
-                    const response = await fetch(`${API_BASE_URL}/api/projects/${encodedPath}/tags`, {
+                    const response = await fetch(`${API_BASE_URL}/projects/${encodedPath}/tags`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
