@@ -1,253 +1,95 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working with this repository.
 
-## Project Overview
+## What This Is
 
-Project Tracker is a local tool to find and organize your projects. It has:
+Project Tracker is a local web tool for organizing projects. It has:
 
-- **Frontend**: Single-page HTML application (`project-tracker.html`) with embedded CSS/JavaScript
-- **Backend**: Node.js Express server (`server/server.js`) that provides API endpoints for filesystem scanning
-- **Simple design**: Frontend HTML file + optional Node.js backend for scanning
+- **Frontend**: Single HTML files (`project-tracker.html`, `claude-tracker.html`, `git-tracker.html`)
+- **Backend**: Node.js Express server (`server/server.js`)
 
-## Core Architecture
+## Commands
 
-### Frontend (`project-tracker.html`)
-- Single HTML file containing all UI, CSS, and JavaScript
-- Communicates with backend API at `http://localhost:3001`
-- Falls back to hardcoded project data when backend unavailable
-- Uses modern JavaScript features (ES6+) and responsive CSS
+```bash
+# Install and run
+cd server && npm install && npm start
+# Server runs on http://localhost:3001
+
+# Open frontend
+open project-tracker.html  # or just double-click it
+```
+
+## Architecture
 
 ### Backend (`server/server.js`)
-- Express.js server with CORS enabled for frontend communication
-- Two main analysis classes: `ProjectAnalyzer` and `ClaudeAnalyzer`
-- Configurable directory scanning with persistence in `directories.json`
-- RESTful API endpoints for project discovery and configuration
-- Environment configuration support via `PORT` and `HOST` variables
 
-## Development Commands
+Main classes:
+- `CacheManager` - File-based caching for scan results
+- `ProjectAnalyzer` - Scans directories, detects tech stacks
+- `ClaudeAnalyzer` - Detects CLAUDE.md files and .claude directories  
+- `GitAnalyzer` - Git status, branch info, GitHub detection
 
-### Setup and Installation
-```bash
-# Quick setup (recommended)
-./setup.sh
+Data files (in `server/`):
+- `directories.json` - Configured scan directories
+- `user-data.json` - Tags and favorites (persistent)
+- `projects-cache.json` - Cached scan results
 
-# Manual setup
-cd server && npm install
+### Frontend
 
-# Start backend server
-cd server && npm start
-# Server runs on http://localhost:3001 (configurable via PORT/HOST env vars)
+Single HTML files with embedded CSS and JavaScript. Communicates with backend at `http://localhost:3001/api`.
 
-# Development mode with auto-restart
-cd server && npm run dev
-
-# Custom port/host configuration
-PORT=8080 HOST=0.0.0.0 npm start
-```
-
-### Frontend Development
-```bash
-# Open frontend (choose one method)
-open project-tracker.html          # macOS
-start project-tracker.html         # Windows
-xdg-open project-tracker.html      # Linux
-
-# Or serve locally with any HTTP server
-python -m http.server 8000
-# Then visit http://localhost:8000/project-tracker.html
-```
-
-### Testing and Validation
-```bash
-# Test backend health
-curl http://localhost:3001/api/health
-
-# Test project scanning
-curl http://localhost:3001/api/projects
-
-# Test Claude project detection
-curl http://localhost:3001/api/claude/projects
-```
-
-### GitHub Actions CI/CD Pipeline
-The project includes comprehensive automated testing via GitHub Actions:
-
-```yaml
-# Workflow runs on push to main/develop and pull requests
-- HTML Validation: html-validate for markup standards compliance
-- Console Error Detection: Puppeteer headless browser testing
-- Functionality Testing: Automated UI interaction testing
-- Accessibility Testing: axe-core WCAG compliance scanning  
-- Lint Checks: File structure and markdown validation
-```
-
-**CI/CD Configuration**: `.github/workflows/ci.yml`
-- **Chrome Sandbox**: Uses `--no-sandbox` flags for containerized CI environment
-- **Modern APIs**: Replaces deprecated Puppeteer methods with Promise-based timeouts
-- **Parallel Jobs**: Runs test, lint, and accessibility jobs concurrently
-- **Quality Gates**: All tests must pass for successful builds
+Falls back to hardcoded data if backend is unavailable.
 
 ## API Endpoints
 
-### Core Endpoints
-- `GET /api/projects` - Scan and return all discovered projects
-- `GET /api/claude/projects` - Scan specifically for Claude-enabled projects  
-- `GET /api/health` - Server health check
-- `GET /api/config` - Get current configuration
+### Projects
+- `GET /api/projects` - Full scan
+- `GET /api/projects/cached` - Return cache, trigger background scan if stale
 
-### Directory Management
-- `POST /api/directories` - Add new scan directory (accepts cross-platform path formats)
-- `DELETE /api/directories` - Remove scan directory
-- `PUT /api/directories` - Update entire directory list
+### Configuration  
+- `GET /api/config` - Current directories
+- `POST /api/directories` - Add directory (validates path exists)
+- `DELETE /api/directories` - Remove directory
+- `PUT /api/directories` - Replace all directories
 
-#### Cross-Platform Path Support
-- **Windows Paths**: `C:\Users\Name\Projects\my-app` or `C:/Users/Name/Projects/my-app`
-- **Unix/Linux Paths**: `/home/user/projects/my-app`
-- **macOS Paths**: `/Users/name/projects/my-app`
-- **Relative Paths**: `../projects/my-app` or `./my-app`
-- **Backend Normalization**: All paths automatically resolved using Node.js `path.resolve()`
-- **Client Cleanup**: Frontend removes quotes, trailing slashes, and normalizes separators
+### User Data
+- `GET /api/favorites` - List favorites
+- `POST /api/favorites` - Add favorite `{ projectPath }`
+- `DELETE /api/favorites` - Remove favorite `{ projectPath }`
+- `GET /api/projects/:path/tags` - Get tags for project
+- `POST /api/projects/:path/tags` - Save tags `{ tags: [] }`
 
-### Tag Management
-- `GET /api/tags` - Get all unique tags from scanned projects
-- `POST /api/projects/:projectPath/tags` - Update tags for a specific project
-- `DELETE /api/tags/:tagName` - Remove a tag globally from all projects
+### Other
+- `GET /api/health` - Health check
+- `GET /api/tags` - All tags across projects
+- `GET /api/claude/projects` - Projects with CLAUDE.md
+- `GET /api/git/repos` - Git repository details
 
-## Project Analysis Features
+## Key Behaviors
 
-### ProjectAnalyzer Class (`server.js:240+`)
-- Recursive filesystem scanning with exclusion patterns
-- Technology stack detection from file extensions
-- Virtual environment detection for Python projects
+- Projects are scanned from directories listed in `directories.json`
+- Each directory should be a project root, not a parent folder
+- WSL path conversion: Windows paths like `C:\...` become `/mnt/c/...`
+- Cache expires after 1 hour
+- Tags merge auto-detected tags with user-saved tags
+- Favorites and tags persist in `user-data.json`
 
-- Automatic categorization (Web, AI/ML, Backend, etc.)
-- Project status inference (Production, Development)
+## Adding Features
 
-### ClaudeAnalyzer Class (`server.js:61-189`)
-- Detects CLAUDE.md files and .claude directories
-- Extracts metadata from CLAUDE.md (Name, Role patterns)
+### New detection in ProjectAnalyzer
+1. Add to `detectTechnologies()` for file extensions
+2. Add to `detectCategory()` for project types
+3. Add to `generateTags()` for auto-tagging
 
-- Analyzes Claude project permissions and settings
-- Determines Claude project status and activity
+### New API endpoint
+Add route handler in `server.js`, follow existing patterns for JSON responses.
 
-## Default Scan Directories
+### Frontend changes
+All in the HTML files - CSS in `<style>`, JS at end of file.
 
-The backend scans these directories by default (configured in `server.js:15-18`):
-- `/mnt/f/utility-projects/project-tracker`
-- `/mnt/f/utility-projects/fundo-matic`
+## Dependencies
 
-Additional directories are loaded from `server/directories.json` configuration file and can be managed via the API endpoints.
+Backend: `express`, `cors` (that's it)
 
-## Key File Detection Patterns
-
-### Technology Detection
-- Languages: `.py`, `.js`, `.ts`, `.html`, `.css`, `.java`, `.cpp`, `.rs`, `.go`, etc.
-- Frameworks: `package.json` (Node.js), `requirements.txt` (Python), `Cargo.toml` (Rust)
-- Containerization: `dockerfile`, `docker-compose.yml`
-
-### Special Files
-- Documentation: `readme.*` files
-- Claude Integration: `CLAUDE.md`, `.claude/` directory
-- Virtual Environments: `venv/`, `.venv/`, `env/` directories
-
-- Configuration: `package.json`, `requirements.txt`, `setup.py`
-
-## API Response Fields
-
-### Claude Project Detection
-Projects returned by `/api/projects` include basic Claude detection:
-
-#### Core Fields
-- `hasClaudeFile`: Boolean indicating if CLAUDE.md file exists
-- `hasClaudeDir`: Boolean indicating if .claude directory exists
-- `claudeRole`: Extracted role from CLAUDE.md metadata
-- `permissions`: Array of Claude permissions from settings
-- `isGitHub`: Boolean indicating if project has GitHub remote repository
-- `gitHubUrl`: String with GitHub repository web URL (null if not GitHub)
-- `lastCommitDate`: String with relative time since last commit (null if no git repo)
-
-#### Detection Logic
-- **File Detection**: Looks for CLAUDE.md files and .claude directories
-- **Metadata Extraction**: Parses project name and role from CLAUDE.md content
-- **Settings Analysis**: Reads .claude/settings.local.json for permissions
-
-#### Notes
-- Local Claude Code CLI detection was removed (not feasible)
-- Focus is on CLAUDE.md file presence and project metadata
-
-## Frontend-Backend Communication
-
-The frontend automatically detects backend availability and switches modes:
-- **With Backend**: Dynamic project scanning, real-time updates
-- **Without Backend**: Falls back to hardcoded project data for development
-
-## Favorites System
-
-The Project Tracker includes a comprehensive favorites system for organizing important projects:
-
-### Features
-- **⭐ Star Icon**: Each project card displays a star icon in the upper right corner
-- **Visual States**: Empty star (☆) for non-favorites, filled gold star (★) for favorites
-- **Toggle Functionality**: Click the star to add/remove projects from favorites
-- **Persistent Storage**: Favorites saved to `localStorage` and persist across browser sessions
-- **Smart Sorting**: Favorites automatically appear at the top of the project list
-- **Integration**: Works seamlessly with search, filtering, and tag management
-
-### Implementation Details
-- **CSS Classes**: `.favorite-star`, `.favorited` for styling and states
-- **JavaScript Functions**: 
-  - `isFavorite(projectPath)` - checks favorite status
-  - `toggleFavorite(projectPath)` - toggles and saves favorite state
-- **Storage Key**: `projectFavorites` in localStorage
-- **Sorting Logic**: Enhanced `filterProjects()` with favorites-first sorting
-
-## Configuration Persistence
-
-Backend configuration is persisted in `server/directories.json`:
-```json
-{
-  "directories": ["/path/to/scan1", "/path/to/scan2"],
-  "lastUpdated": "2025-01-01T00:00:00.000Z"
-}
-```
-
-## Development Patterns
-
-### Adding New Project Detection
-1. Extend `ProjectAnalyzer.detectTechnologies()` for new file types
-2. Update `ProjectAnalyzer.detectCategory()` for new project categories
-3. Add patterns to `ProjectAnalyzer.detectStatus()` for status inference
-
-### Adding New API Endpoints
-1. Add route handler in `server.js` (after line 1076)
-2. Follow existing patterns for error handling and JSON responses
-3. Update CORS configuration if needed
-
-### Frontend Feature Development
-1. All frontend code is in `project-tracker.html`
-2. CSS is embedded in `<style>` tags (lines 12+)
-3. JavaScript is embedded in `<script>` tags (end of file)
-4. Use existing utility functions for consistent UX
-
-### Tag Management System
-The project includes a comprehensive tag management interface:
-
-#### Enhanced Tag Generation (`server.js:377-488`)
-- **19 tag categories**: quantum, research, creative, gaming, science, environmental, security, business, education, experimental, framework, data, frontend, backend, tool, ai, web, production, development
-- **Smart Detection**: Uses project names, paths, and technologies to auto-assign relevant tags
-- **Pattern Matching**: Detects quantum projects, AI/ML projects, research work, creative endeavors, etc.
-
-#### Tag Management UI (`project-tracker.html`)
-- **🏷️ Manage Tags Button**: Purple button in main controls toolbar
-- **Modal Interface**: Comprehensive popup for tag operations
-- **Individual Save Buttons**: Each project has its own save button for incremental updates
-- **Visual Indicators**: Shows unsaved changes with orange status indicators
-- **Change Counter**: Footer displays count of projects with pending changes
-
-#### Tag Operations
-- **Create Tags**: Add custom tags via input field or predefined quick-add buttons
-- **Delete Tags**: Remove tags globally with confirmation (removes from all projects)
-- **Assign/Remove**: Click tags to toggle assignment to specific projects
-- **Bulk Save**: Save all changes at once or save individual projects
-- **Real-time UI**: Immediate visual feedback for all tag operations
+No database - everything is JSON files.
