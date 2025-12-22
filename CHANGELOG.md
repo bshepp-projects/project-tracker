@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### ✨ Added
-- **⬆️ Back to Top Button**: Added back-to-top navigation button in all tracker interfaces
+### Added
+- **Back to Top Button**: Added back-to-top navigation button in all tracker interfaces
   - Positioned next to theme toggle in navigation bar with consistent styling
   - Smooth scrolling animation with hover effects
   - Available in Project Tracker, Claude Tracker, and Git Tracker HTML files
@@ -16,30 +16,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.3] - 2025-08-26
 
-### 🔧 Fixed
+### Fixed
 - **Sync Status Detection**: Completely overhauled sync status logic to show accurate repository information
   - Fixed backend `GitAnalyzer.getBranchStatus()` to include `isSynced` field and compatibility aliases  
   - Improved frontend `getSyncStatus()` to prioritize specific issues over generic "Unknown" status
   - Added proper handling for "No upstream" branches
   - Projects now show accurate sync information instead of confusing "❓ Unknown" status
 
-### ✨ Enhanced  
+### Enhanced  
 - **Claude Tracker Feature Parity**: Added missing features to match main Project Tracker
-  - ⭐ **Favorites System**: Complete favorites functionality with star icons and localStorage persistence
-  - 📊 **Permission Display**: Shows permission count in Claude project info cards
-  - 🔄 **Individual Refresh**: Fixed to properly use Claude API endpoint for accurate project updates
-  - 🎯 **Favorites-First Sorting**: Favorite projects automatically appear at top of lists
+  - **Favorites System**: Complete favorites functionality with star icons and localStorage persistence
+  - **Permission Display**: Shows permission count in Claude project info cards
+  - **Individual Refresh**: Fixed to properly use Claude API endpoint for accurate project updates
+  - **Favorites-First Sorting**: Favorite projects automatically appear at top of lists
 
-### 📚 Documentation
+### Documentation
 - **Version Consistency**: Updated README.md and FUTURE_IMPROVEMENTS.md version references from v1.6.0 to v1.6.2
 - **File Size Claims**: Replaced inaccurate "under 50KB" claim with realistic description
 
 ## [1.6.2] - 2025-08-24
 
-### 🔧 HTML Validation & CI/CD Fixes
+### HTML Validation & CI/CD Fixes
 
 ### Fixed
-- **✅ GitHub Actions CI/CD Pipeline**: Resolved HTML validation failures
+- **GitHub Actions CI/CD Pipeline**: Resolved HTML validation failures
   - Removed final inline styles from tag management modal
   - Replaced `style` attributes with proper CSS classes (`tag-assignment-help`, `changes-summary`)
   - All HTML files now pass html-validate standards completely
@@ -52,49 +52,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.1] - 2025-08-24
 
-### 🧹 Project Cleanup & Infrastructure Improvements
+### Project Cleanup & Infrastructure Improvements
 
 ### Added
-- **📁 Comprehensive Ignore File System**: Complete audit and creation of ignore files
+- **Comprehensive Ignore File System**: Complete audit and creation of ignore files
   - `.agentignore`: Optimized for AI agents (Claude Code) to ignore large files, dependencies, secrets
   - `serverless/.gitignore`: SAM artifacts, Lambda packages, AWS configurations
   - `serverless/.samignore`: Deployment exclusions for SAM packaging
   - Lambda function `.gitignore` files: Individual dependency management for each function
 
 ### Enhanced
-- **🔧 .gitignore Improvements**: Added AWS/serverless patterns and server runtime files
+- **.gitignore Improvements**: Added AWS/serverless patterns and server runtime files
   - AWS and serverless deployment artifacts (`.aws-sam/`, `samconfig.toml`, etc.)
   - Server runtime files (`projects-cache.json`, `server.log`, `directories.json`)
   - Updated package-lock.json handling for CI/CD compatibility
 
-- **🐳 .dockerignore Optimization**: Comprehensive container build exclusions
+- **.dockerignore Optimization**: Comprehensive container build exclusions
   - Organized sections for development, documentation, and deployment files
   - Better performance for Docker builds by excluding unnecessary files
 
 ### Fixed
-- **🗑️ Runtime File Cleanup**: Removed auto-generated cache files from git tracking
+- **Runtime File Cleanup**: Removed auto-generated cache files from git tracking
   - Removed `server/projects-cache.json` from version control
   - Cleaned up duplicate Claude settings files with name conflicts
   - Prevented future accidental commits of cache/log files
 
-- **🔄 UI Improvements Recovery**: Restored UI enhancements from git history
+- **UI Improvements Recovery**: Restored UI enhancements from git history
   - Recovered individual refresh buttons for each project card
-  - Restored YOLO mode (💀) for Claude projects with --dangerously-skip-permissions
+  - Restored YOLO mode for Claude projects with --dangerously-skip-permissions
   - Rebuilt comprehensive tooltip system for all buttons and status indicators
   - Maintained enhanced transitions and professional styling
 
 ### Security
-- **🛡️ Enhanced Security**: Comprehensive protection against credential exposure
+- **Enhanced Security**: Comprehensive protection against credential exposure
   - AWS credentials and configuration files
   - Environment variables and secrets
   - API keys and certificates
 
 ## [1.6.0] - 2025-08-24
 
-### 🎯 Major Release: Complete Serverless Architecture & CI/CD Fixes
+### Major Release: Complete Serverless Architecture & CI/CD Fixes
 
 ### Added
-- **🚀 Complete AWS Serverless Architecture**: 90% cost reduction from container deployment
+- **Complete AWS Serverless Architecture**: 90% cost reduction from container deployment
   - 6 specialized Lambda functions for different operations
   - DynamoDB tables with caching and TTL for optimal performance  
   - API Gateway with caching and CORS configuration
@@ -102,34 +102,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - GitHub Actions CI/CD pipeline for automated deployment
   - Production and development environment support
 
-- **⚙️ Enhanced Branch Strategy**: Clear separation of deployment targets
+- **Enhanced Branch Strategy**: Clear separation of deployment targets
   - `main`: Local development version (clean, no AWS dependencies)
   - `develop`: Development and testing branch
   - `aws-deployment`: Complete serverless architecture with live deployment
 
-- **📊 Live Serverless API**: Deployed and operational
+- **Live Serverless API**: Deployed and operational
   - Health Check: https://vw7uzdw9kc.execute-api.us-east-1.amazonaws.com/dev/api/health
   - Projects: https://vw7uzdw9kc.execute-api.us-east-1.amazonaws.com/dev/api/projects
   - Claude Projects: https://vw7uzdw9kc.execute-api.us-east-1.amazonaws.com/dev/api/claude/projects
   - Full CRUD operations with tag management
 
 ### Fixed
-- **🔧 HTML Validation Issues**: Removed all inline styles to pass validation
+- **HTML Validation Issues**: Removed all inline styles to pass validation
   - Replaced inline styles with proper CSS classes (`tag-assignment-help`, `changes-summary`)
   - All HTML files now pass html-validate standards
   - CI/CD pipelines validate HTML structure automatically
 
-- **📦 npm Dependency Management**: Resolved package-lock.json issues
+- **npm Dependency Management**: Resolved package-lock.json issues
   - Added server/package-lock.json for proper dependency caching
   - Fixed npm audit ENOLOCK errors in GitHub Actions
   - Enabled proper Node.js setup caching in CI/CD
 
-- **🏗️ API Gateway Path Conflicts**: Fixed CloudFormation deployment issues
+- **API Gateway Path Conflicts**: Fixed CloudFormation deployment issues
   - Changed conflicting path `/api/projects/{projectPath+}/tags` to `/api/project-tags`
   - Updated Lambda functions to handle new path structure
   - Successful CloudFormation stack deployment and rollout
 
-- **⚡ GitHub Actions Workflows**: All CI/CD pipelines now functional
+- **GitHub Actions Workflows**: All CI/CD pipelines now functional
   - HTML validation with html-validate
   - Security scanning with npm audit
   - Dependency caching for faster builds
@@ -158,7 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.3] - 2025-08-20
 
 ### Added
-- **⚡ Industry-Standard Caching**: Fast project loading with persistent cache
+- **Industry-Standard Caching**: Fast project loading with persistent cache
   - CacheManager class for centralized cache operations
   - File-based cache persistence (projects-cache.json)
   - Background scanning with immediate cached results
@@ -166,35 +166,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `/api/projects/cached` endpoint for instant response
 
 ### Fixed
-- **🐛 Display Bug**: Fixed undefined `displayProjects()` function call
-- **🌍 Path Handling**: Improved cross-platform path support in WSL
+- **Display Bug**: Fixed undefined `displayProjects()` function call
+- **Path Handling**: Improved cross-platform path support in WSL
   - Windows path to WSL path conversion (C:\ → /mnt/c/)
   - Tilde expansion for home directory paths
   - Support for both backslash and forward slash formats
 
 ### Changed
-- **📈 Performance**: Projects now load instantly from cache (<100ms)
-- **🔄 Background Updates**: Scans run in background while showing cached data
+- **Performance**: Projects now load instantly from cache (<100ms)
+- **Background Updates**: Scans run in background while showing cached data
 
 ## [1.5.2] - 2025-08-18
 
 ### Added
-- **🔗 GitHub Repository Integration**: Complete GitHub repository detection and access
+- **GitHub Repository Integration**: Complete GitHub repository detection and access
   - GitHub repository URL detection for all projects with git remotes
-  - New "🔗 GitHub" button on project cards for GitHub repositories
+  - New "GitHub" button on project cards for GitHub repositories
   - Opens GitHub repositories in new browser window/tab
   - GitHub-themed button styling with hover effects
   - Automatic conversion of git URLs to web URLs
   - Visual notifications when opening GitHub repositories
 
-- **📅 Last Commit Date Display**: Real-time git commit information
+- **Last Commit Date Display**: Real-time git commit information
   - Replaced Virtual Environment info field with Last Commit date
   - Shows relative time since last commit (e.g., "43 minutes ago", "3 days ago")
   - Displays "❓ Unknown" for projects without git repositories
   - Integrated with existing GitAnalyzer for accurate commit detection
   - Available in both Project Tracker and Claude Tracker interfaces
 
-- **🌍 Cross-Platform Directory Path Support**: Universal path compatibility
+- **Cross-Platform Directory Path Support**: Universal path compatibility
   - Backend path normalization using Node.js path.resolve() for proper handling
   - Support for Windows backslash (C:\path\to\project) and forward slash paths
   - Support for Linux/macOS absolute paths (/home/user/project)
@@ -203,7 +203,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced UI guidance with cross-platform examples in all tracker interfaces
   - Automatic path resolution eliminates format confusion
 
-- **⭐ Favorites System**: Complete favorites functionality with persistent storage
+- **Favorites System**: Complete favorites functionality with persistent storage
   - Star icon in upper right corner of each project card (☆ empty, ★ filled gold)
   - Click to toggle favorite status with instant visual feedback
   - Favorites automatically sorted to the top of project list
@@ -211,13 +211,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Hover effects with background highlight and scale animation
   - Smart sorting: favorites first, then alphabetical within each group
 
-- **📊 Unified Stats Bar**: Standardized dynamic stats across all three tracker applications
+- **Unified Stats Bar**: Standardized dynamic stats across all three tracker applications
   - Consistent "Total Projects/Repos + Top 10 Tags" format across Project, Claude, and Git trackers
   - Clickable tag filtering with visual active states
   - Compact flexbox layout with responsive design
   - Real-time tag counting and sorting by frequency
 
-- **🏷️ Comprehensive Tag Management System**: Complete tag interface with individual project saves
+- **Comprehensive Tag Management System**: Complete tag interface with individual project saves
   - Enhanced tag generation with 19 smart tag categories
   - Individual save buttons for incremental tag updates
   - Visual change indicators for projects with unsaved changes
@@ -225,27 +225,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Real-time UI updates and smart tag detection
 
 ### Changed
-- **🔍 Simplified Search Interface**: Removed filter buttons, expanded search bar to full width with enhanced tag searching
-- **🎯 Enhanced Project Sorting**: Projects now sorted with favorites first, then alphabetically
-- **📱 Standardized UI Components**: Consistent button heights, text, and styling across all tracker interfaces
+- **Simplified Search Interface**: Removed filter buttons, expanded search bar to full width with enhanced tag searching
+- **Enhanced Project Sorting**: Projects now sorted with favorites first, then alphabetically
+- **Standardized UI Components**: Consistent button heights, text, and styling across all tracker interfaces
 - Enhanced project analysis with improved tag generation algorithm
 - Updated `generateTags()` function to accept project name and path parameters for smarter tag assignment
 
 ## [1.5.2] - 2025-08-16
 
 ### Fixed
-- **🌙 Dark Mode Improvements**
+- **Dark Mode Improvements**
   - Fixed popup windows (manage directories modal) not following dark/light mode theme switching
   - Added complete dark mode support to Claude Tracker with theme toggle functionality
   - Modal backgrounds and borders now properly use CSS variables for consistent theming
 
-- **📐 Navigation Banner Consistency**
+- **Navigation Banner Consistency**
   - Standardized navigation banner dimensions, padding, and positioning across all tracker pages
   - Fixed Claude Tracker banner shape and location to match Project Tracker and Git Tracker
   - Ensured consistent nav-container styling with proper alignment and visual effects
   - All navigation bars now have identical responsive behavior and professional appearance
 
-- **🔍 Claude Code Detection Major Bug Fix**
+- **Claude Code Detection Major Bug Fix**
   - Fixed fundamental bug where detection was looking for Python packages instead of npm packages
   - Claude Code CLI is installed via npm (`@anthropic-ai/claude-code`), not pip
   - Removed incorrect Python site-packages detection logic
@@ -254,7 +254,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added package.json dependency checking for claude-code packages
 
 ### Added
-- **🌐 Enhanced Claude Detection Capabilities**
+- **Enhanced Claude Detection Capabilities**
   - New ability to distinguish between local and system-wide Claude Code installations
   - Added `hasGlobalClaude` field to detect system-wide installations
   - Added `claudeLocation` field showing "none", "local", "global", or "both"
@@ -263,7 +263,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Proper detection of global installations via `which claude` command
   - Smart filtering to exclude global paths from local detection
 
-- **🚀 GitHub Actions CI/CD Pipeline Implementation**
+- **GitHub Actions CI/CD Pipeline Implementation**
   - Fixed HTML validation failures by adding missing `type="button"` attributes on all buttons
   - Removed inline styles and replaced with CSS classes for better maintainability
   - Fixed raw ampersand characters by encoding as `&amp;`
@@ -288,7 +288,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0] - 2025-08-09
 
 ### Added
-- **🔀 Git Repository Tracking & Management**
+- **Git Repository Tracking & Management**
   - New Git Tracker interface (`git-tracker.html`) for comprehensive repository monitoring
   - Complete GitAnalyzer class in backend with detailed git repository analysis
   - `/api/git/repos` endpoint for repository data retrieval
@@ -299,20 +299,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - GitHub Actions workflow status monitoring via GitHub CLI integration
   - .gitignore presence detection for repository health assessment
 
-- **🌐 Multi-Tab Navigation System**
+- **Multi-Tab Navigation System**
   - Unified navigation bar across all interfaces
   - Three main tabs: Project Tracker, Claude Tracker, Git Tracker  
   - Consistent theme and styling across all interfaces
   - Seamless switching between different project management views
 
-- **⚡ Enhanced Repository Operations**
+- **Enhanced Repository Operations**
   - Quick-copy git commands (fetch, pull, push) with clipboard integration
   - GitHub URL copying for easy repository access
   - Smart command generation based on repository status
   - Platform-specific folder opening commands
   - Repository status badges with visual indicators (ahead, behind, clean, dirty, etc.)
 
-- **🎨 Improved UI/UX & Accessibility**
+- **Improved UI/UX & Accessibility**
   - Enhanced dark mode text contrast for better readability
   - Separate CSS variables for light background text (`--text-light-bg`)
   - Improved contrast ratios across all interface elements
@@ -332,13 +332,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better color accessibility in both light and dark modes
 
 ### Fixed
-- **🎨 Text Contrast & Accessibility**
+- **Text Contrast & Accessibility**
   - Fixed dark mode text being too dark to read in previous version
   - Resolved light background text being too light in dark mode
   - Improved readability of info boxes and card content
   - Better contrast ratios meeting accessibility standards
 
-- **🔧 Git Integration Reliability**
+- **Git Integration Reliability**
   - Proper error handling for repositories without remotes
   - Graceful handling of detached HEAD states
   - Better parsing of git status output for accurate ahead/behind counts
@@ -357,7 +357,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.0] - 2025-08-07
 
 ### Added
-- **🌙 Dark Mode Implementation**
+- **Dark Mode Implementation**
   - Complete dark/light theme system with CSS variables
   - Smooth transitions between themes (0.3s ease)
   - Persistent theme preferences using localStorage
@@ -365,14 +365,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Dynamic theme toggle button in navigation bar with animated icons
   - Theme-aware notifications and UI components
 
-- **⚡ Enhanced Directory Management**
+- **Enhanced Directory Management**
   - Non-disruptive project addition (no automatic refresh interruptions)
   - Batched operations workflow with "Finish & Refresh Projects" button
   - Improved modal footer with clear action buttons
   - Better user feedback and workflow guidance
   - Informational tips for optimal usage patterns
 
-- **🎨 UI/UX Improvements**
+- **UI/UX Improvements**
   - Enhanced navigation bar styling with rounded corners and improved spacing
   - Better visual separation between banner and main content
   - Constrained banner width to match main container
@@ -402,7 +402,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2025-08-05
 
 ### Added
-- **🚀 Backend API Service**
+- **Backend API Service**
   - Node.js Express server for comprehensive filesystem scanning
   - RESTful API endpoints: `/api/projects`, `/api/health`, `/api/config`
   - Automatic project discovery on page load and refresh
@@ -410,14 +410,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fallback system for offline backend scenarios
   - CORS support for secure frontend-backend communication
 
-- **⚡ Enhanced Project Analysis**
+- **Enhanced Project Analysis**
   - Real-time filesystem analysis with recursive directory traversal
   - Intelligent depth limiting to prevent infinite loops
   - Advanced file type detection (15+ programming languages)
   - Smart project categorization based on file patterns
   - Production/Development status detection
 
-- **🛠️ Developer Experience**
+- **Developer Experience**
   - Setup script (`setup.sh`) for easy installation
   - Updated documentation with backend setup instructions
   - Comprehensive error handling and user feedback
@@ -437,27 +437,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2025-08-04
 
 ### Added
-- **🔍 Dynamic Project Scanning**
-  - New "🔍 Scan Folders" button for real-time project discovery
+- **Dynamic Project Scanning**
+  - New "Scan Folders" button for real-time project discovery
   - Browser-based folder selection using File System Access API
   - Multi-project scanning from parent directories
   - Hybrid system combining hardcoded projects with user-scanned projects
 
-- **🤖 Intelligent Auto-Detection**
+- **Intelligent Auto-Detection**
   - Automatic CLAUDE.md detection and marking
   - Virtual environment detection (venv/, .venv/, requirements.txt)
   - README file detection (README.md, readme.txt, etc.)
   - Technology stack analysis from file extensions
   - Smart project categorization based on structure and naming
 
-- **📊 Advanced Project Analysis**
+- **Advanced Project Analysis**
   - Technology mapping for 15+ languages (Python, JavaScript, TypeScript, Java, C++, Rust, Go, etc.)
   - Framework detection (Node.js, Docker, Python packages)
   - Category classification (Web Application, AI/ML Project, Backend Service, Mobile App)
   - Status detection (Production vs Development based on Docker files, test files)
   - Automatic tag generation for enhanced filtering
 
-- **🎨 Enhanced User Interface**
+- **Enhanced User Interface**
   - Custom favicon with folder and project dots design
   - Visual scanning feedback with button state changes
   - Success notification system with toast messages
@@ -486,8 +486,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **CLAUDE.md Detection & Integration**
   - New `hasClaude` field in project data structure
-  - Visual 🤖 indicator on project cards showing CLAUDE.md presence
-  - New "🤖 Claude" action button that copies `claude --continue` command to clipboard
+  - Visual indicator on project cards showing CLAUDE.md presence
+  - New "Claude" action button that copies `claude --continue` command to clipboard
   - Conditional rendering - Claude button only appears for projects with CLAUDE.md
 
 - **Virtual Environment Management**
@@ -533,7 +533,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-08-04
 
 ### Added
-- **Initial Release** 🎉
+- **Initial Release**
 - Comprehensive project dashboard with visual cards
 - Real-time search functionality across project names, descriptions, and technologies
 - Category-based filtering system (All, Production, Development, AI/ML, Web)

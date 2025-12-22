@@ -3,7 +3,7 @@
 ## Setup
 
 ```bash
-git clone https://github.com/your-username/project-tracker.git
+git clone https://github.com/bshepp-projects/project-tracker.git
 cd project-tracker/server
 npm install
 npm start
