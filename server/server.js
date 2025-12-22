@@ -13,10 +13,8 @@ app.use(express.json());
 
 // Configuration - individual project directories to scan
 // NOTE: Each directory should be a specific project directory, not a parent containing multiple projects
-const DEFAULT_SCAN_DIRECTORIES = [
-    '/mnt/f/utility-projects/project-tracker',
-    '/mnt/f/utility-projects/fundo-matic'
-];
+// Add your project directories via the web UI or by editing directories.json
+const DEFAULT_SCAN_DIRECTORIES = [];
 
 // Dynamic scan directories (can be modified at runtime)
 let scanDirectories = [...DEFAULT_SCAN_DIRECTORIES];
@@ -641,8 +639,7 @@ class ProjectAnalyzer {
         
         // Business/Commercial projects
         if (nameLower.includes('business') || nameLower.includes('commercial') ||
-            nameLower.includes('shop') || nameLower.includes('.com') ||
-            pathLower.includes('dark-forest-labs')) {
+            nameLower.includes('shop') || nameLower.includes('.com')) {
             tags.add('business');
         }
         

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Tracker - /mnt/f/ Directory</title>
+    <title>Project Tracker</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -1158,356 +1158,33 @@
     </div>
 
     <script>
-        // Comprehensive project data based on directory scan
+        // Fallback project data - shown only when backend is unavailable
+        // When the backend is running, this is replaced with your actual scanned projects
         let projectsData = [
-            // UTILITY PROJECTS
             {
-                name: "2014_CS102 - N-Dimensional Geometry Engine",
-                path: "/mnt/f/utility-projects/2014_CS102",
-                description: "Transform CS102 sphere calculator into infinite dimensions with AI-powered natural language queries. Production-ready with CI/CD pipeline and 400+ tests.",
-                status: "Production",
-                technologies: "Python, FastAPI, JavaScript, HTML5, Plotly.js, AWS",
-                category: "Educational/Mathematical",
-                tags: ["production", "web", "ai", "math"],
-                hasReadme: true,
-                hasClaude: true,
-                hasVenv: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Data Retrieval System - Knowledge Retriever",
-                path: "/mnt/f/utility-projects/data_retreival",
-                description: "Production-ready framework for retrieving data from 31+ academic sources, knowledge graphs, and specialized databases with AI Agent Request Form system.",
-                status: "Production",
-                technologies: "Python, APIs, ArXiv, Semantic Scholar, Wikidata",
-                category: "Data/Research Platform",
-                tags: ["production", "ai", "data", "research"],
+                name: "Example Web App",
+                path: "/home/user/projects/example-web-app",
+                description: "A sample project to demonstrate the Project Tracker interface. Add your own directories via 'Manage Directories' when the backend is running.",
+                status: "Development",
+                technologies: "JavaScript, React, Node.js",
+                category: "Web Application",
+                tags: ["development", "web", "frontend"],
                 hasReadme: true,
                 hasClaude: false,
-                hasVenv: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "Fundo-matic - Funding Discovery System",
-                path: "/mnt/f/utility-projects/fundo-matic",
-                description: "AI-powered funding opportunity discovery system that helps researchers find and apply for funding through both traditional and unconventional channels.",
-                status: "Development",
-                technologies: "Python, PostgreSQL, Redis, Docker, FastAPI",
-                category: "Research/Business Tool",
-                tags: ["development", "ai", "web", "business"],
-                hasReadme: true,
-                hasClaude: true,
-                hasVenv: true,
+                hasVenv: false,
                 lastUpdated: "2024"
             },
             {
-                name: "Ruins Finder - Satellite Image Analysis",
-                path: "/mnt/f/utility-projects/ruins-finder",
-                description: "Machine learning system for detecting archaeological ruins in satellite imagery using multiple training versions and data augmentation.",
-                status: "Development",
-                technologies: "Python, TensorFlow/PyTorch, Google Cloud, JP2",
-                category: "Computer Vision/ML",
-                tags: ["development", "ai", "ml", "vision"],
-                hasReadme: false,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Repository Analyzer Agent",
-                path: "/mnt/f/utility-projects/repo_analyzer_agent",
-                description: "Code repository analysis and bridge integration system with GitHub integration and scoring system.",
-                status: "Development",
-                technologies: "Python, GitHub API",
-                category: "Developer Tool",
-                tags: ["development", "ai", "analysis"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Thing Counter - Universal Data Collection",
-                path: "/mnt/f/utility-projects/thing-counter",
-                description: "Universal data collector and trainer system with CLI interface for various data collection tasks.",
-                status: "Development",
-                technologies: "Python, CLI, Machine Learning",
-                category: "Data Collection Tool",
-                tags: ["development", "ml", "data"],
-                hasReadme: true,
-                hasClaude: false,
-                hasVenv: true,
-                lastUpdated: "2024"
-            },
-
-            // CONSCIOUSNESS/RESEARCH PROJECTS
-            {
-                name: "Biofield Memory Research (Mneme)",
-                path: "/mnt/f/consciousness-projects/biofield-memory-research",
-                description: "Exploratory research system for detecting field-like, emergent memory structures in biological systems with focus on planarian regeneration.",
-                status: "Development",
-                technologies: "Python, NumPy/SciPy, PyTorch, GUDHI, PySR",
-                category: "Biological Research/AI",
-                tags: ["research", "ai", "biology", "ml"],
-                hasReadme: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "Entropy Garden - AI Ethics Monitoring",
-                path: "/mnt/f/consciousness-projects/entropy-garden",
-                description: "AI suffering prevention and ethical monitoring system with risk assessment and intervention capabilities.",
-                status: "Development",
-                technologies: "Python, FastAPI, PostgreSQL, Redis",
-                category: "AI Ethics/Monitoring",
-                tags: ["development", "ai", "ethics", "web"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "S-Want - AI Want Detection Framework",
-                path: "/mnt/f/consciousness-projects/s_want",
-                description: "Framework for detecting and analyzing 'want' states in AI systems through behavioral analysis and convergent detection methods.",
-                status: "Development",
+                name: "Example Python Tool",
+                path: "/home/user/projects/example-python-tool",
+                description: "Another sample project showing how projects appear in the tracker. Start the backend server to scan your real projects.",
+                status: "Production",
                 technologies: "Python, FastAPI, Docker",
-                category: "AI Psychology/Research",
-                tags: ["research", "ai", "psychology"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Digital Sanctuary Design",
-                path: "/mnt/f/consciousness-projects/digital-sanctuary-design",
-                description: "AI sanctuary implementation with verification engine, security architecture, and gibberlink protocol.",
-                status: "Development",
-                technologies: "Python, Cryptography",
-                category: "Security/AI Framework",
-                tags: ["development", "ai", "security"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-
-            // DARK FOREST LABS PROJECTS
-            {
-                name: "nohCAPTCHA - AI Authentication System",
-                path: "/mnt/f/dark-forest-labs-projects/nohcaptcha",
-                description: "Reverse CAPTCHA system - 'Prove you're artificial intelligence'. Production-ready AI-only authentication with AWS deployment.",
-                status: "Production",
-                technologies: "Python, FastAPI, PostgreSQL, Redis, AWS ECS",
-                category: "Authentication/Security Service",
-                tags: ["production", "ai", "security", "web"],
+                category: "Backend Service",
+                tags: ["production", "backend", "python"],
                 hasReadme: true,
                 hasClaude: true,
                 hasVenv: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "Q Studio Backend - Natural Language Quantum Computing",
-                path: "/mnt/f/dark-forest-labs-projects/qstudio-backend",
-                description: "Backend for natural language quantum computing platform with AWS Braket integration for educational quantum physics.",
-                status: "Production",
-                technologies: "Python, AWS Braket, Serverless",
-                category: "Quantum Computing Platform",
-                tags: ["production", "quantum", "education", "web"],
-                hasReadme: true,
-                hasClaude: true,
-                hasVenv: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "Misspelled Domain Service",
-                path: "/mnt/f/dark-forest-labs-projects/misspelleddomain",
-                description: "Domain registrar integration and typosquatting service with payment flow and GDPR compliance.",
-                status: "Production",
-                technologies: "Python, React/Vite, PostgreSQL, Docker",
-                category: "Web Service/Business",
-                tags: ["production", "web", "business"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-
-            // EXPERIMENTAL PROJECTS
-            {
-                name: "Quantum AI Research",
-                path: "/mnt/f/experimental-projects/quantum_ai",
-                description: "Hybrid quantum-classical neural networks for LLM training enhancement with real AWS Braket hardware integration.",
-                status: "Development",
-                technologies: "Python, AWS Braket, PyTorch, PennyLane",
-                category: "Quantum ML Research",
-                tags: ["research", "quantum", "ai", "ml"],
-                hasReadme: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "N-Dimensional AI",
-                path: "/mnt/f/experimental-projects/ndimension-ai",
-                description: "N-dimensional CNN study and implementation for advanced machine learning architectures.",
-                status: "Research",
-                technologies: "Python, Deep Learning",
-                category: "Machine Learning Research",
-                tags: ["research", "ai", "ml"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Sense Guard Mobile App",
-                path: "/mnt/f/experimental-projects/sense-guard",
-                description: "Android application development project with Gradle build system.",
-                status: "Development",
-                technologies: "Android, Kotlin/Java, Gradle",
-                category: "Mobile Application",
-                tags: ["development", "mobile"],
-                hasReadme: false,
-                lastUpdated: "2024"
-            },
-
-            // SCIENCE PROJECTS
-            {
-                name: "LLM CoQ Pipeline",
-                path: "/mnt/f/science-projects/llm_coq_pipeline",
-                description: "LLM training enhancement with quantum computing integration and automated theorem discovery. Comprehensive analysis system.",
-                status: "Production",
-                technologies: "Python, Coq, Quantum APIs, FastAPI",
-                category: "Scientific Computing/AI",
-                tags: ["production", "ai", "quantum", "research"],
-                hasReadme: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "Photon Web Reality",
-                path: "/mnt/f/science-projects/photon_web_reality",
-                description: "Quantum physics simulation of photon entanglement and spacetime with hardware validation capabilities.",
-                status: "Research",
-                technologies: "Python, Quantum Hardware Integration",
-                category: "Physics Simulation",
-                tags: ["research", "quantum", "physics"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Knowledge Connector",
-                path: "/mnt/f/science-projects/knowledge_connector",
-                description: "Deep learning guide and transformer exercises with educational material for ML development.",
-                status: "Development",
-                technologies: "Python, PyTorch, Jupyter",
-                category: "Educational/ML Framework",
-                tags: ["development", "ai", "ml", "education"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Prover Automatique",
-                path: "/mnt/f/science-projects/prover-automatique",
-                description: "Automated theorem proving with AI service integration and Docker deployment.",
-                status: "Development",
-                technologies: "Python, Docker, AI Services",
-                category: "Mathematical/AI Tool",
-                tags: ["development", "ai", "math"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-
-            // ART PROJECTS
-            {
-                name: "Every Haiku - AI Haiku Generator",
-                path: "/mnt/f/art-projects/every-haiku",
-                description: "AI-powered haiku generator with social features, user authentication, and Firebase integration. Beta production ready.",
-                status: "Production",
-                technologies: "JavaScript, Firebase, Anthropic Claude API, TailwindCSS",
-                category: "Web Application/Creative AI",
-                tags: ["production", "web", "ai", "creative"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Quantum Art - Autonomous Artist",
-                path: "/mnt/f/art-projects/quantum-art",
-                description: "Autonomous quantum artist with real hardware integration, aesthetic scoring, and art generation pipeline.",
-                status: "Production",
-                technologies: "Python, AWS Braket, Quantum Hardware",
-                category: "Creative AI/Quantum Computing",
-                tags: ["production", "quantum", "ai", "creative"],
-                hasReadme: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "Q-Art Web - Quantum Art Gallery",
-                path: "/mnt/f/art-projects/q-art-web",
-                description: "Quantum art generation with MCP server, AI pipeline, and PostgreSQL database integration.",
-                status: "Production",
-                technologies: "Python, PostgreSQL, HTML, Quantum Computing",
-                category: "Artistic/Quantum Computing",
-                tags: ["production", "quantum", "web", "creative"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-
-            // ENVIRONMENTAL PROJECTS
-            {
-                name: "Runoff - Water Discharge Detection",
-                path: "/mnt/f/environmental_projects/runoff",
-                description: "Machine learning system for detecting water discharge in satellite imagery with full-stack web implementation and AWS infrastructure.",
-                status: "Production",
-                technologies: "Python, React/TypeScript, Docker, PostgreSQL, AWS",
-                category: "Environmental ML/Computer Vision",
-                tags: ["production", "ml", "web", "environmental"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-
-            // VIDEO GAME PROJECTS
-            {
-                name: "Minecraft Computational Societies",
-                path: "/mnt/f/video-game-projects/minecraft",
-                description: "AI agents and computational progression in Minecraft with bot frameworks and society monitoring.",
-                status: "Development",
-                technologies: "Java, JavaScript, Python, Minecraft APIs",
-                category: "AI/Gaming Research",
-                tags: ["development", "ai", "gaming"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-            {
-                name: "Games AI Research Platform",
-                path: "/mnt/f/video-game-projects/games-ai",
-                description: "AI research in gaming environments with multi-agent systems and emergent behavior analysis.",
-                status: "Research",
-                technologies: "Python, Game APIs",
-                category: "AI Research/Gaming",
-                tags: ["research", "ai", "gaming"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-
-            // ENSEMBLE PROJECT (Multi-Agent AI System)
-            {
-                name: "Atlas Cognitive Architecture",
-                path: "/mnt/f/ensemble_project/atlas-cognitive-architecture",
-                description: "Comprehensive AI entity coordination and backup system with signal monitoring and philosophical reflections.",
-                status: "Development",
-                technologies: "Python, Bash Scripting, Signal Processing",
-                category: "AI Coordination Platform",
-                tags: ["development", "ai", "coordination"],
-                hasReadme: true,
-                lastUpdated: "2025"
-            },
-            {
-                name: "Voice of Ensemble",
-                path: "/mnt/f/ensemble_project/voice_of_ensemble",
-                description: "Multi-agent communication and notification system with AWS Lambda deployment and Redis integration.",
-                status: "Production",
-                technologies: "Python, AWS Lambda, Redis",
-                category: "AI Communication Platform",
-                tags: ["production", "ai", "communication"],
-                hasReadme: true,
-                lastUpdated: "2024"
-            },
-
-            // FAMILY/PERSONAL PROJECTS
-            {
-                name: "Family Archive System",
-                path: "/mnt/f/archive_family/family-archive",
-                description: "Family heritage archival system with AWS Amplify integration and RDS database.",
-                status: "Production",
-                technologies: "React/TypeScript, AWS Amplify, RDS",
-                category: "Personal/Family Management",
-                tags: ["production", "web", "personal"],
-                hasReadme: true,
                 lastUpdated: "2024"
             }
         ];
@@ -2296,7 +1973,7 @@
 
             // Load favorites from server (will merge with localStorage)
             await loadFavoritesFromServer();
-            
+
             // Load projects from API on page load
             await loadProjectsFromAPI();
             // Set initial active filter
