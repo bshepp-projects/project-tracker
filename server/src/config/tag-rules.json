@@ -1,0 +1,74 @@
+{
+  "rules": [
+    {
+      "tag": "quantum",
+      "namePatterns": ["quantum", "q-art", "qsim", "photon"],
+      "pathPatterns": ["quantum"]
+    },
+    {
+      "tag": "ai",
+      "namePatterns": ["ai", "ml", "neural", "machine", "learning"],
+      "pathPatterns": []
+    },
+    {
+      "tag": "research",
+      "namePatterns": ["research", "analysis", "study", "experiment"],
+      "pathPatterns": ["science", "consciousness"]
+    },
+    {
+      "tag": "creative",
+      "namePatterns": ["art", "creative", "haiku", "curator"],
+      "pathPatterns": ["art-projects"]
+    },
+    {
+      "tag": "gaming",
+      "namePatterns": ["game", "gaming"],
+      "pathPatterns": ["game"]
+    },
+    {
+      "tag": "tool",
+      "namePatterns": ["tool", "tracker", "analyzer", "counter", "finder"],
+      "pathPatterns": ["utility"]
+    },
+    {
+      "tag": "science",
+      "namePatterns": ["physics", "neutrino", "topology", "icecube", "prover"],
+      "pathPatterns": ["science"]
+    },
+    {
+      "tag": "environmental",
+      "namePatterns": ["runoff", "eco", "climate"],
+      "pathPatterns": ["environmental"]
+    },
+    {
+      "tag": "security",
+      "namePatterns": ["security", "captcha", "auth", "guard"],
+      "pathPatterns": []
+    },
+    {
+      "tag": "business",
+      "namePatterns": ["business", "commercial", "shop", ".com"],
+      "pathPatterns": []
+    },
+    {
+      "tag": "education",
+      "namePatterns": ["education", "tutorial", "cs102", "learn"],
+      "pathPatterns": []
+    },
+    {
+      "tag": "experimental",
+      "namePatterns": ["prototype", "test"],
+      "pathPatterns": ["experimental"]
+    },
+    {
+      "tag": "framework",
+      "namePatterns": ["architecture", "framework", "template", "platform"],
+      "pathPatterns": []
+    },
+    {
+      "tag": "data",
+      "namePatterns": ["data", "analytics", "retrieval"],
+      "pathPatterns": []
+    }
+  ]
+}

@@ -7,7 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-02-19
+
+### Major Release: TypeScript Conversion, Frontend Modularization & Test Suite
+
+A comprehensive tech debt refactoring addressing 8 pain points across the full stack.
+
 ### Added
+- **TypeScript Backend**: Entire backend converted from JavaScript to TypeScript
+  - Strict type checking with shared interfaces in `src/types.ts`
+  - Instance-based service classes with constructor-injected dependencies
+  - Modular file structure: `src/services/`, `src/routes/`, `src/config/`
+  - Development mode with auto-reload (`npm run dev` via tsx)
+  - Backward-compatible shim in `server.js` for existing scripts
+
+- **Test Suite**: Comprehensive Jest test suite with 78 tests across 9 suites
+  - Unit tests for all 5 service classes (CacheManager, ProjectAnalyzer, ClaudeAnalyzer, GitAnalyzer, UserData)
+  - API integration tests for routes using supertest (health, favorites, tags, directories)
+  - Test helpers for creating isolated test instances
+
+- **Shared Frontend Assets**: Extracted duplicated CSS/JS into `shared/` directory
+  - `shared/shared.css` -- common styles (reset, nav, modals, theme, responsive)
+  - `shared/shared.js` -- common JS (escapeHtml, theme toggle, notifications, directory/tag management)
+  - Each HTML file reduced from ~2500 lines to page-specific code only
+
+- **Data-Driven Tag Rules**: Tag detection now uses `src/config/tag-rules.json`
+  - Editable without code changes -- add patterns to auto-detect project tags
+  - Technology-based and status-based tags remain in code (generic logic)
+
+- **XSS Protection**: All `innerHTML` injection sites sanitized with `escapeHtml()` and `escapeJsStr()`
+
+- **CI Backend Job**: GitHub Actions workflow now builds TypeScript and runs Jest tests
+
+### Fixed
+- **DELETE /api/tags/:tagName**: Was a no-op stub returning success without deleting; now removes tags from user data and cache
+- **XSS Vulnerability**: ~15 unsanitized `innerHTML` injection sites across 3 HTML files now properly escaped
+
+### Changed
+- Backend classes converted from static to instance-based (proper dependency injection)
+- Route handlers split from monolithic `server.js` into 7 separate route files
+- GitHub Actions bumped from actions/checkout@v3 and actions/setup-node@v3 to v4
+
+### Removed
+- Dead frontend code: `analyzeProjectFolder()`, `detectTechnologies()`, `detectCategory()`, `detectStatus()`, `generateTags()`, `getHardcodedProjects()` (~150 lines per HTML file)
+- Duplicated CSS and JS across HTML files (moved to `shared/`)
+
+### Technical
+- Backend entry point: `src/index.ts` wires services and starts server; `src/app.ts` creates Express app (testable)
+- `UserData` class extracted from top-level `userData` object and `loadUserData()`/`saveUserData()` functions
+- `fileExists()` utility extracted from 3 duplicated implementations
+- `CacheManager.removeTag()` method added for proper tag cleanup
+
+### Added (Previous Unreleased)
 - **Back to Top Button**: Added back-to-top navigation button in all tracker interfaces
   - Positioned next to theme toggle in navigation bar with consistent styling
   - Smooth scrolling animation with hover effects
@@ -617,4 +668,4 @@ All changes should be documented in this changelog following the format:
 
 ---
 
-*Last updated: August 20, 2025*
+*Last updated: February 19, 2026*
