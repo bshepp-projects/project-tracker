@@ -131,6 +131,7 @@ yarn.lock
 # Build and Distribution
 # ===========================
 dist/
+server/dist/
 build/
 out/
 *.tar.gz

@@ -43,8 +43,8 @@ Working features:
 - [ ] Better caching strategy
 
 ### Technical
-- [ ] TypeScript conversion
-- [ ] Test suite
+- [x] TypeScript conversion (completed v2.0.0)
+- [x] Test suite (completed v2.0.0 -- Jest with ts-jest, unit + API integration tests)
 - [ ] Docker deployment option
 
 ## Not Planned

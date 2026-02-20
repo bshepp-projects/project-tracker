@@ -21,7 +21,7 @@ A local tool to find and organize projects across multiple directories.
 cd project-tracker
 cd server && npm install
 npm start
-# Server runs on http://localhost:3001
+# Builds TypeScript and starts the server on http://localhost:3001
 
 # Open project-tracker.html in your browser
 ```
@@ -30,6 +30,11 @@ Or use the setup script:
 ```bash
 ./setup.sh
 cd server && npm start
+```
+
+For development with auto-reload:
+```bash
+cd server && npm run dev
 ```
 
 ## Usage
@@ -50,14 +55,43 @@ cd server && npm start
 
 ```
 project-tracker/
-├── project-tracker.html    # Main interface
-├── claude-tracker.html     # Claude projects view
-├── git-tracker.html        # Git repository view
+├── project-tracker.html       # Main interface
+├── claude-tracker.html        # Claude projects view
+├── git-tracker.html           # Git repository view
+├── shared/
+│   ├── shared.css             # Common styles (theme, nav, modals, responsive)
+│   └── shared.js              # Common JS (escapeHtml, theme, notifications, directory/tag mgmt)
 └── server/
-    ├── server.js           # Express backend
     ├── package.json
-    ├── directories.json    # Configured directories (generated)
-    └── user-data.json      # Tags and favorites (generated)
+    ├── tsconfig.json
+    ├── jest.config.js
+    ├── server.js              # Backward-compat shim → dist/index.js
+    ├── src/
+    │   ├── index.ts           # Entry point (wires services, starts server)
+    │   ├── app.ts             # Express app factory
+    │   ├── types.ts           # Shared TypeScript interfaces
+    │   ├── utils.ts           # Shared utilities
+    │   ├── services/
+    │   │   ├── cache-manager.ts
+    │   │   ├── project-analyzer.ts
+    │   │   ├── claude-analyzer.ts
+    │   │   ├── git-analyzer.ts
+    │   │   └── user-data.ts
+    │   ├── routes/
+    │   │   ├── projects.ts
+    │   │   ├── directories.ts
+    │   │   ├── tags.ts
+    │   │   ├── favorites.ts
+    │   │   ├── git.ts
+    │   │   ├── claude.ts
+    │   │   └── health.ts
+    │   ├── config/
+    │   │   └── tag-rules.json # Data-driven tag detection rules
+    │   └── __tests__/         # Jest test suite
+    ├── dist/                  # Compiled output (gitignored)
+    ├── directories.json       # Configured directories (generated)
+    ├── user-data.json         # Tags and favorites (generated)
+    └── projects-cache.json    # Cached scan results (generated)
 ```
 
 ## API Endpoints
@@ -72,6 +106,10 @@ project-tracker/
 - `DELETE /api/favorites` - Remove favorite
 - `POST /api/projects/:path/tags` - Save tags for a project
 - `GET /api/tags` - Get all tags
+- `DELETE /api/tags/:tagName` - Remove a tag from all projects
+- `GET /api/claude/projects` - Projects with CLAUDE.md
+- `GET /api/git/repos` - Git repository details
+- `GET /api/health` - Health check
 
 ## What Gets Detected
 
@@ -88,6 +126,14 @@ All data is local:
 - `projects-cache.json` - cached scan results
 
 No external services, no tracking.
+
+## Testing
+
+```bash
+cd server && npm test
+```
+
+Unit tests cover all backend services (CacheManager, ProjectAnalyzer, ClaudeAnalyzer, GitAnalyzer, UserData). API integration tests verify route behavior using supertest.
 
 ## Keyboard Shortcuts
 

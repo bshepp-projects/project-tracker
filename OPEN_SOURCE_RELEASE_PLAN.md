@@ -27,4 +27,4 @@ This repository is ready to share publicly:
 3. Open `project-tracker.html` in your browser
 4. Add your project directories via the UI
 
-The tool is fully functional for personal use with zero configuration beyond adding your own directories.
+`npm start` builds the TypeScript source automatically before starting. The tool is fully functional for personal use with zero configuration beyond adding your own directories.

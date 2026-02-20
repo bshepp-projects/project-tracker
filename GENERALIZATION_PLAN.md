@@ -9,7 +9,7 @@ The following changes have been made to prepare for public release:
 ### Completed
 
 - ✅ Replaced hardcoded `projectsData` arrays in HTML files with generic examples
-- ✅ Changed `DEFAULT_SCAN_DIRECTORIES` in server.js to empty array
+- ✅ Changed `DEFAULT_SCAN_DIRECTORIES` in server to empty array
 - ✅ `directories.json` is excluded from git via .gitignore (users create their own)
 - ✅ Personal project paths removed from fallback data
 - ✅ GitHub URLs updated in documentation
