@@ -157,6 +157,7 @@ out/
 # Backup Files
 # ===========================
 *.bak
+*.bak.*
 *.backup
 *.orig
 *.rej
