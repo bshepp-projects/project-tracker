@@ -827,9 +827,9 @@
                 .then(response => response.json())
                 .then(data => {
                     // Update just this project in the global array
-                    const projectIndex = projects.findIndex(p => p.path === path);
+                    const projectIndex = projectsData.findIndex(p => p.path === path);
                     if (projectIndex !== -1 && data.length > 0) {
-                        projects[projectIndex] = data[0];
+                        projectsData[projectIndex] = data[0];
                         filterProjects(); // Re-render to show updated data
                     }
                     
