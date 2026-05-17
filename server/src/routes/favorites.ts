@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import type { UserData } from '../services/user-data';
+import { isPathWithinScanDirs } from '../utils';
 
-export function createFavoritesRouter(userData: UserData): Router {
+export function createFavoritesRouter(
+  userData: UserData,
+  getScanDirectories: () => string[]
+): Router {
   const router = Router();
 
   router.get('/favorites', (_req, res) => {
@@ -14,6 +18,11 @@ export function createFavoritesRouter(userData: UserData): Router {
 
       if (!projectPath || typeof projectPath !== 'string') {
         res.status(400).json({ success: false, error: 'Project path is required' });
+        return;
+      }
+
+      if (!isPathWithinScanDirs(projectPath, getScanDirectories())) {
+        res.status(403).json({ success: false, error: 'Path is outside the configured scan directories' });
         return;
       }
 

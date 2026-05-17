@@ -11,15 +11,15 @@ describe('Favorites API', () => {
 
   it('POST /api/favorites adds a favorite', async () => {
     const userData = createTestUserData();
-    const app = createTestApp({ userData });
+    const app = createTestApp({ userData, scanDirectories: ['/scan/root'] });
 
     const res = await request(app)
       .post('/api/favorites')
-      .send({ projectPath: '/path/to/project' });
+      .send({ projectPath: '/scan/root' });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.favorites).toContain('/path/to/project');
+    expect(res.body.favorites).toContain('/scan/root');
   });
 
   it('POST /api/favorites rejects missing path', async () => {
