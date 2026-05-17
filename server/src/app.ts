@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 
+import { isAllowedOrigin } from './utils';
+
 import type { CacheManager } from './services/cache-manager';
 import type { UserData } from './services/user-data';
 import type { ProjectAnalyzer } from './services/project-analyzer';
@@ -28,7 +30,11 @@ export interface AppDependencies {
 
 export function createApp(deps: AppDependencies): express.Express {
   const app = express();
-  app.use(cors());
+  app.use(
+    cors({
+      origin: (origin, callback) => callback(null, isAllowedOrigin(origin ?? undefined)),
+    })
+  );
   app.use(express.json());
 
   app.use('/api', createHealthRouter());
@@ -38,7 +44,7 @@ export function createApp(deps: AppDependencies): express.Express {
     createDirectoriesRouter(deps.getScanDirectories, deps.setScanDirectories, deps.saveDirectories, deps.cacheManager)
   );
   app.use('/api', createTagsRouter(deps.userData, deps.cacheManager, deps.projectAnalyzer, deps.getScanDirectories));
-  app.use('/api', createFavoritesRouter(deps.userData));
+  app.use('/api', createFavoritesRouter(deps.userData, deps.getScanDirectories));
   app.use('/api', createClaudeRouter(deps.claudeAnalyzer, deps.getScanDirectories));
   app.use('/api', createGitRouter(deps.gitAnalyzer, deps.getScanDirectories));
 

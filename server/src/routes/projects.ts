@@ -4,16 +4,7 @@ import path from 'path';
 import type { ProjectAnalyzer } from '../services/project-analyzer';
 import type { CacheManager } from '../services/cache-manager';
 import type { Project } from '../types';
-
-function shouldSkipDirectory(dirName: string): boolean {
-  return (
-    dirName.startsWith('$Temp') ||
-    dirName.endsWith('.tmp') ||
-    dirName === '$RECYCLE.BIN' ||
-    dirName === 'System Volume Information' ||
-    (dirName.startsWith('.') && dirName !== '.claude')
-  );
-}
+import { shouldSkipDirectory } from '../utils';
 
 export function createProjectsRouter(
   projectAnalyzer: ProjectAnalyzer,
