@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import path from 'path';
 import type { GitRepo, CommitInfo, BranchStatus, WorkingTreeStatus, GitHubActionsInfo } from '../types';
 import { fileExists } from '../utils';
@@ -59,22 +59,28 @@ export class GitAnalyzer {
     }
   }
 
-  private executeGitCommand(projectPath: string, command: string): Promise<GitCommandResult> {
+  private executeGitCommand(projectPath: string, args: string[]): Promise<GitCommandResult> {
     return new Promise((resolve) => {
-      const fullCommand = `cd "${projectPath}" && git ${command}`;
-      exec(fullCommand, { timeout: 10000 }, (error, stdout, stderr) => {
-        resolve({
-          stdout: (stdout || '').trim(),
-          stderr: (stderr || '').trim(),
-          error: error,
-        });
-      });
+      // execFile (no shell) — the path is passed as cwd and git args as an
+      // argv array, so directory or branch names cannot inject shell commands.
+      execFile(
+        'git',
+        args,
+        { cwd: projectPath, timeout: 10000, windowsHide: true },
+        (error, stdout, stderr) => {
+          resolve({
+            stdout: (stdout || '').trim(),
+            stderr: (stderr || '').trim(),
+            error: error,
+          });
+        }
+      );
     });
   }
 
   async getCurrentBranch(projectPath: string): Promise<string | null> {
     try {
-      const result = await this.executeGitCommand(projectPath, 'branch --show-current');
+      const result = await this.executeGitCommand(projectPath, ['branch', '--show-current']);
       return result.stdout || 'detached HEAD';
     } catch {
       return null;
@@ -83,7 +89,7 @@ export class GitAnalyzer {
 
   async getRemoteUrl(projectPath: string): Promise<string | null> {
     try {
-      const result = await this.executeGitCommand(projectPath, 'remote get-url origin');
+      const result = await this.executeGitCommand(projectPath, ['remote', 'get-url', 'origin']);
       return result.stdout || null;
     } catch {
       return null;
@@ -97,10 +103,11 @@ export class GitAnalyzer {
 
   async getLastCommit(projectPath: string): Promise<CommitInfo | null> {
     try {
-      const result = await this.executeGitCommand(
-        projectPath,
-        'log -1 --pretty=format:"%H|%s|%an|%ar"'
-      );
+      const result = await this.executeGitCommand(projectPath, [
+        'log',
+        '-1',
+        '--pretty=format:%H|%s|%an|%ar',
+      ]);
       if (!result.stdout) return null;
 
       const [hash, message, author, date] = result.stdout.replace(/"/g, '').split('|');
@@ -117,7 +124,7 @@ export class GitAnalyzer {
 
   async getBranchStatus(projectPath: string): Promise<BranchStatus> {
     try {
-      const result = await this.executeGitCommand(projectPath, 'status -b --porcelain=v1');
+      const result = await this.executeGitCommand(projectPath, ['status', '-b', '--porcelain=v1']);
       const lines = result.stdout.split('\n');
       const branchLine = lines[0];
 
@@ -162,7 +169,7 @@ export class GitAnalyzer {
 
   async getWorkingTreeStatus(projectPath: string): Promise<WorkingTreeStatus> {
     try {
-      const result = await this.executeGitCommand(projectPath, 'status --porcelain');
+      const result = await this.executeGitCommand(projectPath, ['status', '--porcelain']);
       const lines = result.stdout.split('\n').filter((line) => line.trim());
 
       let modified = 0;
@@ -184,7 +191,7 @@ export class GitAnalyzer {
 
   async getBranchCount(projectPath: string): Promise<number> {
     try {
-      const result = await this.executeGitCommand(projectPath, 'branch -a');
+      const result = await this.executeGitCommand(projectPath, ['branch', '-a']);
       return result.stdout.split('\n').filter((line) => line.trim()).length;
     } catch {
       return 0;
@@ -193,7 +200,7 @@ export class GitAnalyzer {
 
   async getLastActivity(projectPath: string): Promise<string> {
     try {
-      const result = await this.executeGitCommand(projectPath, 'log -1 --pretty=format:"%cr"');
+      const result = await this.executeGitCommand(projectPath, ['log', '-1', '--pretty=format:%cr']);
       return result.stdout.replace(/"/g, '') || 'Unknown';
     } catch {
       return 'Unknown';
@@ -203,8 +210,11 @@ export class GitAnalyzer {
   async getGitHubActions(projectPath: string): Promise<GitHubActionsInfo | null> {
     try {
       return new Promise((resolve) => {
-        const command = `cd "${projectPath}" && gh run list --limit 1 --json status,workflowName,createdAt 2>/dev/null`;
-        exec(command, { timeout: 5000 }, (error, stdout) => {
+        execFile(
+          'gh',
+          ['run', 'list', '--limit', '1', '--json', 'status,workflowName,createdAt'],
+          { cwd: projectPath, timeout: 5000, windowsHide: true },
+          (error, stdout) => {
           if (error || !stdout?.trim()) {
             resolve(null);
             return;

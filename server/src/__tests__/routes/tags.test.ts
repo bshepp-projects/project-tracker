@@ -35,10 +35,10 @@ describe('Tags API', () => {
   describe('GET /api/projects/:projectPath/tags', () => {
     it('returns tags for a project', async () => {
       const userData = createTestUserData();
-      userData.setTagsForProject('/path/to/project', ['web', 'ai']);
-      const app = createTestApp({ userData });
+      userData.setTagsForProject('/scan/root', ['web', 'ai']);
+      const app = createTestApp({ userData, scanDirectories: ['/scan/root'] });
 
-      const encodedPath = encodeURIComponent('/path/to/project');
+      const encodedPath = encodeURIComponent('/scan/root');
       const res = await request(app).get(`/api/projects/${encodedPath}/tags`);
 
       expect(res.status).toBe(200);

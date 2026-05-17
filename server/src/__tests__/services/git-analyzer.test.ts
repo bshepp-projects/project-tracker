@@ -1,3 +1,6 @@
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { GitAnalyzer } from '../../services/git-analyzer';
 
 describe('GitAnalyzer', () => {
@@ -5,6 +8,24 @@ describe('GitAnalyzer', () => {
 
   beforeEach(() => {
     analyzer = new GitAnalyzer();
+  });
+
+  describe('command injection safety', () => {
+    // `&` chains commands and `echo > file` works in both POSIX sh and
+    // Windows cmd.exe, so this payload triggers on the dev box and in CI.
+    const marker = path.join(os.tmpdir(), `pt-injection-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+
+    afterEach(() => {
+      if (fs.existsSync(marker)) fs.unlinkSync(marker);
+    });
+
+    it('does not execute shell commands embedded in a project path', async () => {
+      const evilPath = `${os.tmpdir()}" & echo pwned > "${marker}`;
+
+      await analyzer.getCurrentBranch(evilPath);
+
+      expect(fs.existsSync(marker)).toBe(false);
+    });
   });
 
   describe('isGitHubRepo', () => {

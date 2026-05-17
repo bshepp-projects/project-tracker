@@ -2,16 +2,7 @@ import { Router } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import type { ClaudeAnalyzer } from '../services/claude-analyzer';
-
-function shouldSkipDirectory(dirName: string): boolean {
-  return (
-    dirName.startsWith('$Temp') ||
-    dirName.endsWith('.tmp') ||
-    dirName === '$RECYCLE.BIN' ||
-    dirName === 'System Volume Information' ||
-    (dirName.startsWith('.') && dirName !== '.claude')
-  );
-}
+import { shouldSkipDirectory } from '../utils';
 
 export function createClaudeRouter(
   claudeAnalyzer: ClaudeAnalyzer,

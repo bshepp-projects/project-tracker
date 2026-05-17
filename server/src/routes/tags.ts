@@ -4,6 +4,7 @@ import path from 'path';
 import type { UserData } from '../services/user-data';
 import type { CacheManager } from '../services/cache-manager';
 import type { ProjectAnalyzer } from '../services/project-analyzer';
+import { shouldSkipDirectory, isPathWithinScanDirs } from '../utils';
 
 export function createTagsRouter(
   userData: UserData,
@@ -49,6 +50,12 @@ export function createTagsRouter(
   router.get('/projects/:projectPath/tags', (req, res) => {
     try {
       const decodedPath = decodeURIComponent(req.params.projectPath);
+
+      if (!isPathWithinScanDirs(decodedPath, getScanDirectories())) {
+        res.status(403).json({ success: false, error: 'Path is outside the configured scan directories' });
+        return;
+      }
+
       const tags = userData.getTagsForProject(decodedPath);
       res.json({ success: true, projectPath: decodedPath, tags });
     } catch (error) {
@@ -68,6 +75,11 @@ export function createTagsRouter(
       }
 
       const decodedPath = decodeURIComponent(req.params.projectPath);
+
+      if (!isPathWithinScanDirs(decodedPath, getScanDirectories())) {
+        res.status(403).json({ success: false, error: 'Path is outside the configured scan directories' });
+        return;
+      }
 
       try {
         await fs.access(decodedPath);
@@ -111,14 +123,4 @@ export function createTagsRouter(
   });
 
   return router;
-}
-
-function shouldSkipDirectory(dirName: string): boolean {
-  return (
-    dirName.startsWith('$Temp') ||
-    dirName.endsWith('.tmp') ||
-    dirName === '$RECYCLE.BIN' ||
-    dirName === 'System Volume Information' ||
-    (dirName.startsWith('.') && dirName !== '.claude')
-  );
 }
