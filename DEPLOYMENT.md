@@ -48,13 +48,34 @@ cd server && npm run dev
 PORT=8080 npm start
 ```
 
-Update `API_BASE_URL` in `shared/shared.js` if you change the port.
+Update `API_BASE_URL` in `shared/shared.js` if you change the port. Behind a reverse proxy (e.g. nginx serving the app under `/tracker/`), set it to a **relative** path like `/tracker/api` so requests are same-origin (no CORS needed).
 
 ### Adding Project Directories
 
 Either:
-1. Use the "Manage Directories" button in the UI
-2. Edit `server/directories.json` directly
+1. Use the "Manage Directories" button in the UI (adds explicit pins)
+2. Edit `server/directories.json` directly. Recommended shape:
+
+```jsonc
+{
+  "roots": ["/path/to/projects-parent"],   // auto-discovers projects inside
+  "directories": [],                         // explicit pins (also legacy format)
+  "exclude": [],                             // extra dir names to skip
+  "maxDepth": 3
+}
+```
+
+A legacy `{ "directories": [...] }` file keeps working; unreachable entries are reported in the UI instead of vanishing. This file is gitignored — it stays local.
+
+### Local Actions (opt-in, localhost only)
+
+The per-project action buttons (open folder, launch Claude, etc.) copy a command by default. To make them execute, run the server **locally** with:
+
+```bash
+ENABLE_LOCAL_ACTIONS=1 npm start
+```
+
+The bridge is gated three ways and only fires when **all** hold: the flag is set, the server is bound to a loopback host (the default), and the request originates from the same machine. On any networked deployment (`HOST=0.0.0.0`, reverse proxy, remote box) it is inert and the buttons safely fall back to copy. Do **not** enable it on a shared/networked server.
 
 ### Customizing Tag Detection
 

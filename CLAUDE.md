@@ -39,17 +39,20 @@ Instance-based service classes (constructor-injected dependencies):
 - `CacheManager` (`services/cache-manager.ts`) - File-based caching with 1-hour TTL
 - `ProjectAnalyzer` (`services/project-analyzer.ts`) - Scans directories, detects tech stacks, generates tags
 - `ClaudeAnalyzer` (`services/claude-analyzer.ts`) - Detects CLAUDE.md files and .claude directories
-- `GitAnalyzer` (`services/git-analyzer.ts`) - Git status, branch info, GitHub detection
+- `GitAnalyzer` (`services/git-analyzer.ts`) - Git status, branch info, GitHub detection (uses `execFile`, never a shell)
+- `ProjectDiscovery` (`services/project-discovery.ts`) - Walks configured roots to find project dirs by marker; reports skipped paths
 - `UserData` (`services/user-data.ts`) - Persists tags and favorites
 
-Route handlers are in `src/routes/` (one file per resource: projects, directories, tags, favorites, git, claude, health).
+`services/action-command.ts` is a pure builder (action name + path → spawn spec or copy text) used by the local action bridge.
+
+Route handlers are in `src/routes/` (one file per resource: projects, directories, tags, favorites, git, claude, health, actions).
 
 Tag generation uses data-driven rules from `src/config/tag-rules.json` (editable without code changes).
 
 Types are defined in `src/types.ts`.
 
 Data files (in `server/`, not `src/`):
-- `directories.json` - Configured scan directories
+- `directories.json` - Scan config: `roots` (parents auto-scanned for projects), `directories` (explicit project pins, legacy key), `exclude` (extra basenames to skip), `maxDepth` (default 3). All keys optional; legacy `{ "directories": [...] }` still works. Gitignored — local-only, not committed.
 - `user-data.json` - Tags and favorites (persistent)
 - `projects-cache.json` - Cached scan results
 
@@ -66,8 +69,8 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 ## API Endpoints
 
 ### Projects
-- `GET /api/projects` - Full scan
-- `GET /api/projects/cached` - Return cache, trigger background scan if stale
+- `GET /api/projects` - Full scan. Response includes `discovery: { rootsScanned, projectsFound, skipped: [{path,reason}] }`
+- `GET /api/projects/cached` - Return cache, trigger background scan if stale (also returns `discovery`)
 
 ### Configuration
 - `GET /api/config` - Current directories
@@ -82,6 +85,10 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 - `GET /api/projects/:path/tags` - Get tags for project
 - `POST /api/projects/:path/tags` - Save tags `{ tags: [] }`
 
+### Local Actions (localhost-gated)
+- `GET /api/actions/status` - `{ enabled }` — whether the bridge is usable
+- `POST /api/actions/:action` - Run an allowlisted action `{ projectPath }`. Actions: `open-folder`, `open-terminal`, `launch-claude`, `launch-claude-yolo`, `activate-venv`. Returns `{ mode: 'launched' }` or `{ mode: 'copy', text }`.
+
 ### Other
 - `GET /api/health` - Health check
 - `GET /api/tags` - All tags across projects
@@ -91,8 +98,11 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 
 ## Key Behaviors
 
-- Projects are scanned from directories listed in `directories.json`
-- Each directory should be a project root, not a parent folder
+- Projects come from **discovery**: each `roots` entry is walked to `maxDepth`; a directory is a project if it contains a marker (`.git`, `package.json`, `pyproject.toml`, `requirements.txt`, `Cargo.toml`, `go.mod`, `CLAUDE.md`) and descent stops there. `directories` entries are explicit pins included regardless. (Pointing a root at a *parent* folder is now the intended usage — the old "each entry must be a single project root" rule no longer applies.)
+- Missing/inaccessible roots and pins are reported in the `discovery.skipped` array and surfaced in the UI — never silently dropped.
+- Discovery skips `node_modules`/`venv`/`__pycache__`/`dist`/`build`, anything in `exclude`, dot-dirs (except `.claude`), and does not follow symlinks (cycle-safe).
+- `isPathWithinScanDirs` validates client-supplied paths (tags/favorites/actions) against pins + roots.
+- **Local action bridge** is off by default. It only executes when ALL hold: `ENABLE_LOCAL_ACTIONS` is set, the server is bound to loopback, and the request comes from a loopback address. Otherwise it 403s with `actionsDisabled` (so it is provably inert on a `0.0.0.0`/remote box like Magus). Commands are built by a fixed per-OS allowlist and spawned with no shell.
 - WSL path conversion: Windows paths like `C:\...` become `/mnt/c/...`
 - Cache expires after 1 hour
 - Tags merge auto-detected tags with user-saved tags
@@ -119,8 +129,8 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 
 Tests use Jest with ts-jest. Test files are in `server/src/__tests__/`.
 
-- **Unit tests** (`__tests__/services/`): CacheManager, ProjectAnalyzer, ClaudeAnalyzer, GitAnalyzer, UserData
-- **API tests** (`__tests__/routes/`): health, favorites, tags, directories (using supertest)
+- **Unit tests** (`__tests__/services/` + `__tests__/utils.test.ts`): CacheManager, ProjectAnalyzer, ClaudeAnalyzer, GitAnalyzer (incl. a command-injection regression test), UserData, ProjectDiscovery, buildActionCommand, utils (path containment / CORS / loopback)
+- **API tests** (`__tests__/routes/` + `cors.test.ts`): health, favorites, tags, directories, path-validation, actions (incl. an explicit "inert on a Magus-like 0.0.0.0 host" test), using supertest
 - **Test helpers** (`__tests__/test-helpers.ts`): factories for creating isolated test instances
 
 Run `npm test` from `server/`.

@@ -4,7 +4,7 @@ description: "Use when editing frontend HTML pages. Covers XSS prevention, share
 ---
 # Frontend HTML Conventions
 
-- **XSS prevention is mandatory**: All dynamic data injected via `innerHTML` must pass through `escapeHtml()` or `escapeJsStr()` from `shared/shared.js`. Never insert raw user data.
+- **XSS prevention is mandatory**: Prefer safe DOM construction (`textContent`, `createElement`, setting `.title`/attributes as properties) over `innerHTML`. Where `innerHTML` is genuinely needed, every dynamic value must pass through `escapeHtml()` / `escapeJsStr()` from `shared/shared.js`. Never build `innerHTML` from raw/interpolated dynamic data.
 - No build step — vanilla HTML/CSS/JS only. No frameworks, no bundlers, no transpilers.
 - Three pages (`project-tracker.html`, `claude-tracker.html`, `git-tracker.html`) share common assets from `shared/shared.css` and `shared/shared.js`.
 - Page-specific styles go in `<style>` blocks within the HTML file, not in shared CSS (unless truly shared).

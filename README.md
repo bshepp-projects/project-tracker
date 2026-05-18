@@ -4,10 +4,11 @@ A local tool to find and organize projects across multiple directories.
 
 ## What It Does
 
-- Scans directories you specify and displays projects in a web interface
+- Auto-discovers projects under the parent folders ("roots") you configure — no need to list every project by hand
 - Detects technology stacks, git status, CLAUDE.md files, virtual environments
 - Tags projects automatically based on content; you can add custom tags
 - Favorites and tags are persisted server-side
+- Optional local action bridge: when run locally with a flag, the per-project buttons (open folder, launch Claude, etc.) actually execute instead of just copying a command
 - Dark/light theme
 
 ## Requirements
@@ -40,10 +41,35 @@ cd server && npm run dev
 ## Usage
 
 1. Open `project-tracker.html` in your browser
-2. Click "Manage Directories" to add project paths
-3. Projects are scanned and displayed with detected info
+2. Configure scan locations (see "Scanning" below) — point `roots` at parent folders and projects are found automatically; "Manage Directories" adds explicit pins
+3. Projects are scanned and displayed with detected info; a line under the stats shows how many were found vs. any configured paths that were unavailable
 4. Use search to filter, click stars to favorite
 5. Tags can be edited via "Manage Tags"
+
+### Scanning
+
+`server/directories.json` controls what is scanned. All keys optional:
+
+```jsonc
+{
+  "roots":   ["F:\\projects", "F:\\work"],  // parents — auto-discover projects inside
+  "directories": ["F:\\one-off\\thing"],    // explicit pins (also the legacy format)
+  "exclude": ["archive"],                    // extra directory names to skip
+  "maxDepth": 3                              // how deep to walk under each root
+}
+```
+
+A directory counts as a project if it contains a marker (`.git`, `package.json`, `pyproject.toml`, `requirements.txt`, `Cargo.toml`, `go.mod`, or `CLAUDE.md`); discovery stops descending there. `node_modules`, `venv`, `dist`, etc. and symlinks are skipped. Anything unreachable is reported in the UI, not silently dropped. A legacy `{ "directories": [...] }` file still works unchanged.
+
+### Local Actions (opt-in)
+
+By default the action buttons copy a command to the clipboard. To make them actually run on your machine, start the server **locally** with:
+
+```bash
+cd server && ENABLE_LOCAL_ACTIONS=1 npm start
+```
+
+The bridge only works when the server is bound to localhost **and** the request comes from the same machine, so it stays inert on any networked/reverse-proxied deployment. Without the flag, buttons fall back to copying the command (and say so).
 
 ### Path Formats Supported
 
@@ -74,8 +100,10 @@ project-tracker/
     │   ├── services/
     │   │   ├── cache-manager.ts
     │   │   ├── project-analyzer.ts
+    │   │   ├── project-discovery.ts   # Walks roots → project dirs
     │   │   ├── claude-analyzer.ts
     │   │   ├── git-analyzer.ts
+    │   │   ├── action-command.ts      # Pure action→command builder
     │   │   └── user-data.ts
     │   ├── routes/
     │   │   ├── projects.ts
@@ -84,12 +112,13 @@ project-tracker/
     │   │   ├── favorites.ts
     │   │   ├── git.ts
     │   │   ├── claude.ts
+    │   │   ├── actions.ts             # Localhost-gated action bridge
     │   │   └── health.ts
     │   ├── config/
     │   │   └── tag-rules.json # Data-driven tag detection rules
     │   └── __tests__/         # Jest test suite
     ├── dist/                  # Compiled output (gitignored)
-    ├── directories.json       # Configured directories (generated)
+    ├── directories.json       # Scan config: roots/directories/exclude/maxDepth (gitignored, local-only)
     ├── user-data.json         # Tags and favorites (generated)
     └── projects-cache.json    # Cached scan results (generated)
 ```
@@ -99,16 +128,20 @@ project-tracker/
 - `GET /api/projects` - Scan and return projects
 - `GET /api/projects/cached` - Return cached projects (faster)
 - `GET /api/config` - Current configuration
-- `POST /api/directories` - Add a directory
-- `DELETE /api/directories` - Remove a directory
+- `POST /api/directories` - Add a directory pin
+- `DELETE /api/directories` - Remove a directory pin
+- `PUT /api/directories` - Replace all directory pins
 - `GET /api/favorites` - Get favorites list
 - `POST /api/favorites` - Add favorite
 - `DELETE /api/favorites` - Remove favorite
+- `GET /api/projects/:path/tags` - Get tags for a project
 - `POST /api/projects/:path/tags` - Save tags for a project
 - `GET /api/tags` - Get all tags
 - `DELETE /api/tags/:tagName` - Remove a tag from all projects
 - `GET /api/claude/projects` - Projects with CLAUDE.md
 - `GET /api/git/repos` - Git repository details
+- `GET /api/actions/status` - Whether the local action bridge is usable
+- `POST /api/actions/:action` - Run an allowlisted local action (gated)
 - `GET /api/health` - Health check
 
 ## What Gets Detected
@@ -121,7 +154,7 @@ project-tracker/
 ## Data Storage
 
 All data is local:
-- `directories.json` - which directories to scan
+- `directories.json` - scan config (roots / pins / exclude / maxDepth); gitignored, never committed
 - `user-data.json` - your tags and favorites
 - `projects-cache.json` - cached scan results
 
@@ -133,7 +166,7 @@ No external services, no tracking.
 cd server && npm test
 ```
 
-Unit tests cover all backend services (CacheManager, ProjectAnalyzer, ClaudeAnalyzer, GitAnalyzer, UserData). API integration tests verify route behavior using supertest.
+Unit tests cover the backend services (CacheManager, ProjectAnalyzer, ProjectDiscovery, ClaudeAnalyzer, GitAnalyzer incl. a command-injection regression test, UserData) and the pure helpers (path containment, CORS, loopback, action-command builder). API integration tests (supertest) cover health, favorites, tags, directories, path validation, CORS, and the action bridge — including a test that it stays inert on a Magus-like `0.0.0.0` host.
 
 ## Keyboard Shortcuts
 
