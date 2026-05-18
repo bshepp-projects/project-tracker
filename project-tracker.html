@@ -232,6 +232,12 @@
             .projects-grid { grid-template-columns: 1fr; }
             .project-info { grid-template-columns: 1fr; }
         }
+        .discovery-info {
+            display: none;
+            margin: 8px 0 0;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -387,7 +393,7 @@
             <!-- Stats will be dynamically generated: Total Projects + Top 10 Tags -->
         </div>
 
-        <div id="discoveryInfo" style="display:none; margin:8px 0 0; font-size:0.85em; color:var(--text-secondary);"></div>
+        <div id="discoveryInfo" class="discovery-info"></div>
 
         <div id="loading" class="loading" style="display: none;">Loading projects...</div>
         <div id="projects" class="projects-grid"></div>
