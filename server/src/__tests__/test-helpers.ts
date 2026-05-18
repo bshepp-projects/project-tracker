@@ -22,6 +22,9 @@ interface TestAppOptions {
   userData?: UserData;
   cacheManager?: CacheManager;
   scanDirectories?: string[];
+  localActions?: { enabled: boolean; hostIsLoopback: boolean };
+  spawnAction?: (file: string, args: string[]) => void;
+  platform?: NodeJS.Platform;
 }
 
 export function createTestApp(options: TestAppOptions = {}): express.Express {
@@ -46,6 +49,10 @@ export function createTestApp(options: TestAppOptions = {}): express.Express {
     // In tests, the configured scanDirectories ARE the resolved projects
     // (no real discovery walk) — preserves prior route-test semantics.
     resolveProjects: async () => ({ projects: scanDirs, skipped: [], rootsScanned: 0 }),
+    // Bridge disabled by default so existing suites are unaffected.
+    localActions: options.localActions ?? { enabled: false, hostIsLoopback: true },
+    spawnAction: options.spawnAction,
+    actionPlatform: options.platform,
   };
 
   return createApp(deps);

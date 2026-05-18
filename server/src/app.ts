@@ -17,6 +17,7 @@ import { createTagsRouter } from './routes/tags';
 import { createFavoritesRouter } from './routes/favorites';
 import { createClaudeRouter } from './routes/claude';
 import { createGitRouter } from './routes/git';
+import { createActionsRouter } from './routes/actions';
 
 export interface AppDependencies {
   cacheManager: CacheManager;
@@ -31,6 +32,12 @@ export interface AppDependencies {
   getProjectRoots: () => string[];
   /** Run discovery: expand roots + pins into the effective project set. */
   resolveProjects: () => Promise<DiscoveryResult>;
+  /** Local action bridge gating (off by default; inert unless loopback). */
+  localActions: { enabled: boolean; hostIsLoopback: boolean };
+  /** Test seam: override the spawn runner. */
+  spawnAction?: (file: string, args: string[]) => void;
+  /** Test seam: override the platform used to build commands. */
+  actionPlatform?: NodeJS.Platform;
 }
 
 export function createApp(deps: AppDependencies): express.Express {
@@ -57,6 +64,16 @@ export function createApp(deps: AppDependencies): express.Express {
   app.use('/api', createFavoritesRouter(deps.userData, validationPaths));
   app.use('/api', createClaudeRouter(deps.claudeAnalyzer, deps.resolveProjects));
   app.use('/api', createGitRouter(deps.gitAnalyzer, deps.resolveProjects));
+  app.use(
+    '/api',
+    createActionsRouter({
+      enabled: deps.localActions.enabled,
+      hostIsLoopback: deps.localActions.hostIsLoopback,
+      validationPaths,
+      spawnAction: deps.spawnAction,
+      platform: deps.actionPlatform,
+    })
+  );
 
   return app;
 }

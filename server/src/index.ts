@@ -7,12 +7,24 @@ import { GitAnalyzer } from './services/git-analyzer';
 import { ClaudeAnalyzer } from './services/claude-analyzer';
 import { ProjectAnalyzer } from './services/project-analyzer';
 import { ProjectDiscovery } from './services/project-discovery';
+import { isLoopbackAddress } from './utils';
 import { createApp } from './app';
 
 import type { DirectoriesConfig, TagRulesConfig } from './types';
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const HOST = process.env.HOST || 'localhost';
+
+function parseBool(v: string | undefined): boolean {
+  return !!v && !['0', 'false', 'no', ''].includes(v.toLowerCase());
+}
+
+// The local action bridge is off unless explicitly enabled AND the server
+// is bound to loopback (so it stays inert on a 0.0.0.0 box like Magus).
+const LOCAL_ACTIONS = {
+  enabled: parseBool(process.env.ENABLE_LOCAL_ACTIONS),
+  hostIsLoopback: HOST === 'localhost' || isLoopbackAddress(HOST),
+};
 
 const DATA_DIR = path.resolve(__dirname, '..');
 const DIRECTORIES_CONFIG_FILE = path.join(DATA_DIR, 'directories.json');
@@ -119,6 +131,7 @@ async function startServer(): Promise<void> {
     saveDirectories: saveDirectoriesToFile,
     getProjectRoots,
     resolveProjects,
+    localActions: LOCAL_ACTIONS,
   });
 
   app.listen(PORT, HOST, () => {
