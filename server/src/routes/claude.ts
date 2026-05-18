@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import fs from 'fs/promises';
 import path from 'path';
 import type { ClaudeAnalyzer } from '../services/claude-analyzer';
-import { shouldSkipDirectory } from '../utils';
+import type { DiscoveryResult } from '../services/project-discovery';
 
 export function createClaudeRouter(
   claudeAnalyzer: ClaudeAnalyzer,
-  getScanDirectories: () => string[]
+  resolveProjects: () => Promise<DiscoveryResult>
 ): Router {
   const router = Router();
 
@@ -14,23 +13,18 @@ export function createClaudeRouter(
     try {
       console.log('🤖 Scanning for Claude projects...');
       const allClaudeProjects = [];
-      const scanDirectories = getScanDirectories();
+      const discovered = await resolveProjects();
 
-      for (const scanDir of scanDirectories) {
+      for (const projectPath of discovered.projects) {
         try {
-          const stats = await fs.stat(scanDir);
-          if (stats.isDirectory()) {
-            const dirName = path.basename(scanDir);
-            if (shouldSkipDirectory(dirName)) continue;
-
-            const claudeProject = await claudeAnalyzer.analyzeClaudeProject(scanDir, dirName);
-            if (claudeProject) {
-              allClaudeProjects.push(claudeProject);
-            }
-          }
+          const claudeProject = await claudeAnalyzer.analyzeClaudeProject(
+            projectPath,
+            path.basename(projectPath)
+          );
+          if (claudeProject) allClaudeProjects.push(claudeProject);
         } catch (error) {
           const msg = error instanceof Error ? error.message : String(error);
-          console.warn(`Could not scan directory ${scanDir} for Claude projects:`, msg);
+          console.warn(`Could not scan ${projectPath} for Claude projects:`, msg);
         }
       }
 
@@ -39,7 +33,11 @@ export function createClaudeRouter(
         success: true,
         projects: allClaudeProjects,
         scanTime: new Date().toISOString(),
-        scannedDirectories: scanDirectories,
+        discovery: {
+          rootsScanned: discovered.rootsScanned,
+          projectsFound: discovered.projects.length,
+          skipped: discovered.skipped,
+        },
       });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);

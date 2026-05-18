@@ -1,47 +1,58 @@
 import { Router } from 'express';
-import fs from 'fs/promises';
 import path from 'path';
 import type { ProjectAnalyzer } from '../services/project-analyzer';
 import type { CacheManager } from '../services/cache-manager';
+import type { DiscoveryResult } from '../services/project-discovery';
 import type { Project } from '../types';
-import { shouldSkipDirectory } from '../utils';
+
+interface DiscoverySummary {
+  rootsScanned: number;
+  projectsFound: number;
+  skipped: DiscoveryResult['skipped'];
+}
 
 export function createProjectsRouter(
   projectAnalyzer: ProjectAnalyzer,
   cacheManager: CacheManager,
-  getScanDirectories: () => string[]
+  resolveProjects: () => Promise<DiscoveryResult>
 ): Router {
   const router = Router();
 
-  async function scanAllProjects(): Promise<Project[]> {
+  async function scanAllProjects(): Promise<{ projects: Project[]; discovery: DiscoverySummary }> {
+    const discovered = await resolveProjects();
     const allProjects: Project[] = [];
-    const scanDirectories = getScanDirectories();
 
-    for (const scanDir of scanDirectories) {
+    for (const projectPath of discovered.projects) {
       try {
-        const stats = await fs.stat(scanDir);
-        if (stats.isDirectory()) {
-          const dirName = path.basename(scanDir);
-          if (shouldSkipDirectory(dirName)) continue;
-
-          const project = await projectAnalyzer.analyzeProject(scanDir, dirName);
-          if (project) {
-            allProjects.push(project);
-          }
-        }
+        const project = await projectAnalyzer.analyzeProject(projectPath, path.basename(projectPath));
+        if (project) allProjects.push(project);
       } catch (error) {
         const msg = error instanceof Error ? error.message : String(error);
-        console.warn(`Could not scan directory ${scanDir}:`, msg);
+        console.warn(`Could not analyze ${projectPath}:`, msg);
       }
     }
 
-    return allProjects;
+    return {
+      projects: allProjects,
+      discovery: {
+        rootsScanned: discovered.rootsScanned,
+        projectsFound: allProjects.length,
+        skipped: discovered.skipped,
+      },
+    };
   }
 
   router.get('/projects/cached', async (_req, res) => {
     try {
       const forceRefresh = _req.query.refresh === 'true';
-      const scanDirectories = getScanDirectories();
+      // Discovery is a cheap stat/readdir walk (no git) — run it for the
+      // up-to-date "found vs skipped" summary even on the cached path.
+      const discovered = await resolveProjects();
+      const discovery: DiscoverySummary = {
+        rootsScanned: discovered.rootsScanned,
+        projectsFound: discovered.projects.length,
+        skipped: discovered.skipped,
+      };
 
       if (!forceRefresh && cacheManager.isCacheValid()) {
         console.log('📦 Returning cached projects');
@@ -51,7 +62,7 @@ export function createProjectsRouter(
           fromCache: true,
           cacheAge: cacheManager.getCacheAge(),
           scanTime: new Date(cacheManager.cache.timestamp!).toISOString(),
-          scannedDirectories: scanDirectories,
+          discovery,
         });
         return;
       }
@@ -61,7 +72,7 @@ export function createProjectsRouter(
         console.log('🔄 Starting background scan...');
 
         scanAllProjects()
-          .then(async (projects) => {
+          .then(async ({ projects }) => {
             await cacheManager.updateProjectsCache(projects);
             cacheManager.isScanning = false;
             console.log(`✅ Background scan complete: ${projects.length} projects cached`);
@@ -81,7 +92,7 @@ export function createProjectsRouter(
         scanTime: cacheManager.cache.timestamp
           ? new Date(cacheManager.cache.timestamp).toISOString()
           : null,
-        scannedDirectories: scanDirectories,
+        discovery,
       });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
@@ -93,16 +104,18 @@ export function createProjectsRouter(
   router.get('/projects', async (_req, res) => {
     try {
       console.log('🔍 Scanning for projects...');
-      const allProjects = await scanAllProjects();
+      const { projects, discovery } = await scanAllProjects();
 
-      console.log(`✅ Found ${allProjects.length} projects`);
-      await cacheManager.updateProjectsCache(allProjects);
+      console.log(
+        `✅ Found ${projects.length} projects (${discovery.rootsScanned} roots, ${discovery.skipped.length} skipped)`
+      );
+      await cacheManager.updateProjectsCache(projects);
 
       res.json({
         success: true,
-        projects: allProjects,
+        projects,
         scanTime: new Date().toISOString(),
-        scannedDirectories: getScanDirectories(),
+        discovery,
       });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);

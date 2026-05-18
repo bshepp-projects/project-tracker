@@ -6,6 +6,7 @@ import { UserData } from './services/user-data';
 import { GitAnalyzer } from './services/git-analyzer';
 import { ClaudeAnalyzer } from './services/claude-analyzer';
 import { ProjectAnalyzer } from './services/project-analyzer';
+import { ProjectDiscovery } from './services/project-discovery';
 import { createApp } from './app';
 
 import type { DirectoriesConfig, TagRulesConfig } from './types';
@@ -19,7 +20,12 @@ const USER_DATA_FILE = path.join(DATA_DIR, 'user-data.json');
 const PROJECTS_CACHE_FILE = path.join(DATA_DIR, 'projects-cache.json');
 const TAG_RULES_FILE = path.join(DATA_DIR, 'src', 'config', 'tag-rules.json');
 
-let scanDirectories: string[] = [];
+let scanDirectories: string[] = []; // explicit project pins (legacy `directories`)
+let scanRoots: string[] = []; // parent folders auto-scanned for projects
+let scanExclude: string[] = []; // extra directory basenames to skip
+let scanMaxDepth = 3;
+
+const projectDiscovery = new ProjectDiscovery();
 
 function getScanDirectories(): string[] {
   return scanDirectories;
@@ -29,14 +35,30 @@ function setScanDirectories(dirs: string[]): void {
   scanDirectories = dirs;
 }
 
+function getProjectRoots(): string[] {
+  return scanRoots;
+}
+
+function resolveProjects() {
+  return projectDiscovery.discover({
+    roots: scanRoots,
+    pins: scanDirectories,
+    exclude: scanExclude,
+    maxDepth: scanMaxDepth,
+  });
+}
+
 async function loadDirectoriesFromFile(): Promise<void> {
   try {
     const data = await fs.readFile(DIRECTORIES_CONFIG_FILE, 'utf8');
     const config: DirectoriesConfig = JSON.parse(data);
-    if (Array.isArray(config.directories)) {
-      scanDirectories = config.directories;
-      console.log(`📂 Loaded ${scanDirectories.length} directories from config file`);
-    }
+    scanDirectories = Array.isArray(config.directories) ? config.directories : [];
+    scanRoots = Array.isArray(config.roots) ? config.roots : [];
+    scanExclude = Array.isArray(config.exclude) ? config.exclude : [];
+    scanMaxDepth = typeof config.maxDepth === 'number' ? config.maxDepth : 3;
+    console.log(
+      `📂 Config loaded: ${scanRoots.length} roots, ${scanDirectories.length} pins, depth ${scanMaxDepth}`
+    );
   } catch {
     console.log('📂 Using default directories (config file not found or invalid)');
   }
@@ -44,7 +66,12 @@ async function loadDirectoriesFromFile(): Promise<void> {
 
 async function saveDirectoriesToFile(): Promise<void> {
   try {
+    // Preserve discovery config (roots/exclude/maxDepth) — the directories
+    // route only mutates pins, but a naive write would otherwise drop these.
     const config: DirectoriesConfig = {
+      roots: scanRoots,
+      exclude: scanExclude,
+      maxDepth: scanMaxDepth,
       directories: scanDirectories,
       lastUpdated: new Date().toISOString(),
     };
@@ -90,6 +117,8 @@ async function startServer(): Promise<void> {
     getScanDirectories,
     setScanDirectories,
     saveDirectories: saveDirectoriesToFile,
+    getProjectRoots,
+    resolveProjects,
   });
 
   app.listen(PORT, HOST, () => {

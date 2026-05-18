@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import fs from 'fs/promises';
 import path from 'path';
 import type { GitAnalyzer } from '../services/git-analyzer';
-import { shouldSkipDirectory } from '../utils';
+import type { DiscoveryResult } from '../services/project-discovery';
 
 export function createGitRouter(
   gitAnalyzer: GitAnalyzer,
-  getScanDirectories: () => string[]
+  resolveProjects: () => Promise<DiscoveryResult>
 ): Router {
   const router = Router();
 
@@ -14,23 +13,15 @@ export function createGitRouter(
     try {
       console.log('🔀 Scanning for git repositories...');
       const allGitRepos = [];
-      const scanDirectories = getScanDirectories();
+      const discovered = await resolveProjects();
 
-      for (const scanDir of scanDirectories) {
+      for (const projectPath of discovered.projects) {
         try {
-          const stats = await fs.stat(scanDir);
-          if (stats.isDirectory()) {
-            const dirName = path.basename(scanDir);
-            if (shouldSkipDirectory(dirName)) continue;
-
-            const gitRepo = await gitAnalyzer.analyzeGitRepo(scanDir, dirName);
-            if (gitRepo) {
-              allGitRepos.push(gitRepo);
-            }
-          }
+          const gitRepo = await gitAnalyzer.analyzeGitRepo(projectPath, path.basename(projectPath));
+          if (gitRepo) allGitRepos.push(gitRepo);
         } catch (error) {
           const msg = error instanceof Error ? error.message : String(error);
-          console.warn(`Could not scan directory ${scanDir} for git repos:`, msg);
+          console.warn(`Could not scan ${projectPath} for git repos:`, msg);
         }
       }
 
@@ -39,7 +30,11 @@ export function createGitRouter(
         success: true,
         repositories: allGitRepos,
         scanTime: new Date().toISOString(),
-        scannedDirectories: scanDirectories,
+        discovery: {
+          rootsScanned: discovered.rootsScanned,
+          projectsFound: discovered.projects.length,
+          skipped: discovered.skipped,
+        },
       });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);

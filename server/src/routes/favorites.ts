@@ -4,7 +4,7 @@ import { isPathWithinScanDirs } from '../utils';
 
 export function createFavoritesRouter(
   userData: UserData,
-  getScanDirectories: () => string[]
+  validationPaths: () => string[]
 ): Router {
   const router = Router();
 
@@ -21,7 +21,7 @@ export function createFavoritesRouter(
         return;
       }
 
-      if (!isPathWithinScanDirs(projectPath, getScanDirectories())) {
+      if (!isPathWithinScanDirs(projectPath, validationPaths())) {
         res.status(403).json({ success: false, error: 'Path is outside the configured scan directories' });
         return;
       }

@@ -4,13 +4,15 @@ import path from 'path';
 import type { UserData } from '../services/user-data';
 import type { CacheManager } from '../services/cache-manager';
 import type { ProjectAnalyzer } from '../services/project-analyzer';
-import { shouldSkipDirectory, isPathWithinScanDirs } from '../utils';
+import type { DiscoveryResult } from '../services/project-discovery';
+import { isPathWithinScanDirs } from '../utils';
 
 export function createTagsRouter(
   userData: UserData,
   cacheManager: CacheManager,
   projectAnalyzer: ProjectAnalyzer,
-  getScanDirectories: () => string[]
+  resolveProjects: () => Promise<DiscoveryResult>,
+  validationPaths: () => string[]
 ): Router {
   const router = Router();
 
@@ -18,23 +20,20 @@ export function createTagsRouter(
     try {
       console.log('🏷️ Getting all tags...');
       const allTags = new Set<string>();
-      const scanDirectories = getScanDirectories();
+      const discovered = await resolveProjects();
 
-      for (const scanDir of scanDirectories) {
+      for (const projectPath of discovered.projects) {
         try {
-          const stats = await fs.stat(scanDir);
-          if (stats.isDirectory()) {
-            const dirName = path.basename(scanDir);
-            if (shouldSkipDirectory(dirName)) continue;
-
-            const project = await projectAnalyzer.analyzeProject(scanDir, dirName);
-            if (project?.tags) {
-              project.tags.forEach((tag) => allTags.add(tag));
-            }
+          const project = await projectAnalyzer.analyzeProject(
+            projectPath,
+            path.basename(projectPath)
+          );
+          if (project?.tags) {
+            project.tags.forEach((tag) => allTags.add(tag));
           }
         } catch (error) {
           const msg = error instanceof Error ? error.message : String(error);
-          console.warn(`Could not scan directory ${scanDir} for tags:`, msg);
+          console.warn(`Could not scan ${projectPath} for tags:`, msg);
         }
       }
 
@@ -51,7 +50,7 @@ export function createTagsRouter(
     try {
       const decodedPath = decodeURIComponent(req.params.projectPath);
 
-      if (!isPathWithinScanDirs(decodedPath, getScanDirectories())) {
+      if (!isPathWithinScanDirs(decodedPath, validationPaths())) {
         res.status(403).json({ success: false, error: 'Path is outside the configured scan directories' });
         return;
       }
@@ -76,7 +75,7 @@ export function createTagsRouter(
 
       const decodedPath = decodeURIComponent(req.params.projectPath);
 
-      if (!isPathWithinScanDirs(decodedPath, getScanDirectories())) {
+      if (!isPathWithinScanDirs(decodedPath, validationPaths())) {
         res.status(403).json({ success: false, error: 'Path is outside the configured scan directories' });
         return;
       }

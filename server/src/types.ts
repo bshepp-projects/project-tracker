@@ -124,6 +124,13 @@ export interface CacheData {
 }
 
 export interface DirectoriesConfig {
-  directories: string[];
+  /** Explicit project directories (legacy / pins). */
+  directories?: string[];
+  /** Parent folders auto-scanned for project roots. */
+  roots?: string[];
+  /** Additional directory basenames to skip during discovery. */
+  exclude?: string[];
+  /** How deep to walk under each root (default 3). */
+  maxDepth?: number;
   lastUpdated: string;
 }

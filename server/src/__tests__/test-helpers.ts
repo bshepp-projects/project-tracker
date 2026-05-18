@@ -42,6 +42,10 @@ export function createTestApp(options: TestAppOptions = {}): express.Express {
     getScanDirectories: () => scanDirs,
     setScanDirectories: (dirs: string[]) => { scanDirs = dirs; },
     saveDirectories: async () => {},
+    getProjectRoots: () => [],
+    // In tests, the configured scanDirectories ARE the resolved projects
+    // (no real discovery walk) — preserves prior route-test semantics.
+    resolveProjects: async () => ({ projects: scanDirs, skipped: [], rootsScanned: 0 }),
   };
 
   return createApp(deps);
