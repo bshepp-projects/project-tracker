@@ -61,3 +61,15 @@ export function isAllowedOrigin(origin: string | undefined): boolean {
     return false;
   }
 }
+
+/**
+ * True if `addr` is an IPv4/IPv6 loopback address. Used to gate the local
+ * action bridge so it only ever fires for requests from the same machine.
+ * Node may report loopback as `::1` or the IPv4-mapped `::ffff:127.0.0.1`.
+ */
+export function isLoopbackAddress(addr: string | undefined): boolean {
+  if (!addr) return false;
+  if (addr === '::1' || addr === '::ffff:127.0.0.1') return true;
+  const v4 = addr.startsWith('::ffff:') ? addr.slice(7) : addr;
+  return /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v4);
+}

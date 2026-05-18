@@ -1,5 +1,10 @@
 import path from 'path';
-import { shouldSkipDirectory, isPathWithinScanDirs, isAllowedOrigin } from '../utils';
+import {
+  shouldSkipDirectory,
+  isPathWithinScanDirs,
+  isAllowedOrigin,
+  isLoopbackAddress,
+} from '../utils';
 
 describe('shouldSkipDirectory', () => {
   it('skips Windows system / temp directories', () => {
@@ -66,5 +71,22 @@ describe('isAllowedOrigin', () => {
   it('rejects arbitrary external origins', () => {
     expect(isAllowedOrigin('https://evil.com')).toBe(false);
     expect(isAllowedOrigin('http://localhost.evil.com')).toBe(false);
+  });
+});
+
+describe('isLoopbackAddress', () => {
+  it('accepts IPv4 / IPv6 loopback (incl. IPv4-mapped)', () => {
+    expect(isLoopbackAddress('127.0.0.1')).toBe(true);
+    expect(isLoopbackAddress('127.5.6.7')).toBe(true);
+    expect(isLoopbackAddress('::1')).toBe(true);
+    expect(isLoopbackAddress('::ffff:127.0.0.1')).toBe(true);
+  });
+
+  it('rejects non-loopback and missing addresses', () => {
+    expect(isLoopbackAddress('10.0.0.48')).toBe(false);
+    expect(isLoopbackAddress('192.168.1.5')).toBe(false);
+    expect(isLoopbackAddress('0.0.0.0')).toBe(false);
+    expect(isLoopbackAddress(undefined)).toBe(false);
+    expect(isLoopbackAddress('')).toBe(false);
   });
 });
