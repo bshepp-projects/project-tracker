@@ -387,6 +387,8 @@
             <!-- Stats will be dynamically generated: Total Projects + Top 10 Tags -->
         </div>
 
+        <div id="discoveryInfo" style="display:none; margin:8px 0 0; font-size:0.85em; color:var(--text-secondary);"></div>
+
         <div id="loading" class="loading" style="display: none;">Loading projects...</div>
         <div id="projects" class="projects-grid"></div>
         <div id="noResults" class="no-results" style="display: none;">No projects match your search criteria.</div>
@@ -905,6 +907,29 @@
         let fallbackProjects = [...projectsData]; // Keep original as fallback
 
         // Load projects from backend API
+        function renderDiscoveryInfo(discovery) {
+            const el = document.getElementById('discoveryInfo');
+            if (!el) return;
+            el.textContent = '';
+            if (!discovery) { el.style.display = 'none'; return; }
+            const found = Number(discovery.projectsFound) || 0;
+            const roots = Number(discovery.rootsScanned) || 0;
+            const skipped = Array.isArray(discovery.skipped) ? discovery.skipped : [];
+            el.appendChild(document.createTextNode(
+                `📂 ${found} project${found === 1 ? '' : 's'} from ${roots} root${roots === 1 ? '' : 's'}`
+            ));
+            if (skipped.length > 0) {
+                el.appendChild(document.createTextNode(' · '));
+                const span = document.createElement('span');
+                span.textContent = `⚠️ ${skipped.length} configured path${skipped.length === 1 ? '' : 's'} unavailable`;
+                span.title = skipped.map(s => `${s.path} (${s.reason})`).join('\n');
+                span.style.cursor = 'help';
+                span.style.textDecoration = 'underline dotted';
+                el.appendChild(span);
+            }
+            el.style.display = 'block';
+        }
+
         async function loadProjectsFromAPI() {
             try {
                 // First, try to load cached data for instant display
@@ -912,6 +937,7 @@
                 
                 if (cachedResponse.ok) {
                     const cachedData = await cachedResponse.json();
+                    renderDiscoveryInfo(cachedData.discovery);
                     if (cachedData.success && cachedData.projects.length > 0) {
                         // Display cached data immediately
                         projectsData = cachedData.projects;
@@ -937,6 +963,7 @@
                 }
 
                 const data = await response.json();
+                renderDiscoveryInfo(data.discovery);
 
                 if (data.success) {
                     apiProjects = data.projects;
