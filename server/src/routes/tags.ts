@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import fs from 'fs/promises';
-import path from 'path';
 import type { UserData } from '../services/user-data';
 import type { CacheManager } from '../services/cache-manager';
 import type { ProjectAnalyzer } from '../services/project-analyzer';
@@ -16,29 +15,13 @@ export function createTagsRouter(
 ): Router {
   const router = Router();
 
-  router.get('/tags', async (_req, res) => {
+  router.get('/tags', (_req, res) => {
     try {
-      console.log('🏷️ Getting all tags...');
-      const allTags = new Set<string>();
-      const discovered = await resolveProjects();
-
-      for (const projectPath of discovered.projects) {
-        try {
-          const project = await projectAnalyzer.analyzeProject(
-            projectPath,
-            path.basename(projectPath)
-          );
-          if (project?.tags) {
-            project.tags.forEach((tag) => allTags.add(tag));
-          }
-        } catch (error) {
-          const msg = error instanceof Error ? error.message : String(error);
-          console.warn(`Could not scan ${projectPath} for tags:`, msg);
-        }
-      }
-
-      console.log(`🏷️ Found ${allTags.size} unique tags`);
-      res.json({ success: true, tags: Array.from(allTags).sort(), scanTime: new Date().toISOString() });
+      // Tags are already aggregated into the cache by the projects scan.
+      // Re-deriving them here meant re-analyzing every project on each
+      // request, which timed out once discovery found many projects.
+      const tags = Array.from(cacheManager.cache.tags).sort();
+      res.json({ success: true, tags, scanTime: new Date().toISOString() });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       console.error('Error getting tags:', error);

@@ -32,6 +32,21 @@ describe('Tags API', () => {
     });
   });
 
+  describe('GET /api/tags', () => {
+    it('returns aggregated tags from the cache (no full rescan)', async () => {
+      const cacheManager = createTestCacheManager();
+      cacheManager.cache.tags.add('web');
+      cacheManager.cache.tags.add('ai');
+      const app = createTestApp({ cacheManager });
+
+      const res = await request(app).get('/api/tags');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.tags).toEqual(['ai', 'web']);
+    });
+  });
+
   describe('GET /api/projects/:projectPath/tags', () => {
     it('returns tags for a project', async () => {
       const userData = createTestUserData();
