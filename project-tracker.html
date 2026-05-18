@@ -761,56 +761,13 @@
         }
 
         function launchClaude(path) {
-            // For now, show a notification with the command
-            // In the future, this will integrate with a backend service
-            const command = `cd "${path}" && source venv/bin/activate && claude`;
-
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '🚀 Launching...';
-            button.style.background = '#45a049';
-
-            // Copy command to clipboard for now
-            navigator.clipboard.writeText(command).then(() => {
-                setTimeout(() => {
-                    button.textContent = '📋 Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '#4CAF50';
-                    }, 1500);
-                }, 500);
-            }).catch(() => {
-                alert(`Command copied to clipboard: ${command}`);
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '#4CAF50';
-                }, 2000);
-            });
+            runProjectAction('launch-claude', path,
+                `cd "${path}" && source venv/bin/activate && claude`);
         }
 
         function launchClaudeYOLO(path) {
-            const command = `cd "${path}" && source venv/bin/activate && claude --dangerously-skip-permissions`;
-
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '💀 YOLO...';
-            button.style.background = '#d32f2f';
-
-            navigator.clipboard.writeText(command).then(() => {
-                setTimeout(() => {
-                    button.textContent = '📋 Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '#f44336';
-                    }, 1500);
-                }, 500);
-            }).catch(() => {
-                alert(`Command copied to clipboard: ${command}`);
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '#f44336';
-                }, 2000);
-            });
+            runProjectAction('launch-claude-yolo', path,
+                `cd "${path}" && source venv/bin/activate && claude --dangerously-skip-permissions`);
         }
 
         function refreshProject(path) {
@@ -858,36 +815,10 @@
         }
 
         function activateVenv(path) {
-            // For now, show the activation command
-            // In the future, this will integrate with a backend service
-            const commands = [
-                `cd "${path}"`,
-                `source venv/bin/activate`,  // Linux/Mac
-                `# Or on Windows: venv\\Scripts\\activate`
-            ];
-            const command = commands.join(' && ');
-
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '🔄 Activating...';
-            button.style.background = '#E64A19';
-
-            // Copy command to clipboard for now
-            navigator.clipboard.writeText(command).then(() => {
-                setTimeout(() => {
-                    button.textContent = '📋 Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '#FF5722';
-                    }, 1500);
-                }, 500);
-            }).catch(() => {
-                alert(`Command copied to clipboard: ${command}`);
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '#FF5722';
-                }, 2000);
-            });
+            // Cannot inject into the user's shell — the bridge returns an
+            // OS-correct command to copy; without the bridge, same fallback.
+            runProjectAction('activate-venv', path,
+                `cd "${path}" && source venv/bin/activate`);
         }
 
         async function refreshProjects() {

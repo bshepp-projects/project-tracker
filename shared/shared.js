@@ -77,24 +77,72 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// --- Local Action Bridge ---
+
+// True only when the backend reports the localhost-gated action bridge is
+// usable (flag on + loopback). Otherwise actions fall back to clipboard.
+let localActionsEnabled = false;
+
+async function probeLocalActions() {
+    try {
+        const r = await fetch(`${API_BASE_URL}/actions/status`);
+        if (r.ok) {
+            const d = await r.json();
+            localActionsEnabled = !!d.enabled;
+        }
+    } catch (e) {
+        localActionsEnabled = false; // backend down → clipboard fallback
+    }
+}
+document.addEventListener('DOMContentLoaded', probeLocalActions);
+
+function copyToClipboardSafe(text) {
+    return navigator.clipboard.writeText(text).catch(() => {
+        showNotification(`Command: ${text}`, 'info');
+    });
+}
+
+// Executes an action via the backend bridge when enabled; otherwise (or on
+// any failure) copies the equivalent command. Always honest about which
+// actually happened.
+async function runProjectAction(actionName, path, legacyCommand) {
+    if (localActionsEnabled) {
+        try {
+            const res = await fetch(`${API_BASE_URL}/actions/${actionName}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectPath: path })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.success) {
+                if (data.mode === 'copy' && data.text) {
+                    await copyToClipboardSafe(data.text);
+                    showNotification(`📋 Copied: ${data.text}`, 'success');
+                } else {
+                    showNotification('▶️ Launched on this machine', 'success');
+                }
+                return;
+            }
+        } catch (e) {
+            // fall through to clipboard fallback
+        }
+    }
+    await copyToClipboardSafe(legacyCommand);
+    showNotification(
+        `📋 Copied command${localActionsEnabled ? '' : ' (local actions off)'}: ${legacyCommand}`,
+        localActionsEnabled ? 'warning' : 'info'
+    );
+}
+
 // --- Folder Actions ---
 
 function openFolder(path) {
     const isWindows = navigator.platform.indexOf('Win') > -1;
     const isMac = navigator.platform.indexOf('Mac') > -1;
-    let command;
-    if (isWindows) {
-        command = `explorer "${path.replace(/\//g, '\\')}"`;
-    } else if (isMac) {
-        command = `open "${path}"`;
-    } else {
-        command = `xdg-open "${path}"`;
-    }
-    navigator.clipboard.writeText(command).then(() => {
-        showNotification(`📋 Copied command: ${command}`, 'success');
-    }).catch(() => {
-        showNotification(`Command: ${command}`, 'info');
-    });
+    const legacy = isWindows ? `explorer "${path.replace(/\//g, '\\')}"`
+                 : isMac ? `open "${path}"`
+                 : `xdg-open "${path}"`;
+    runProjectAction('open-folder', path, legacy);
 }
 
 // --- Path Normalization ---
