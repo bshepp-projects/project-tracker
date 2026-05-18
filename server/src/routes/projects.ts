@@ -54,23 +54,20 @@ export function createProjectsRouter(
         skipped: discovered.skipped,
       };
 
-      if (!forceRefresh && cacheManager.isCacheValid()) {
-        console.log('📦 Returning cached projects');
-        res.json({
-          success: true,
-          projects: cacheManager.cache.projects,
-          fromCache: true,
-          cacheAge: cacheManager.getCacheAge(),
-          scanTime: new Date(cacheManager.cache.timestamp!).toISOString(),
-          discovery,
-        });
-        return;
-      }
+      const cacheCount = (cacheManager.cache.projects || []).length;
+      const ageMs = cacheManager.getCacheAge();
+      // Refresh in the background when the cache is missing, expired, older
+      // than 2 min, or out of sync with what discovery now finds (e.g. after
+      // a directories.json change). Never block the response on the scan.
+      const stale =
+        forceRefresh ||
+        !cacheManager.isCacheValid() ||
+        cacheCount !== discovered.projects.length ||
+        (typeof ageMs === 'number' && ageMs > 120000);
 
-      if (!cacheManager.isScanning) {
+      if (stale && !cacheManager.isScanning) {
         cacheManager.isScanning = true;
-        console.log('🔄 Starting background scan...');
-
+        console.log('🔄 Starting background project scan...');
         scanAllProjects()
           .then(async ({ projects }) => {
             await cacheManager.updateProjectsCache(projects);
@@ -87,8 +84,8 @@ export function createProjectsRouter(
         success: true,
         projects: cacheManager.cache.projects || [],
         fromCache: true,
-        scanning: true,
-        cacheAge: cacheManager.getCacheAge(),
+        scanning: cacheManager.isScanning,
+        cacheAge: ageMs,
         scanTime: cacheManager.cache.timestamp
           ? new Date(cacheManager.cache.timestamp).toISOString()
           : null,

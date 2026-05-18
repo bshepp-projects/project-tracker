@@ -828,6 +828,7 @@
             loadingDiv.style.display = 'block';
             projectsContainer.innerHTML = '';
 
+            projectsPollAttempts = 0;
             await loadProjectsFromAPI();
             loadingDiv.style.display = 'none';
         }
@@ -861,72 +862,50 @@
             el.style.display = 'block';
         }
 
+        let projectsPollAttempts = 0;
         async function loadProjectsFromAPI() {
             try {
-                // First, try to load cached data for instant display
-                const cachedResponse = await fetch(`${API_BASE_URL}/projects/cached`);
-                
-                if (cachedResponse.ok) {
-                    const cachedData = await cachedResponse.json();
-                    renderDiscoveryInfo(cachedData.discovery);
-                    if (cachedData.success && cachedData.projects.length > 0) {
-                        // Display cached data immediately
-                        projectsData = cachedData.projects;
-                        filterProjects();
-                        updateStats();
-                        
-                        if (cachedData.scanning) {
-                            showNotification('🔄 Loading cached data, updating in background...', 'info');
-                        } else if (cachedData.fromCache && cachedData.cacheAge < 60000) {
-                            showNotification(`✅ Loaded ${cachedData.projects.length} projects (cached)`, 'success');
-                            return; // Cache is fresh enough, no need to re-scan
-                        }
-                    }
-                }
-                
-                // If cache is old or missing, do a full scan
-                showNotification('🔍 Scanning filesystem for updates...', 'info');
-                
-                const response = await fetch(`${API_BASE_URL}/projects`);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
+                // Only ever block on the fast cached endpoint. The full /projects
+                // scan can take minutes over many projects and 504s behind a
+                // reverse proxy — the cached endpoint returns instantly and
+                // refreshes itself in the background, so we poll it instead.
+                const res = await fetch(`${API_BASE_URL}/projects/cached`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                const data = await res.json();
                 renderDiscoveryInfo(data.discovery);
 
-                if (data.success) {
-                    apiProjects = data.projects;
-                    projectsData = apiProjects;
-
-                    console.log(`Loaded ${apiProjects.length} projects from API`);
-                    console.log(`First project:`, apiProjects[0]);
-
-                    // Update display
-                    filterProjects();
-                    updateStats();
-
-                    // Hide initial loading animation
-                    hideInitialLoader();
-
-                    showNotification(`✅ Found ${apiProjects.length} projects!`, 'success');
-                } else {
-                    throw new Error(data.error || 'Unknown API error');
+                if (data.success && Array.isArray(data.projects) && data.projects.length > 0) {
+                    projectsData = data.projects;
                 }
-
-            } catch (error) {
-                console.warn('Failed to load projects from API:', error.message);
-
-                // Fallback to hardcoded projects
-                projectsData = fallbackProjects;
                 filterProjects();
                 updateStats();
+                hideInitialLoader(); // ALWAYS — never leave the overlay stuck
 
-                // Hide initial loading animation even on error
+                const shown = Array.isArray(data.projects) ? data.projects.length : 0;
+                const found = data.discovery ? data.discovery.projectsFound : shown;
+                const caughtUp = shown > 0 && shown === found;
+
+                if (!caughtUp && projectsPollAttempts < 30) {
+                    // Cache still catching up to discovery — it refreshes in the
+                    // background; poll until it lands.
+                    projectsPollAttempts++;
+                    showNotification(`🔄 Updating projects in the background (${shown} of ${found} ready)…`, 'info');
+                    setTimeout(loadProjectsFromAPI, 8000);
+                } else {
+                    projectsPollAttempts = 0;
+                    showNotification(`✅ ${shown} projects`, 'success');
+                }
+            } catch (error) {
+                console.warn('Failed to load projects:', error.message);
                 hideInitialLoader();
-
-                showNotification(`⚠️ Using cached projects (${fallbackProjects.length}) - Backend may be offline`, 'warning');
+                // Only a genuine backend/network failure falls back — not a
+                // slow scan (that path caused bogus "offline" + fake data).
+                if (!Array.isArray(projectsData) || projectsData.length === 0) {
+                    projectsData = fallbackProjects;
+                }
+                filterProjects();
+                updateStats();
+                showNotification(`⚠️ Backend unreachable — ${error.message}`, 'error');
             }
         }
 
