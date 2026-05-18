@@ -615,6 +615,7 @@
         }
 
         // Load repositories from backend API
+        let gitScanPollAttempts = 0;
         async function loadReposFromAPI() {
             try {
                 showNotification('🔍 Scanning git repositories...', 'info');
@@ -629,14 +630,22 @@
                 
                 if (data.success) {
                     reposData = data.repositories;
-                    
-                    console.log(`Loaded ${reposData.length} repositories from API`);
-                    
-                    // Update display
                     filterRepos();
                     updateStats();
-                    
-                    showNotification(`✅ Found ${reposData.length} git repositories!`, 'success');
+
+                    if (!data.fromCache) {
+                        // First background scan pass not done yet — poll until it lands.
+                        gitScanPollAttempts++;
+                        if (gitScanPollAttempts <= 40) {
+                            showNotification(`🔄 Scanning git repos in the background (${reposData.length} so far)…`, 'info');
+                            setTimeout(loadReposFromAPI, 8000);
+                        } else {
+                            showNotification('⚠️ Git scan is taking a while — reload to check again.', 'warning');
+                        }
+                    } else {
+                        gitScanPollAttempts = 0;
+                        showNotification(`✅ Found ${reposData.length} git repositories!`, 'success');
+                    }
                 } else {
                     throw new Error(data.error || 'Unknown API error');
                 }
@@ -659,6 +668,7 @@
             loadingDiv.style.display = 'block';
             reposContainer.innerHTML = '';
             
+            gitScanPollAttempts = 0;
             await loadReposFromAPI();
             loadingDiv.style.display = 'none';
         }
