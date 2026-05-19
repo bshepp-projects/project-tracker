@@ -9,6 +9,32 @@ Newest entries first.
 
 ---
 
+## 2026-05-18 — Fix the dead 🚫 Remove button (hide via path-exclude + filter)
+
+The per-project Remove button was a no-op for ~all projects: it issued
+`DELETE /api/directories` which only deleted exact `directories` pins, but
+after Pillar-1 root-discovery nearly all projects are discovered, not pinned
+— so it 400'd "Directory is not in the scan list". Regression from the
+discovery refactor (the directories mutation route was never re-wired; the
+`exclude` list was loaded/saved but mutated by nothing).
+
+Fix (spec: `docs/superpowers/specs/2026-05-18-remove-button-fix-design.md`):
+single reversible model — Remove adds the project's resolved full path to
+`exclude` (no pin-deletion branch; a removed pin lingers, masked).
+`ProjectDiscovery` now splits `exclude` into basename entries (silent skip,
+unchanged) vs absolute-path entries (surfaced in a new `hidden` list).
+`DELETE /api/directories` rewritten (normalize + path-containment + add to
+exclude, idempotent); new `POST /api/directories/restore` (unhide). Shared
+`normalizeInputPath` helper extracted (POST/DELETE/restore consistent;
+DELETE previously skipped normalization). Projects route analyzes hidden
+too, flags `hidden:true`, reports `discovery.hiddenCount`; cached-endpoint
+stale math updated for the larger set. Frontend: default-off "Show hidden
+(N)" toggle, dimmed card + Hidden badge, per-card ↩️ Unhide. Git/Claude
+pages exclude hidden naturally (they iterate `projects`, not `hidden`).
+Backend fully TDD'd; all suites green.
+
+---
+
 ## 2026-05-16 → 2026-05-18 — Evaluation, security hardening, scanning + action redesign
 
 Single extended session. Branch work lives on

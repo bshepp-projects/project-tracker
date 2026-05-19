@@ -59,7 +59,7 @@ cd server && npm run dev
 }
 ```
 
-A directory counts as a project if it contains a marker (`.git`, `package.json`, `pyproject.toml`, `requirements.txt`, `Cargo.toml`, `go.mod`, or `CLAUDE.md`); discovery stops descending there. `node_modules`, `venv`, `dist`, etc. and symlinks are skipped. Anything unreachable is reported in the UI, not silently dropped. A legacy `{ "directories": [...] }` file still works unchanged.
+A directory counts as a project if it contains a marker (`.git`, `package.json`, `pyproject.toml`, `requirements.txt`, `Cargo.toml`, `go.mod`, or `CLAUDE.md`); discovery stops descending there. `node_modules`, `venv`, `dist`, etc. and symlinks are skipped. Anything unreachable is reported in the UI, not silently dropped. A legacy `{ "directories": [...] }` file still works unchanged. The 🚫 Remove button hides a single project by adding its full path to `exclude`; hidden projects are off by default and revealed via the "Show hidden" toggle, where each has an ↩️ Unhide action.
 
 ### Local Actions (opt-in)
 
@@ -129,7 +129,8 @@ project-tracker/
 - `GET /api/projects/cached` - Return cached projects (faster)
 - `GET /api/config` - Current configuration
 - `POST /api/directories` - Add a directory pin
-- `DELETE /api/directories` - Remove a directory pin
+- `DELETE /api/directories` - Hide a project (adds its path to the exclude list)
+- `POST /api/directories/restore` - Unhide a project (removes its path from exclude)
 - `PUT /api/directories` - Replace all directory pins
 - `GET /api/favorites` - Get favorites list
 - `POST /api/favorites` - Add favorite
