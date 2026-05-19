@@ -1033,6 +1033,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ directory: projectPath })
                 });
+                if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
                 const data = await res.json();
                 if (data.success) {
                     showNotification(`↩️ Restored project: ${projectName}`, 'success');
