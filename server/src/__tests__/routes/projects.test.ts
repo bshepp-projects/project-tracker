@@ -30,13 +30,15 @@ describe('Projects API', () => {
       scanExclude: [path.resolve(tmp)],
     });
 
-    const res = await request(app).get('/api/projects');
+    try {
+      const res = await request(app).get('/api/projects');
 
-    expect(res.status).toBe(200);
-    expect(res.body.discovery.hiddenCount).toBe(1);
-    expect(res.body.projects.length).toBe(1);
-    expect(res.body.projects[0].hidden).toBe(true);
-
-    await fsp.rm(tmp, { recursive: true, force: true });
+      expect(res.status).toBe(200);
+      expect(res.body.discovery.hiddenCount).toBe(1);
+      expect(res.body.projects.length).toBe(1);
+      expect(res.body.projects[0].hidden).toBe(true);
+    } finally {
+      await fsp.rm(tmp, { recursive: true, force: true });
+    }
   });
 });

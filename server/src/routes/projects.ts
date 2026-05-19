@@ -116,7 +116,7 @@ export function createProjectsRouter(
       const { projects, discovery } = await scanAllProjects();
 
       console.log(
-        `✅ Found ${projects.length} projects (${discovery.rootsScanned} roots, ${discovery.skipped.length} skipped)`
+        `✅ Found ${projects.length} projects (${discovery.hiddenCount} hidden, ${discovery.rootsScanned} roots, ${discovery.skipped.length} skipped)`
       );
       await cacheManager.updateProjectsCache(projects);
 
