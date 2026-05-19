@@ -34,7 +34,7 @@ const TAG_RULES_FILE = path.join(DATA_DIR, 'src', 'config', 'tag-rules.json');
 
 let scanDirectories: string[] = []; // explicit project pins (legacy `directories`)
 let scanRoots: string[] = []; // parent folders auto-scanned for projects
-let scanExclude: string[] = []; // extra directory basenames to skip
+let scanExclude: string[] = []; // skip entries: basenames (name-based) or absolute paths (path-based hide)
 let scanMaxDepth = 3;
 
 const projectDiscovery = new ProjectDiscovery();
