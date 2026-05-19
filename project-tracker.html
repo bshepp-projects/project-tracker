@@ -238,6 +238,25 @@
             font-size: 0.85em;
             color: var(--text-secondary);
         }
+        .project-card.is-hidden { opacity: 0.5; }
+        .hidden-badge {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 1px 8px;
+            font-size: 0.6em;
+            border-radius: 10px;
+            background: var(--button-secondary);
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+        .show-hidden-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -274,6 +293,9 @@
             <button type="button" class="refresh-btn" onclick="refreshProjects()">🔄 Refresh</button>
             <button type="button" class="tag-btn" onclick="toggleTagManager()">🏷️ Manage Tags</button>
             <button type="button" class="settings-btn" onclick="toggleDirectoryManager()">⚙️ Directories</button>
+            <label class="show-hidden-toggle" title="Show projects you've hidden with Remove">
+                <input type="checkbox" id="showHidden" onchange="filterProjects()"> Show hidden <span id="hiddenCount"></span>
+            </label>
             <input type="text" class="search-box" placeholder="🔍 Search projects by name, technology, category, tags, or path..." onkeyup="filterProjects()" id="searchInput">
         </div>
 
@@ -451,11 +473,11 @@
                 const ePath = escapeJsStr(project.path);
                 const eUrl = escapeJsStr(project.gitHubUrl || '');
                 return `
-                <div class="project-card">
+                <div class="project-card${project.hidden ? ' is-hidden' : ''}">
                     <div class="favorite-star ${isFavorite(project.path) ? 'favorited' : ''}" onclick="toggleFavorite('${ePath}'); event.stopPropagation();" title="Add to favorites">
                         ${isFavorite(project.path) ? '★' : '☆'}
                     </div>
-                    <div class="project-title">${escapeHtml(project.name)}</div>
+                    <div class="project-title">${escapeHtml(project.name)}${project.hidden ? '<span class="hidden-badge">Hidden</span>' : ''}</div>
                     <div class="project-path">${escapeHtml(project.path)}</div>
                     <div class="project-description">${escapeHtml(project.description)}</div>
 
@@ -499,7 +521,9 @@
                         ${project.isGitHub ? `<button class="action-btn github-btn" onclick="openGitHub('${eUrl}')" title="Open GitHub repository in browser">🔗 GitHub</button>` : ''}
                         ${project.hasVenv === true ? `<button class="action-btn venv-btn" onclick="activateVenv('${ePath}')" title="Copy virtual environment activation command to clipboard">🐍 Venv</button>` : ''}
                         <button class="action-btn copy-path" onclick="copyPath('${ePath}')" title="Copy full project path to clipboard">📋 Copy</button>
-                        <button class="action-btn ignore-btn" onclick="ignoreDirectory('${ePath}')" title="Remove this project from tracker">🚫 Remove</button>
+                        ${project.hidden
+                            ? `<button class="action-btn" onclick="unhideDirectory('${ePath}')" title="Unhide this project (removes it from the exclude list)">↩️ Unhide</button>`
+                            : `<button class="action-btn ignore-btn" onclick="ignoreDirectory('${ePath}')" title="Hide this project — reversible via the Show hidden toggle">🚫 Remove</button>`}
                     </div>
                 </div>
             `}).join('');
@@ -507,6 +531,7 @@
 
         function filterProjects() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const showHidden = document.getElementById('showHidden')?.checked;
 
             console.log(`Filtering projects: ${projectsData.length} total`);
 
@@ -518,7 +543,7 @@
                     project.category.toLowerCase().includes(searchTerm) ||
                     (project.tags && project.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
 
-                return matchesSearch;
+                return matchesSearch && (showHidden || !project.hidden);
             }).sort((a, b) => {
                 // Sort favorites to the top
                 const aIsFavorite = isFavorite(a.path);
@@ -852,10 +877,17 @@
             if (!discovery) { el.style.display = 'none'; return; }
             const found = Number(discovery.projectsFound) || 0;
             const roots = Number(discovery.rootsScanned) || 0;
+            const hiddenN = Number(discovery.hiddenCount) || 0;
+            const visible = Math.max(found - hiddenN, 0);
             const skipped = Array.isArray(discovery.skipped) ? discovery.skipped : [];
             el.appendChild(document.createTextNode(
-                `📂 ${found} project${found === 1 ? '' : 's'} from ${roots} root${roots === 1 ? '' : 's'}`
+                `📂 ${visible} project${visible === 1 ? '' : 's'} from ${roots} root${roots === 1 ? '' : 's'}`
             ));
+            const hc = document.getElementById('hiddenCount');
+            if (hc) hc.textContent = hiddenN ? `(${hiddenN})` : '';
+            if (hiddenN > 0) {
+                el.appendChild(document.createTextNode(` · 🙈 ${hiddenN} hidden`));
+            }
             if (skipped.length > 0) {
                 el.appendChild(document.createTextNode(' · '));
                 const span = document.createElement('span');
@@ -961,8 +993,8 @@
 
         async function ignoreDirectory(projectPath) {
             try {
-                const projectName = projectPath.split('/').pop();
-                const confirmMessage = `Are you sure you want to remove "${projectName}" from the tracker?\n\nThis will stop scanning: ${projectPath}`;
+                const projectName = projectPath.split(/[\\/]/).pop();
+                const confirmMessage = `Hide "${projectName}"?\n\nIt will be excluded from the list (reversible via the "Show hidden" toggle):\n${projectPath}`;
 
                 if (!confirm(confirmMessage)) {
                     return;
@@ -990,6 +1022,27 @@
             } catch (error) {
                 console.error('Error ignoring directory:', error);
                 showNotification('❌ Failed to ignore directory', 'error');
+            }
+        }
+
+        async function unhideDirectory(projectPath) {
+            try {
+                const projectName = projectPath.split(/[\\/]/).pop();
+                const res = await fetch(`${API_BASE_URL}/directories/restore`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ directory: projectPath })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showNotification(`↩️ Restored project: ${projectName}`, 'success');
+                    setTimeout(() => refreshProjects(), 1000);
+                } else {
+                    showNotification(`❌ ${data.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error restoring directory:', error);
+                showNotification('❌ Failed to restore directory', 'error');
             }
         }
 
