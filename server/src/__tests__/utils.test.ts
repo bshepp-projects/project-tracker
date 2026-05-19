@@ -109,7 +109,8 @@ describe('normalizeInputPath', () => {
     try {
       expect(normalizeInputPath('~/work', 'darwin')).toBe(path.resolve('/home/tester/work'));
     } finally {
-      process.env.HOME = prev;
+      if (prev === undefined) delete process.env.HOME;
+      else process.env.HOME = prev;
     }
   });
 });
