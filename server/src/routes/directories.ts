@@ -1,13 +1,16 @@
 import { Router } from 'express';
 import fs from 'fs/promises';
-import path from 'path';
 import type { CacheManager } from '../services/cache-manager';
+import { isPathWithinScanDirs, normalizeInputPath } from '../utils';
 
 export function createDirectoriesRouter(
   getScanDirectories: () => string[],
   setScanDirectories: (dirs: string[]) => void,
   saveDirectories: () => Promise<void>,
-  cacheManager: CacheManager
+  cacheManager: CacheManager,
+  getExclude: () => string[],
+  setExclude: (e: string[]) => void,
+  validationPaths: () => string[]
 ): Router {
   const router = Router();
 
@@ -31,23 +34,7 @@ export function createDirectoriesRouter(
         return;
       }
 
-      directory = directory.trim();
-
-      if (process.platform === 'linux') {
-        const windowsDriveMatch = directory.match(/^([A-Za-z]):[\\\/]/);
-        if (windowsDriveMatch) {
-          const driveLetter = windowsDriveMatch[1].toLowerCase();
-          const pathWithoutDrive = directory.substring(2).replace(/\\/g, '/');
-          directory = `/mnt/${driveLetter}${pathWithoutDrive}`;
-        }
-      }
-
-      if (directory.startsWith('~/')) {
-        const homeDir = process.env.HOME || process.env.USERPROFILE || '';
-        directory = path.join(homeDir, directory.substring(2));
-      }
-
-      directory = path.resolve(directory);
+      directory = normalizeInputPath(directory);
 
       const scanDirs = getScanDirectories();
       if (scanDirs.includes(directory)) {
@@ -96,27 +83,29 @@ export function createDirectoriesRouter(
         return;
       }
 
-      const scanDirs = getScanDirectories();
-      const index = scanDirs.indexOf(directory);
-      if (index === -1) {
-        res.status(400).json({ success: false, error: 'Directory is not in the scan list' });
+      const target = normalizeInputPath(directory);
+
+      if (!isPathWithinScanDirs(target, validationPaths())) {
+        res.status(400).json({
+          success: false,
+          error: 'Path is outside the configured scan directories',
+        });
         return;
       }
 
-      scanDirs.splice(index, 1);
-      setScanDirectories(scanDirs);
-      await saveDirectories();
-      await cacheManager.invalidateCache();
+      const exclude = getExclude();
+      if (!exclude.includes(target)) {
+        exclude.push(target);
+        setExclude(exclude);
+        await saveDirectories();
+        await cacheManager.invalidateCache();
+      }
 
-      console.log(`🗑️ Removed directory: ${directory}`);
-      res.json({
-        success: true,
-        message: 'Directory removed successfully',
-        scanDirectories: scanDirs,
-      });
+      console.log(`🙈 Hidden project: ${target}`);
+      res.json({ success: true, message: 'Project hidden', excluded: target });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.error('Error removing directory:', error);
+      console.error('Error hiding project:', error);
       res.status(500).json({ success: false, error: msg });
     }
   });

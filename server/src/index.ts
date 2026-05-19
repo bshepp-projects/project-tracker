@@ -47,6 +47,14 @@ function setScanDirectories(dirs: string[]): void {
   scanDirectories = dirs;
 }
 
+function getScanExclude(): string[] {
+  return scanExclude;
+}
+
+function setScanExclude(e: string[]): void {
+  scanExclude = e;
+}
+
 function getProjectRoots(): string[] {
   return scanRoots;
 }
@@ -129,6 +137,8 @@ async function startServer(): Promise<void> {
     getScanDirectories,
     setScanDirectories,
     saveDirectories: saveDirectoriesToFile,
+    getScanExclude,
+    setScanExclude,
     getProjectRoots,
     resolveProjects,
     localActions: LOCAL_ACTIONS,

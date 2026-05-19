@@ -22,6 +22,7 @@ interface TestAppOptions {
   userData?: UserData;
   cacheManager?: CacheManager;
   scanDirectories?: string[];
+  scanExclude?: string[];
   localActions?: { enabled: boolean; hostIsLoopback: boolean };
   spawnAction?: (file: string, args: string[]) => void;
   platform?: NodeJS.Platform;
@@ -35,6 +36,7 @@ export function createTestApp(options: TestAppOptions = {}): express.Express {
   const projectAnalyzer = new ProjectAnalyzer(gitAnalyzer, userData);
 
   let scanDirs = options.scanDirectories ?? [];
+  let exclude = options.scanExclude ?? [];
 
   const deps: AppDependencies = {
     cacheManager,
@@ -46,14 +48,19 @@ export function createTestApp(options: TestAppOptions = {}): express.Express {
     setScanDirectories: (dirs: string[]) => { scanDirs = dirs; },
     saveDirectories: async () => {},
     getProjectRoots: () => [],
+    getScanExclude: () => exclude,
+    setScanExclude: (e: string[]) => { exclude = e; },
     // In tests, the configured scanDirectories ARE the resolved projects
     // (no real discovery walk) — preserves prior route-test semantics.
-    resolveProjects: async () => ({
-      projects: scanDirs,
-      hidden: [],
-      skipped: [],
-      rootsScanned: 0,
-    }),
+    resolveProjects: async () => {
+      const ex = new Set(exclude.map((e) => path.resolve(e)));
+      return {
+        projects: scanDirs.filter((d) => !ex.has(path.resolve(d))),
+        hidden: scanDirs.filter((d) => ex.has(path.resolve(d))),
+        skipped: [],
+        rootsScanned: 0,
+      };
+    },
     // Bridge disabled by default so existing suites are unaffected.
     localActions: options.localActions ?? { enabled: false, hostIsLoopback: true },
     spawnAction: options.spawnAction,

@@ -28,6 +28,8 @@ export interface AppDependencies {
   getScanDirectories: () => string[];
   setScanDirectories: (dirs: string[]) => void;
   saveDirectories: () => Promise<void>;
+  getScanExclude: () => string[];
+  setScanExclude: (e: string[]) => void;
   /** Configured parent roots (for path-containment validation). */
   getProjectRoots: () => string[];
   /** Run discovery: expand roots + pins into the effective project set. */
@@ -55,7 +57,15 @@ export function createApp(deps: AppDependencies): express.Express {
   app.use('/api', createProjectsRouter(deps.projectAnalyzer, deps.cacheManager, deps.resolveProjects));
   app.use(
     '/api',
-    createDirectoriesRouter(deps.getScanDirectories, deps.setScanDirectories, deps.saveDirectories, deps.cacheManager)
+    createDirectoriesRouter(
+      deps.getScanDirectories,
+      deps.setScanDirectories,
+      deps.saveDirectories,
+      deps.cacheManager,
+      deps.getScanExclude,
+      deps.setScanExclude,
+      validationPaths
+    )
   );
   app.use(
     '/api',

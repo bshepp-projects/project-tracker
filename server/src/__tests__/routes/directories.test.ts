@@ -1,4 +1,5 @@
 import request from 'supertest';
+import path from 'path';
 import { createTestApp } from '../test-helpers';
 
 describe('Directories API', () => {
@@ -37,15 +38,46 @@ describe('Directories API', () => {
     });
   });
 
-  describe('DELETE /api/directories', () => {
-    it('rejects directory not in list', async () => {
+  describe('DELETE /api/directories (hide)', () => {
+    it('rejects a path outside the configured scan dirs', async () => {
       const app = createTestApp({ scanDirectories: [] });
       const res = await request(app)
         .delete('/api/directories')
         .send({ directory: '/nonexistent' });
 
       expect(res.status).toBe(400);
-      expect(res.body.error).toContain('not in the scan list');
+      expect(res.body.error).toContain('outside');
+    });
+
+    it('rejects a missing/empty directory', async () => {
+      const app = createTestApp({ scanDirectories: [process.cwd()] });
+      const res = await request(app).delete('/api/directories').send({});
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('hides a project by adding its resolved path to exclude', async () => {
+      const dir = process.cwd();
+      const exclude: string[] = [];
+      const app = createTestApp({ scanDirectories: [dir], scanExclude: exclude });
+
+      const res = await request(app).delete('/api/directories').send({ directory: dir });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(exclude).toContain(path.resolve(dir));
+    });
+
+    it('is idempotent (no duplicate exclude entry on repeat)', async () => {
+      const dir = process.cwd();
+      const exclude: string[] = [];
+      const app = createTestApp({ scanDirectories: [dir], scanExclude: exclude });
+
+      await request(app).delete('/api/directories').send({ directory: dir });
+      const res = await request(app).delete('/api/directories').send({ directory: dir });
+
+      expect(res.status).toBe(200);
+      expect(exclude.filter((e) => e === path.resolve(dir)).length).toBe(1);
     });
   });
 
