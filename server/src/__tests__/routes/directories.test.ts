@@ -109,13 +109,15 @@ describe('Directories API', () => {
     });
 
     it('is idempotent when the path is not excluded', async () => {
-      const app = createTestApp({ scanDirectories: [process.cwd()], scanExclude: [] });
+      const exclude: string[] = [];
+      const app = createTestApp({ scanDirectories: [process.cwd()], scanExclude: exclude });
       const res = await request(app)
         .post('/api/directories/restore')
         .send({ directory: process.cwd() });
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
+      expect(exclude.length).toBe(0);
     });
 
     it('rejects a path outside the configured scan dirs', async () => {
