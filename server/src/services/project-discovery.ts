@@ -28,7 +28,7 @@ export interface DiscoveryConfig {
   roots: string[];
   /** Explicit project directories (legacy `directories.json` entries). */
   pins: string[];
-  /** Additional directory basenames to skip. */
+  /** Basename entries (relative) are silently skipped; absolute-path entries are hidden (surfaced in DiscoveryResult.hidden). */
   exclude: string[];
   /** How deep to walk under each root (root itself is depth 0). */
   maxDepth: number;
@@ -82,13 +82,13 @@ export class ProjectDiscovery {
 
     const walk = async (dir: string, depth: number): Promise<void> => {
       if (visits >= this.maxVisits) return;
-      visits++;
 
       const rp = path.resolve(dir);
       if (excludePaths.has(rp)) {
         hidden.add(rp);
         return;
       }
+      visits++;
 
       let lst;
       try {
