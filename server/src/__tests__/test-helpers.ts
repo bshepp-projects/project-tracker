@@ -48,7 +48,12 @@ export function createTestApp(options: TestAppOptions = {}): express.Express {
     getProjectRoots: () => [],
     // In tests, the configured scanDirectories ARE the resolved projects
     // (no real discovery walk) — preserves prior route-test semantics.
-    resolveProjects: async () => ({ projects: scanDirs, skipped: [], rootsScanned: 0 }),
+    resolveProjects: async () => ({
+      projects: scanDirs,
+      hidden: [],
+      skipped: [],
+      rootsScanned: 0,
+    }),
     // Bridge disabled by default so existing suites are unaffected.
     localActions: options.localActions ?? { enabled: false, hostIsLoopback: true },
     spawnAction: options.spawnAction,

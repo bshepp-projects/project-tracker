@@ -41,6 +41,7 @@ export interface DiscoverySkip {
 
 export interface DiscoveryResult {
   projects: string[];
+  hidden: string[];
   skipped: DiscoverySkip[];
   rootsScanned: number;
 }
@@ -52,7 +53,13 @@ export class ProjectDiscovery {
     const projects = new Set<string>();
     const skipped: DiscoverySkip[] = [];
     const visitedInodes = new Set<string>();
-    const exclude = new Set(config.exclude);
+    const excludeNames = new Set<string>();
+    const excludePaths = new Set<string>();
+    for (const e of config.exclude) {
+      if (path.isAbsolute(e)) excludePaths.add(path.resolve(e));
+      else excludeNames.add(e);
+    }
+    const hidden = new Set<string>();
     let rootsScanned = 0;
     let visits = 0;
 
@@ -64,8 +71,10 @@ export class ProjectDiscovery {
       const pin = path.resolve(raw);
       try {
         const st = await fs.stat(pin);
-        if (st.isDirectory()) projects.add(pin);
-        else skipped.push({ path: pin, reason: 'ENOTDIR' });
+        if (st.isDirectory()) {
+          if (excludePaths.has(pin)) hidden.add(pin);
+          else projects.add(pin);
+        } else skipped.push({ path: pin, reason: 'ENOTDIR' });
       } catch (e) {
         skipped.push({ path: pin, reason: errCode(e) });
       }
@@ -74,6 +83,12 @@ export class ProjectDiscovery {
     const walk = async (dir: string, depth: number): Promise<void> => {
       if (visits >= this.maxVisits) return;
       visits++;
+
+      const rp = path.resolve(dir);
+      if (excludePaths.has(rp)) {
+        hidden.add(rp);
+        return;
+      }
 
       let lst;
       try {
@@ -103,7 +118,7 @@ export class ProjectDiscovery {
       for (const entry of entries) {
         if (!entry.isDirectory()) continue; // also excludes symlinked dirs
         const name = entry.name;
-        if (INTRINSIC_SKIP.has(name) || exclude.has(name) || shouldSkipDirectory(name)) {
+        if (INTRINSIC_SKIP.has(name) || excludeNames.has(name) || shouldSkipDirectory(name)) {
           continue;
         }
         await walk(path.join(dir, name), depth + 1);
@@ -128,6 +143,7 @@ export class ProjectDiscovery {
 
     return {
       projects: [...projects].sort(),
+      hidden: [...hidden].sort(),
       skipped,
       rootsScanned,
     };

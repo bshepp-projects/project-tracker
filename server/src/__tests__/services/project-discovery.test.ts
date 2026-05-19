@@ -129,4 +129,47 @@ describe('ProjectDiscovery', () => {
 
     expect(res.projects).toEqual([proj]); // completes; loop not followed
   });
+
+  it('path-excludes only the matching project, surfacing it as hidden', async () => {
+    const a = path.join(root, 'r1', 'sketch');
+    const b = path.join(root, 'r2', 'sketch');
+    await mkdir(a);
+    await touch(path.join(a, 'package.json'));
+    await mkdir(b);
+    await touch(path.join(b, 'package.json'));
+
+    const res = await disc.discover({ roots: [root], pins: [], exclude: [a], maxDepth: 3 });
+
+    expect(res.projects).toEqual([b]);
+    expect(res.hidden).toEqual([path.resolve(a)]);
+  });
+
+  it('basename exclude still silently skips and is NOT surfaced as hidden', async () => {
+    const real = path.join(root, 'real');
+    await mkdir(real);
+    await touch(path.join(real, 'package.json'));
+    const arch = path.join(root, 'archive', 'old');
+    await mkdir(arch);
+    await touch(path.join(arch, 'package.json'));
+
+    const res = await disc.discover({
+      roots: [root],
+      pins: [],
+      exclude: ['archive'],
+      maxDepth: 4,
+    });
+
+    expect(res.projects).toEqual([real]);
+    expect(res.hidden).toEqual([]);
+  });
+
+  it('an excluded pin is surfaced as hidden, not as a project', async () => {
+    const pin = path.join(root, 'pinned');
+    await mkdir(pin);
+
+    const res = await disc.discover({ roots: [], pins: [pin], exclude: [pin], maxDepth: 3 });
+
+    expect(res.projects).toEqual([]);
+    expect(res.hidden).toEqual([path.resolve(pin)]);
+  });
 });
