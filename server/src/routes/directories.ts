@@ -110,6 +110,46 @@ export function createDirectoriesRouter(
     }
   });
 
+  router.post('/directories/restore', async (req, res) => {
+    try {
+      const { directory } = req.body;
+
+      if (!directory || typeof directory !== 'string') {
+        res.status(400).json({
+          success: false,
+          error: 'Directory path is required and must be a string',
+        });
+        return;
+      }
+
+      const target = normalizeInputPath(directory);
+
+      if (!isPathWithinScanDirs(target, validationPaths())) {
+        res.status(400).json({
+          success: false,
+          error: 'Path is outside the configured scan directories',
+        });
+        return;
+      }
+
+      const exclude = getExclude();
+      const idx = exclude.indexOf(target);
+      if (idx !== -1) {
+        exclude.splice(idx, 1);
+        setExclude(exclude);
+        await saveDirectories();
+        await cacheManager.invalidateCache();
+      }
+
+      console.log(`↩️ Restored project: ${target}`);
+      res.json({ success: true, message: 'Project restored', restored: target });
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error('Error restoring project:', error);
+      res.status(500).json({ success: false, error: msg });
+    }
+  });
+
   router.put('/directories', async (req, res) => {
     try {
       const { directories } = req.body;

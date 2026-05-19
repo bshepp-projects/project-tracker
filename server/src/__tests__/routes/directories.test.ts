@@ -92,4 +92,40 @@ describe('Directories API', () => {
       expect(res.body.success).toBe(false);
     });
   });
+
+  describe('POST /api/directories/restore (unhide)', () => {
+    it('removes the resolved path from exclude', async () => {
+      const dir = process.cwd();
+      const exclude: string[] = [path.resolve(dir)];
+      const app = createTestApp({ scanDirectories: [dir], scanExclude: exclude });
+
+      const res = await request(app)
+        .post('/api/directories/restore')
+        .send({ directory: dir });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(exclude).not.toContain(path.resolve(dir));
+    });
+
+    it('is idempotent when the path is not excluded', async () => {
+      const app = createTestApp({ scanDirectories: [process.cwd()], scanExclude: [] });
+      const res = await request(app)
+        .post('/api/directories/restore')
+        .send({ directory: process.cwd() });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('rejects a path outside the configured scan dirs', async () => {
+      const app = createTestApp({ scanDirectories: [] });
+      const res = await request(app)
+        .post('/api/directories/restore')
+        .send({ directory: '/nonexistent' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toContain('outside');
+    });
+  });
 });
