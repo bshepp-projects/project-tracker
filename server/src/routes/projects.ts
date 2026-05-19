@@ -8,6 +8,7 @@ import type { Project } from '../types';
 interface DiscoverySummary {
   rootsScanned: number;
   projectsFound: number;
+  hiddenCount: number;
   skipped: DiscoveryResult['skipped'];
 }
 
@@ -22,10 +23,18 @@ export function createProjectsRouter(
     const discovered = await resolveProjects();
     const allProjects: Project[] = [];
 
-    for (const projectPath of discovered.projects) {
+    const entries = [
+      ...discovered.projects.map((p) => ({ p, hidden: false })),
+      ...discovered.hidden.map((p) => ({ p, hidden: true })),
+    ];
+
+    for (const { p: projectPath, hidden } of entries) {
       try {
         const project = await projectAnalyzer.analyzeProject(projectPath, path.basename(projectPath));
-        if (project) allProjects.push(project);
+        if (project) {
+          project.hidden = hidden;
+          allProjects.push(project);
+        }
       } catch (error) {
         const msg = error instanceof Error ? error.message : String(error);
         console.warn(`Could not analyze ${projectPath}:`, msg);
@@ -37,6 +46,7 @@ export function createProjectsRouter(
       discovery: {
         rootsScanned: discovered.rootsScanned,
         projectsFound: allProjects.length,
+        hiddenCount: allProjects.filter((p) => p.hidden).length,
         skipped: discovered.skipped,
       },
     };
@@ -48,9 +58,11 @@ export function createProjectsRouter(
       // Discovery is a cheap stat/readdir walk (no git) — run it for the
       // up-to-date "found vs skipped" summary even on the cached path.
       const discovered = await resolveProjects();
+      const totalDiscovered = discovered.projects.length + discovered.hidden.length;
       const discovery: DiscoverySummary = {
         rootsScanned: discovered.rootsScanned,
-        projectsFound: discovered.projects.length,
+        projectsFound: totalDiscovered,
+        hiddenCount: discovered.hidden.length,
         skipped: discovered.skipped,
       };
 
@@ -62,7 +74,7 @@ export function createProjectsRouter(
       const stale =
         forceRefresh ||
         !cacheManager.isCacheValid() ||
-        cacheCount !== discovered.projects.length ||
+        cacheCount !== totalDiscovered ||
         (typeof ageMs === 'number' && ageMs > 120000);
 
       if (stale && !cacheManager.isScanning) {

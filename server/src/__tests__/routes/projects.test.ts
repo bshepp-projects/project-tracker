@@ -1,4 +1,7 @@
 import request from 'supertest';
+import fsp from 'fs/promises';
+import os from 'os';
+import path from 'path';
 import { createTestApp, createTestCacheManager } from '../test-helpers';
 
 describe('Projects API', () => {
@@ -17,5 +20,23 @@ describe('Projects API', () => {
     // discovery sees 1, cache has 0 -> stale -> a background scan is kicked
     expect(res.body.discovery.projectsFound).toBe(1);
     expect(res.body.scanning).toBe(true);
+  });
+
+  it('GET /projects marks hidden projects and reports hiddenCount', async () => {
+    const tmp = await fsp.mkdtemp(path.join(os.tmpdir(), 'pt-proj-'));
+    await fsp.writeFile(path.join(tmp, 'package.json'), '{}');
+    const app = createTestApp({
+      scanDirectories: [tmp],
+      scanExclude: [path.resolve(tmp)],
+    });
+
+    const res = await request(app).get('/api/projects');
+
+    expect(res.status).toBe(200);
+    expect(res.body.discovery.hiddenCount).toBe(1);
+    expect(res.body.projects.length).toBe(1);
+    expect(res.body.projects[0].hidden).toBe(true);
+
+    await fsp.rm(tmp, { recursive: true, force: true });
   });
 });

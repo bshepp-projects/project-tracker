@@ -18,6 +18,7 @@ export interface Project {
   lastUpdated: string;
   isFavorite: boolean;
   isScanned: boolean;
+  hidden?: boolean;
   dateScanned: string;
 }
 
