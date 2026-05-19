@@ -76,7 +76,7 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 - `GET /api/config` - Current directories
 - `POST /api/directories` - Add directory (validates path exists)
 - `DELETE /api/directories` - Hide a project: adds its normalized path to `exclude` (path-containment validated)
-- `POST /api/directories/restore` - Unhide a project: removes its path from `exclude`
+- `POST /api/directories/restore` - Unhide a project: removes its path from `exclude` (path-containment validated)
 - `PUT /api/directories` - Replace all directories
 
 ### User Data
@@ -103,7 +103,7 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 - Missing/inaccessible roots and pins are reported in the `discovery.skipped` array and surfaced in the UI — never silently dropped.
 - Discovery skips `node_modules`/`venv`/`__pycache__`/`dist`/`build`, anything in `exclude`, dot-dirs (except `.claude`), and does not follow symlinks (cycle-safe).
 - `isPathWithinScanDirs` validates client-supplied paths (tags/favorites/actions) against pins + roots.
-- `exclude` entries are matched by **basename** (relative entries — manual config-noise filters, never surfaced) **or full resolved path** (absolute entries — added by 🚫 Remove). Path-excluded projects are returned by `/api/projects` flagged `hidden:true` with `discovery.hiddenCount`, hidden in the UI by default, revealable + un-hideable via the "Show hidden" toggle. Removing never deletes a pin — it masks via `exclude` so the action is fully reversible.
+- `exclude` entries are matched by **basename** (relative entries — manual config-noise filters, never surfaced) **or full resolved path** (absolute entries — added by 🚫 Remove). Path-excluded projects are returned by `/api/projects` flagged `hidden:true` with `discovery.hiddenCount`, hidden in the UI by default, revealable via the "Show hidden" toggle (each revealed card has an ↩️ Unhide button). Removing never deletes a pin — it masks via `exclude` so the action is fully reversible.
 - **Local action bridge** is off by default. It only executes when ALL hold: `ENABLE_LOCAL_ACTIONS` is set, the server is bound to loopback, and the request comes from a loopback address. Otherwise it 403s with `actionsDisabled` (so it is provably inert on a `0.0.0.0`/remote box like Magus). Commands are built by a fixed per-OS allowlist and spawned with no shell.
 - WSL path conversion: Windows paths like `C:\...` become `/mnt/c/...`
 - Cache expires after 1 hour
