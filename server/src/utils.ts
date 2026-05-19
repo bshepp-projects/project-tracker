@@ -73,3 +73,30 @@ export function isLoopbackAddress(addr: string | undefined): boolean {
   const v4 = addr.startsWith('::ffff:') ? addr.slice(7) : addr;
   return /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v4);
 }
+
+/**
+ * Normalize a client-supplied path: trim, convert a Windows drive path to a
+ * WSL `/mnt/<drive>` path when running on Linux, expand a leading `~/`, then
+ * resolve to an absolute path. Shared by the directories route (POST/DELETE/
+ * restore) so path matching is consistent. Pure; `platform` is injectable
+ * for testing.
+ */
+export function normalizeInputPath(
+  input: string,
+  platform: NodeJS.Platform = process.platform
+): string {
+  let p = input.trim();
+  if (platform === 'linux') {
+    const m = p.match(/^([A-Za-z]):[\\/]/);
+    if (m) {
+      const drive = m[1].toLowerCase();
+      const rest = p.substring(2).replace(/\\/g, '/');
+      p = `/mnt/${drive}${rest}`;
+    }
+  }
+  if (p.startsWith('~/')) {
+    const home = process.env.HOME || process.env.USERPROFILE || '';
+    p = path.join(home, p.substring(2));
+  }
+  return path.resolve(p);
+}

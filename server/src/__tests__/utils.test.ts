@@ -4,6 +4,7 @@ import {
   isPathWithinScanDirs,
   isAllowedOrigin,
   isLoopbackAddress,
+  normalizeInputPath,
 } from '../utils';
 
 describe('shouldSkipDirectory', () => {
@@ -88,5 +89,27 @@ describe('isLoopbackAddress', () => {
     expect(isLoopbackAddress('0.0.0.0')).toBe(false);
     expect(isLoopbackAddress(undefined)).toBe(false);
     expect(isLoopbackAddress('')).toBe(false);
+  });
+});
+
+describe('normalizeInputPath', () => {
+  it('converts a Windows drive path to a /mnt path when platform is linux', () => {
+    const out = normalizeInputPath('C:\\Users\\me\\proj', 'linux');
+    expect(out).toBe(path.resolve('/mnt/c/Users/me/proj'));
+  });
+
+  it('trims and resolves without WSL conversion off-linux', () => {
+    const out = normalizeInputPath('  /a/b/../c  ', 'darwin');
+    expect(out).toBe(path.resolve('/a/b/../c'));
+  });
+
+  it('expands a leading ~/ using HOME/USERPROFILE', () => {
+    const prev = process.env.HOME;
+    process.env.HOME = path.resolve('/home/tester');
+    try {
+      expect(normalizeInputPath('~/work', 'darwin')).toBe(path.resolve('/home/tester/work'));
+    } finally {
+      process.env.HOME = prev;
+    }
   });
 });
