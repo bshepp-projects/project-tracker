@@ -1012,7 +1012,7 @@
                 const deleteData = await deleteResponse.json();
 
                 if (deleteData.success) {
-                    showNotification(`✅ Removed project: ${projectName}`, 'success');
+                    showNotification(`🙈 Hidden: ${projectName} (use "Show hidden" to restore)`, 'success');
                     // Refresh projects to update the list
                     setTimeout(() => refreshProjects(), 1000);
                 } else {
