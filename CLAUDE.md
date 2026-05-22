@@ -2,6 +2,19 @@
 
 Guidance for Claude Code when working with this repository.
 
+## Working style — match effort to stakes
+
+This is a personal home tool. Default to making changes directly: for small
+or contained work (a single button/function/copy change, a localized bug
+fix, a config edit), just make the change, run the relevant tests, and
+report. Do NOT run the brainstorming → spec → writing-plans →
+subagent-execution → multi-stage-review pipeline, and do not run proactive
+security audits, for work like this. Reserve that full process for work that
+is genuinely large, architectural, cross-cutting, or security-sensitive — or
+when explicitly asked. When unsure which bucket a request is in, ask one
+quick question before escalating. This takes precedence over skill defaults
+(superpowers kept available, not auto-invoked for small changes).
+
 ## What This Is
 
 Project Tracker is a local web tool for organizing projects. It has:
