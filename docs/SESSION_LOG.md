@@ -9,6 +9,37 @@ Newest entries first.
 
 ---
 
+## 2026-07-18 — Catch-up: version sync, proxy-aware API base, magus redeploy
+
+Post-hiatus session. Closed the deferred health-endpoint version sync
+(`/api/health` now reads `version` from `package.json`; was hardcoded 1.7.0
+vs 2.0.0) and made `shared.js` derive `API_BASE_URL` from the page origin:
+file:// and localhost keep `http://localhost:3001/api`; any other host
+resolves `./api` relative to the page, so a reverse-proxied deploy no longer
+needs a hand-edited `shared.js`. Tests 141/141.
+
+**Magus redeploy from scratch.** The old magus deploy no longer exists — the
+box died (PSU) and was rebuilt on Debian 13 (see
+`F:\utility-projects\machines\magus\CLAUDE.md`); it is currently at
+10.0.0.31 (DHCP; normally .48). New deploy is a **git clone** (repo is
+public post-scrub) at `~pilot/project-tracker`: systemd
+`project-tracker.service` runs `server/dist` on 127.0.0.1:3002 (`HOST`
+pinned — bare `localhost` bound only `[::1]` while nginx proxied to IPv4),
+nginx serves `/tracker/` static + `/tracker/api/` proxy via
+`snippets/project-tracker.conf` included from the atlas site (include is not
+in the sentinel template). Scan config maps 8 F-drive roots through the
+`/mnt/f-drive` CIFS mount: **117 projects, 0 skipped**, ~3 min cold scan.
+Verified from the LAN: page 200, health v2.0.0, actions
+`{"enabled":false}`. Never set `ENABLE_LOCAL_ACTIONS` on magus — the proxy
+makes LAN requests look loopback to the gate.
+
+Housekeeping: local `directories.json` had two dead roots
+(`consciousness-projects`, `environmental_projects` no longer exist on
+`F:\`) — dropped from both configs. Stale `.git/index.lock` (2026-05-23)
+removed. Remaining known gap: no `claude` route test suite.
+
+---
+
 ## 2026-05-18 — Fix the dead 🚫 Remove button (hide via path-exclude + filter)
 
 The per-project Remove button was a no-op for ~all projects: it issued
