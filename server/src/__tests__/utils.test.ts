@@ -5,6 +5,7 @@ import {
   isAllowedOrigin,
   isLoopbackAddress,
   normalizeInputPath,
+  parseDirectoriesConfig,
 } from '../utils';
 
 describe('shouldSkipDirectory', () => {
@@ -112,5 +113,28 @@ describe('normalizeInputPath', () => {
       if (prev === undefined) delete process.env.HOME;
       else process.env.HOME = prev;
     }
+  });
+});
+
+describe('parseDirectoriesConfig', () => {
+  it('parses a plain config object', () => {
+    const config = parseDirectoriesConfig('{"roots": ["F:\\\\projects"], "maxDepth": 2}');
+    expect(config.roots).toEqual(['F:\\projects']);
+    expect(config.maxDepth).toBe(2);
+  });
+
+  it('tolerates a leading UTF-8 BOM (PowerShell "UTF-8" default)', () => {
+    const bom = String.fromCharCode(0xfeff);
+    const config = parseDirectoriesConfig(bom + '{"directories": ["/home/x"]}');
+    expect(config.directories).toEqual(['/home/x']);
+  });
+
+  it('throws on malformed JSON', () => {
+    expect(() => parseDirectoriesConfig('{not json')).toThrow();
+  });
+
+  it('throws on a non-object payload', () => {
+    expect(() => parseDirectoriesConfig('["just", "an", "array"]')).toThrow('JSON object');
+    expect(() => parseDirectoriesConfig('"a string"')).toThrow('JSON object');
   });
 });

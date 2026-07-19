@@ -1,6 +1,23 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+import type { DirectoriesConfig } from './types';
+
+/**
+ * Parse directories.json content. Tolerates a leading UTF-8 BOM (what
+ * PowerShell writes as "UTF-8") and rejects non-object payloads, so a
+ * corrupt file throws a clear error instead of silently emptying the
+ * scan config. (0xFEFF spelled numerically to keep this file ASCII.)
+ */
+export function parseDirectoriesConfig(raw: string): DirectoriesConfig {
+  const text = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
+  const parsed = JSON.parse(text);
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('directories config must be a JSON object');
+  }
+  return parsed as DirectoriesConfig;
+}
+
 export async function fileExists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);

@@ -7,7 +7,7 @@ import { GitAnalyzer } from './services/git-analyzer';
 import { ClaudeAnalyzer } from './services/claude-analyzer';
 import { ProjectAnalyzer } from './services/project-analyzer';
 import { ProjectDiscovery } from './services/project-discovery';
-import { isLoopbackAddress } from './utils';
+import { isLoopbackAddress, parseDirectoriesConfig } from './utils';
 import { createApp } from './app';
 
 import type { DirectoriesConfig, TagRulesConfig } from './types';
@@ -36,6 +36,10 @@ let scanDirectories: string[] = []; // explicit project pins (legacy `directorie
 let scanRoots: string[] = []; // parent folders auto-scanned for projects
 let scanExclude: string[] = []; // skip entries: basenames (name-based) or absolute paths (path-based hide)
 let scanMaxDepth = 3;
+// Set when directories.json exists but cannot be parsed; surfaced through
+// discovery.skipped so a corrupt config shows up in the UI banner instead of
+// silently emptying the tracker.
+let configLoadError: string | null = null;
 
 const projectDiscovery = new ProjectDiscovery();
 
@@ -59,32 +63,53 @@ function getProjectRoots(): string[] {
   return scanRoots;
 }
 
-function resolveProjects() {
-  return projectDiscovery.discover({
+async function resolveProjects() {
+  const result = await projectDiscovery.discover({
     roots: scanRoots,
     pins: scanDirectories,
     exclude: scanExclude,
     maxDepth: scanMaxDepth,
   });
+  if (configLoadError) {
+    result.skipped.unshift({
+      path: DIRECTORIES_CONFIG_FILE,
+      reason: `invalid config, running without it: ${configLoadError}`,
+    });
+  }
+  return result;
 }
 
 async function loadDirectoriesFromFile(): Promise<void> {
+  let data: string;
   try {
-    const data = await fs.readFile(DIRECTORIES_CONFIG_FILE, 'utf8');
-    const config: DirectoriesConfig = JSON.parse(data);
+    data = await fs.readFile(DIRECTORIES_CONFIG_FILE, 'utf8');
+  } catch {
+    console.log('📂 Using default directories (config file not found)');
+    return;
+  }
+  try {
+    const config: DirectoriesConfig = parseDirectoriesConfig(data);
     scanDirectories = Array.isArray(config.directories) ? config.directories : [];
     scanRoots = Array.isArray(config.roots) ? config.roots : [];
     scanExclude = Array.isArray(config.exclude) ? config.exclude : [];
     scanMaxDepth = typeof config.maxDepth === 'number' ? config.maxDepth : 3;
+    configLoadError = null;
     console.log(
       `📂 Config loaded: ${scanRoots.length} roots, ${scanDirectories.length} pins, depth ${scanMaxDepth}`
     );
-  } catch {
-    console.log('📂 Using default directories (config file not found or invalid)');
+  } catch (error) {
+    configLoadError = error instanceof Error ? error.message : String(error);
+    console.error(`⚠️ Invalid directories config (${DIRECTORIES_CONFIG_FILE}): ${configLoadError}`);
   }
 }
 
 async function saveDirectoriesToFile(): Promise<void> {
+  if (configLoadError) {
+    // The on-disk file failed to parse; writing the (empty) in-memory state
+    // would destroy whatever the user had. Leave the file for manual repair.
+    console.error('⚠️ Not saving directories config: the existing file is invalid and would be overwritten');
+    return;
+  }
   try {
     // Preserve discovery config (roots/exclude/maxDepth) — the directories
     // route only mutates pins, but a naive write would otherwise drop these.
