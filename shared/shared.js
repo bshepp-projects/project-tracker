@@ -1,6 +1,12 @@
 // Shared JavaScript for Project Tracker, Claude Tracker, and Git Tracker
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Opened locally (file:// or localhost), talk to the dev server directly.
+// Served from any other host, the pages sit behind a reverse proxy (e.g.
+// magus's nginx /tracker/) and the API is at ./api relative to the page.
+const API_BASE_URL =
+    (location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname))
+        ? 'http://localhost:3001/api'
+        : new URL('api', location.href).href;
 
 // --- XSS Sanitization ---
 
