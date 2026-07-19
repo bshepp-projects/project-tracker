@@ -13,7 +13,7 @@ A local tool to find and organize projects across multiple directories.
 
 ## Requirements
 
-- Node.js 16+
+- Node.js 18+ (the compiled server itself runs on 16, but the dev/test tooling — tsx, jest — needs 18)
 - A browser
 
 ## Setup
@@ -127,7 +127,7 @@ project-tracker/
 
 - `GET /api/projects` - Scan and return projects
 - `GET /api/projects/cached` - Return cached projects (faster)
-- `GET /api/config` - Current configuration
+- `GET /api/config` - Full scan config (pins, roots, exclude, maxDepth)
 - `POST /api/directories` - Add a directory pin
 - `DELETE /api/directories` - Hide a project (adds its path to the exclude list)
 - `POST /api/directories/restore` - Unhide a project (removes its path from exclude)
@@ -167,7 +167,7 @@ No external services, no tracking.
 cd server && npm test
 ```
 
-Unit tests cover the backend services (CacheManager, ProjectAnalyzer, ProjectDiscovery, ClaudeAnalyzer, GitAnalyzer incl. a command-injection regression test, UserData) and the pure helpers (path containment, CORS, loopback, action-command builder). API integration tests (supertest) cover health, favorites, tags, directories, path validation, CORS, and the action bridge — including a test that it stays inert on a Magus-like `0.0.0.0` host.
+Unit tests cover the backend services (CacheManager, ProjectAnalyzer, ProjectDiscovery, ClaudeAnalyzer, GitAnalyzer incl. a command-injection regression test, UserData) and the pure helpers (path containment, CORS, loopback, action-command builder). API integration tests (supertest) cover health, favorites, tags, directories, path validation, claude/git/projects routes, CORS, and the action bridge — including a test that it stays inert on a Magus-like `0.0.0.0` host.
 
 ## Keyboard Shortcuts
 

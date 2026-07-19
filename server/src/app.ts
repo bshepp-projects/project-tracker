@@ -32,6 +32,8 @@ export interface AppDependencies {
   setScanExclude: (e: string[]) => void;
   /** Configured parent roots (for path-containment validation). */
   getProjectRoots: () => string[];
+  /** Configured discovery depth (reported by GET /config). */
+  getScanMaxDepth?: () => number;
   /** Run discovery: expand roots + pins into the effective project set. */
   resolveProjects: () => Promise<DiscoveryResult>;
   /** Local action bridge gating (off by default; inert unless loopback). */
@@ -64,7 +66,9 @@ export function createApp(deps: AppDependencies): express.Express {
       deps.cacheManager,
       deps.getScanExclude,
       deps.setScanExclude,
-      validationPaths
+      validationPaths,
+      deps.getProjectRoots,
+      deps.getScanMaxDepth
     )
   );
   app.use(

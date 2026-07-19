@@ -86,7 +86,7 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 - `GET /api/projects/cached` - Return cache, trigger background scan if stale (also returns `discovery`)
 
 ### Configuration
-- `GET /api/config` - Current directories
+- `GET /api/config` - Full scan config (pins, roots, exclude, maxDepth)
 - `POST /api/directories` - Add directory (validates path exists)
 - `DELETE /api/directories` - Hide a project: adds its normalized path to `exclude` (path-containment validated)
 - `POST /api/directories/restore` - Unhide a project: removes its path from `exclude` (path-containment validated)
@@ -145,7 +145,7 @@ Communicates with backend at `http://localhost:3001/api`. Falls back to hardcode
 Tests use Jest with ts-jest. Test files are in `server/src/__tests__/`.
 
 - **Unit tests** (`__tests__/services/` + `__tests__/utils.test.ts`): CacheManager, ProjectAnalyzer, ClaudeAnalyzer, GitAnalyzer (incl. a command-injection regression test), UserData, ProjectDiscovery, buildActionCommand, utils (path containment / CORS / loopback)
-- **API tests** (`__tests__/routes/` + `cors.test.ts`): health, favorites, tags, directories, path-validation, actions (incl. an explicit "inert on a Magus-like 0.0.0.0 host" test), using supertest
+- **API tests** (`__tests__/routes/` + `cors.test.ts`): health, favorites, tags, directories, path-validation, claude, git, projects, actions (incl. an explicit "inert on a Magus-like 0.0.0.0 host" test), using supertest
 - **Test helpers** (`__tests__/test-helpers.ts`): factories for creating isolated test instances
 
 Run `npm test` from `server/`.

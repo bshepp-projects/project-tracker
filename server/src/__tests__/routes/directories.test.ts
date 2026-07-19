@@ -13,6 +13,17 @@ describe('Directories API', () => {
       expect(res.status).toBe(200);
       expect(res.body.scanDirectories).toEqual(dirs);
     });
+
+    it('returns the full scan config (roots, exclude, maxDepth)', async () => {
+      const app = createTestApp({ scanDirectories: ['/pin'], scanExclude: ['archive'] });
+
+      const res = await request(app).get('/api/config');
+
+      expect(res.status).toBe(200);
+      expect(res.body.exclude).toEqual(['archive']);
+      expect(Array.isArray(res.body.roots)).toBe(true);
+      expect(typeof res.body.maxDepth).toBe('number');
+    });
   });
 
   describe('POST /api/directories', () => {

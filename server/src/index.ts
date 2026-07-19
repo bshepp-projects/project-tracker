@@ -165,6 +165,7 @@ async function startServer(): Promise<void> {
     getScanExclude,
     setScanExclude,
     getProjectRoots,
+    getScanMaxDepth: () => scanMaxDepth,
     resolveProjects,
     localActions: LOCAL_ACTIONS,
   });

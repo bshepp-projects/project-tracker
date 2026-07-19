@@ -10,13 +10,18 @@ export function createDirectoriesRouter(
   cacheManager: CacheManager,
   getExclude: () => string[],
   setExclude: (e: string[]) => void,
-  validationPaths: () => string[]
+  validationPaths: () => string[],
+  getRoots: () => string[] = () => [],
+  getMaxDepth: () => number = () => 3
 ): Router {
   const router = Router();
 
   router.get('/config', (_req, res) => {
     res.json({
       scanDirectories: getScanDirectories(),
+      roots: getRoots(),
+      exclude: getExclude(),
+      maxDepth: getMaxDepth(),
       defaultDirectories: [],
       port: process.env.PORT || 3001,
     });
