@@ -45,4 +45,28 @@ describe('Favorites API', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.favorites).not.toContain('/path/to/project');
   });
+
+  it('DELETE /api/favorites still removes a favorite orphaned by a config change', async () => {
+    const userData = createTestUserData();
+    userData.addFavorite('/no/longer/scanned/project');
+    const app = createTestApp({ userData, scanDirectories: ['/scan/root'] });
+
+    const res = await request(app)
+      .delete('/api/favorites')
+      .send({ projectPath: '/no/longer/scanned/project' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.favorites).toEqual([]);
+  });
+
+  it('DELETE /api/favorites rejects an out-of-scope path that is not stored', async () => {
+    const app = createTestApp({ scanDirectories: ['/scan/root'] });
+
+    const res = await request(app)
+      .delete('/api/favorites')
+      .send({ projectPath: '/etc/passwd' });
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+  });
 });

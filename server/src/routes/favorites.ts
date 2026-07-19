@@ -48,6 +48,17 @@ export function createFavoritesRouter(
         return;
       }
 
+      // Anything already stored may always be removed (so favorites orphaned
+      // by a scan-config change stay deletable); otherwise apply the same
+      // containment check as POST.
+      if (
+        !userData.favorites.includes(projectPath) &&
+        !isPathWithinScanDirs(projectPath, validationPaths())
+      ) {
+        res.status(403).json({ success: false, error: 'Path is outside the configured scan directories' });
+        return;
+      }
+
       if (userData.removeFavorite(projectPath)) {
         await userData.save();
         console.log(`⭐ Removed favorite: ${projectPath}`);
