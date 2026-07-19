@@ -963,9 +963,6 @@
 
             // Load projects from API on page load
             await loadProjectsFromAPI();
-            // Set initial active filter
-            console.log('Setting initial filter to all...');
-            toggleFilter('all');
         });
 
         
@@ -984,10 +981,7 @@
                 refreshProjects();
             }
             if (e.key === 'Escape') {
-                const modal = document.getElementById('directoryModal');
-                if (!modal.classList.contains('modal-hidden')) {
-                    toggleDirectoryManager();
-                }
+                closeOpenModals();
             }
         });
 

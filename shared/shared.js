@@ -108,6 +108,28 @@ function copyToClipboardSafe(text) {
     });
 }
 
+function copyToClipboard(text, message = 'Copied to clipboard!') {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification(message, 'success');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification(message, 'success');
+    });
+}
+
+// Close any open modal (used by the pages' Escape handlers).
+function closeOpenModals() {
+    document.querySelectorAll('.modal:not(.modal-hidden)').forEach((modal) => {
+        modal.classList.add('modal-hidden');
+    });
+}
+
 // Executes an action via the backend bridge when enabled; otherwise (or on
 // any failure) copies the equivalent command. Always honest about which
 // actually happened.

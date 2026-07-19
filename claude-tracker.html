@@ -524,11 +524,11 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label">Permissions</div>
-                            <div class="info-value" title="Number of Claude permissions configured for this project">${project.permissionCount || 0} permissions</div>
+                            <div class="info-value" title="Number of Claude permissions configured for this project">${escapeHtml(project.permissionCount || 0)} permissions</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Last Activity</div>
-                            <div class="info-value">${new Date(project.lastActivity).toLocaleDateString()}</div>
+                            <div class="info-value">${escapeHtml(new Date(project.lastActivity).toLocaleDateString())}</div>
                         </div>
                     </div>
                     
@@ -916,20 +916,7 @@
             });
         }
 
-        function copyToClipboard(text, message = 'Copied to clipboard!') {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification(message, 'success');
-            }).catch(() => {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showNotification(message, 'success');
-            });
-        }
+        // copyToClipboard now lives in shared/shared.js
 
         async function refreshProjects() {
             const loadingDiv = document.getElementById('loading');
@@ -1019,12 +1006,9 @@
                 e.preventDefault();
                 refreshProjects();
             }
-            // Close modal with Escape key
+            // Close modals with Escape key
             if (e.key === 'Escape') {
-                const modal = document.getElementById('directoryModal');
-                if (modal && !modal.classList.contains('modal-hidden')) {
-                    toggleDirectoryManager();
-                }
+                closeOpenModals();
             }
         });
 

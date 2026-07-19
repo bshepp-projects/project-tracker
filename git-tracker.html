@@ -490,10 +490,10 @@
                 badges.push(`<span class="status-badge status-uptodate">✓ up to date</span>`);
             }
             if (repo.workingTreeClean === false) {
-                badges.push(`<span class="status-badge status-dirty">${repo.uncommittedChanges || 0} uncommitted</span>`);
+                badges.push(`<span class="status-badge status-dirty">${escapeHtml(repo.uncommittedChanges || 0)} uncommitted</span>`);
             }
             if (repo.untrackedFiles > 0) {
-                badges.push(`<span class="status-badge status-untracked">${repo.untrackedFiles} untracked</span>`);
+                badges.push(`<span class="status-badge status-untracked">${escapeHtml(repo.untrackedFiles)} untracked</span>`);
             }
             if (repo.workingTreeClean === true && repo.aheadCount === 0) {
                 badges.push(`<span class="status-badge status-clean">✓ clean</span>`);
@@ -524,7 +524,7 @@
                 <div class="${className}">
                     <div style="font-weight: 500;">${icon} ${text}</div>
                     <div style="font-size: 0.85em; color: var(--text-secondary); margin-top: 2px;">
-                        ${repo.githubActions.workflowName || 'GitHub Actions'} • ${repo.githubActions.lastRun || 'Recently'}
+                        ${escapeHtml(repo.githubActions.workflowName || 'GitHub Actions')} • ${escapeHtml(repo.githubActions.lastRun || 'Recently')}
                     </div>
                 </div>
             `;
@@ -824,6 +824,9 @@
             if (e.ctrlKey && e.key === 'r') {
                 e.preventDefault();
                 refreshRepos();
+            }
+            if (e.key === 'Escape') {
+                closeOpenModals();
             }
         });
     </script>
