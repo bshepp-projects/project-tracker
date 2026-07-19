@@ -55,10 +55,17 @@ were resolved in favor of parity:
 - **`DELETE /api/favorites` path-validated** — with a carve-out so
   favorites orphaned by a config change stay deletable. Tests 147/147.
 
-**Known gaps left after round 2:** `GET /api/config` omits roots/exclude/
-maxDepth; README's Node 16+ claim only covers run/build (dev/test tooling
-needs 18+); no claude route test suite; machine-side: magus IP pin,
-nginx include not in the sentinel template, Scree redeploy.
+**Round 3 (same day) — last audit stragglers.**
+`GET /api/config` now returns the full scan config (pins + roots +
+exclude + maxDepth; old keys kept for compatibility). README/engines
+corrected to Node 18+ (the compiled server runs on 16, but tsx/jest need
+18). New `claude.test.ts` route suite (marker detection, CLAUDE.md
+metadata + .claude permissions, hidden-project exclusion) — every route
+now has a test file. 151/151 across 18 suites.
+
+**Remaining (machine-side only):** magus IP pin back to .48, nginx
+`/tracker/` include not in the sentinel template, Scree redeploy. The
+project itself has no known gaps against its documentation.
 
 ---
 
