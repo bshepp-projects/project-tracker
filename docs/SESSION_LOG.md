@@ -9,6 +9,37 @@ Newest entries first.
 
 ---
 
+## 2026-07-19 — Claims audit + fixes for what failed it
+
+Full does-it-do-what-it-advertises audit: every README/CLAUDE.md claim
+checked against code (two parallel review agents) and against a live local
+server (all 19 endpoints exercised; hide/restore, favorites, path-
+containment 403s, action-bridge gate, CORS allowlist, cache self-heal all
+verified working). Core claims hold. Fixed the clear-cut failures:
+
+- **README button** on the main page was a `ReferenceError`
+  (`copyToClipboard` only existed in claude-tracker) — promoted to
+  shared.js. Also removed the phantom `toggleFilter('all')` init call.
+- **Escape** now closes any open modal on all three pages (was: directory
+  modal only; git-tracker had no handler).
+- **Unescaped innerHTML** interpolations in git/claude tracker cards
+  (githubActions workflowName/lastRun, counts, dates) now escaped.
+- **Corrupt `directories.json` is no longer silent**: parse failures are
+  injected into `discovery.skipped` (surfaces in the UI banner), a leading
+  UTF-8 BOM (PowerShell's default) is tolerated, and saves refuse to
+  overwrite an unparseable file. Found live: a BOM'd config had the local
+  tracker running on zero roots. Tests 145/145.
+
+**Known gaps left by choice** (parity is a design decision, not a bug fix):
+claude/git-tracker Manage Tags are stubs (alert-only save), their action
+buttons never use the local bridge (always copy), claude-tracker favorites
+are localStorage-only, its Ignore button removes the whole parent scan
+entry, `DELETE /api/favorites` skips path validation (harmless),
+`GET /api/config` omits roots/exclude/maxDepth, and README's Node 16+
+claim only covers run/build (dev/test tooling needs 18+).
+
+---
+
 ## 2026-07-18 — Catch-up: version sync, proxy-aware API base, magus redeploy
 
 Post-hiatus session. Closed the deferred health-endpoint version sync
