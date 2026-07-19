@@ -8,6 +8,7 @@ describe('GET /api/health', () => {
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('OK');
     expect(res.body.service).toBe('Project Tracker Backend');
+    expect(res.body.version).toBe(require('../../../package.json').version);
     expect(res.body.timestamp).toBeDefined();
   });
 });
