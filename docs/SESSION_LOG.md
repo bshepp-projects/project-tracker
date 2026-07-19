@@ -30,13 +30,35 @@ verified working). Core claims hold. Fixed the clear-cut failures:
   overwrite an unparseable file. Found live: a BOM'd config had the local
   tracker running on zero roots. Tests 145/145.
 
-**Known gaps left by choice** (parity is a design decision, not a bug fix):
-claude/git-tracker Manage Tags are stubs (alert-only save), their action
-buttons never use the local bridge (always copy), claude-tracker favorites
-are localStorage-only, its Ignore button removes the whole parent scan
-entry, `DELETE /api/favorites` skips path validation (harmless),
-`GET /api/config` omits roots/exclude/maxDepth, and README's Node 16+
-claim only covers run/build (dev/test tooling needs 18+).
+**Round 2 (same day) — secondary-page parity.** The design-decision gaps
+were resolved in favor of parity:
+
+- **Real tag editing everywhere**: a generic tag manager now lives in
+  `shared.js` (vocabulary + per-project assignment from `/projects/cached`,
+  saves via `POST /projects/:path/tags`); claude/git-tracker use it via a
+  `tagManagerItems()` hook (their stub modals + alert-only saves deleted —
+  those pages' Add-Tag buttons had been calling functions that didn't even
+  exist). The main page keeps its own richer implementation, which
+  overrides the shared functions by declaration order.
+- **claude-tracker launch buttons use the bridge**: launchClaude/YOLO/
+  activateVenv now go through `runProjectAction` (execute when enabled,
+  honest copy otherwise). git-tracker's fetch/pull/push stay copy-only by
+  design (not bridge actions) — their labels already said so.
+- **claude-tracker favorites sync to the server** (POST/DELETE + load on
+  init, localStorage fallback), matching the main page.
+- **claude-tracker 🚫 Ignore → 🚫 Hide**: hides the single project via
+  path-exclude (reversible from the main page's Show-hidden toggle). The
+  old code deleted the parent scan entry — and had been dead since
+  root-discovery anyway (it only matched pins).
+- **claude-tracker fallback honesty**: sample data only when nothing is
+  loaded, labeled as sample data, not as a cache.
+- **`DELETE /api/favorites` path-validated** — with a carve-out so
+  favorites orphaned by a config change stay deletable. Tests 147/147.
+
+**Known gaps left after round 2:** `GET /api/config` omits roots/exclude/
+maxDepth; README's Node 16+ claim only covers run/build (dev/test tooling
+needs 18+); no claude route test suite; machine-side: magus IP pin,
+nginx include not in the sentinel template, Scree redeploy.
 
 ---
 
