@@ -765,53 +765,10 @@
             filterRepos();
         });
 
-        // Tag Management System
-        let allTags = new Set();
-        let projectTagChanges = new Map();
-
-
-        function loadTagManager() {
-            // Since Git Tracker doesn't have repository tags yet, we'll create a placeholder system
-            // This can be enhanced to work with actual git repositories
-            renderCurrentTags();
-            renderProjectTagAssignment();
-            updateChangesSummary();
-        }
-
-        function renderCurrentTags() {
-            const container = document.getElementById('currentTags');
-            const tagsArray = Array.from(allTags).sort();
-            
-            container.innerHTML = tagsArray.map(tag => `
-                <div class="tag-item">
-                    <span class="tag-name">${escapeHtml(tag)}</span>
-                    <button class="tag-remove" onclick="removeTag('${escapeJsStr(tag)}')" title="Delete tag">&times;</button>
-                </div>
-            `).join('');
-        }
-
-        function renderProjectTagAssignment() {
-            const container = document.getElementById('projectTagAssignment');
-            // For now, we'll show a message about repository tag support
-            container.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
-                    <h4>Repository Tag System</h4>
-                    <p>Repository tagging will be available in a future update.</p>
-                    <p>This will allow you to tag repositories for better organization and filtering.</p>
-                </div>
-            `;
-        }
-
-
-        function saveTagChanges() {
-            // Save tags (implementation would depend on backend)
-            alert('Tag changes saved! (Repository tagging will be available in a future update)');
-            toggleTagManager();
-        }
-
-        function updateChangesSummary() {
-            const summary = document.getElementById('changesSummary');
-            summary.textContent = `${allTags.size} tags available`;
+        // Tag management comes from shared.js (real, backed by the tags API);
+        // it lists the currently filtered repositories for assignment.
+        function tagManagerItems() {
+            return filteredRepos.map(r => ({ path: r.path, name: r.name }));
         }
 
         function finishDirectoryManagement() {

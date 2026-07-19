@@ -541,7 +541,7 @@
                         ${project.isGitHub ? `<button class="action-btn github-btn" onclick="openGitHub('${eUrl}')" title="Open GitHub repository in browser">🔗 GitHub</button>` : ''}
                         ${project.hasClaudeDir ? `<button class="action-btn settings-btn" onclick="viewClaudeSettings('${ePath}')" title="View Claude project settings and configuration">⚙️ Settings</button>` : ''}
                         <button class="action-btn copy-path" onclick="copyPath('${ePath}')" title="Copy full project path to clipboard">📋 Copy</button>
-                        <button class="action-btn ignore-btn" onclick="ignoreDirectory('${ePath}')" title="Remove this directory from scan list">🚫 Ignore</button>
+                        <button class="action-btn ignore-btn" onclick="ignoreDirectory('${ePath}')" title="Hide this project (reversible via the main page's Show-hidden toggle)">🚫 Hide</button>
                     </div>
                 </div>
             `}).join('');
@@ -633,15 +633,48 @@
             return favorites.includes(projectPath);
         }
 
-        function toggleFavorite(projectPath) {
+        // Load favorites from server (merges with localStorage as fallback)
+        async function loadFavoritesFromServer() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/favorites`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.favorites) {
+                        favorites = data.favorites;
+                        localStorage.setItem('claudeProjectFavorites', JSON.stringify(favorites));
+                    }
+                }
+            } catch (error) {
+                console.log('Using localStorage favorites (server unavailable)');
+            }
+        }
+
+        async function toggleFavorite(projectPath) {
             const index = favorites.indexOf(projectPath);
-            if (index === -1) {
+            const adding = index === -1;
+
+            // Update local state immediately for responsive UI
+            if (adding) {
                 favorites.push(projectPath);
             } else {
                 favorites.splice(index, 1);
             }
             localStorage.setItem('claudeProjectFavorites', JSON.stringify(favorites));
             renderProjects(); // Re-render to update star and sorting
+
+            // Sync with server in background
+            try {
+                const response = await fetch(`${API_BASE_URL}/favorites`, {
+                    method: adding ? 'POST' : 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectPath })
+                });
+                if (!response.ok) {
+                    console.warn('Failed to sync favorite with server');
+                }
+            } catch (error) {
+                console.log('Server sync failed, favorites saved locally');
+            }
         }
         
         function filterByTag(tag) {
@@ -770,56 +803,13 @@
         }
 
         function launchClaude(path) {
-            // For now, show a notification with the command
-            // In the future, this will integrate with a backend service
-            const command = `cd "${path}" && source venv/bin/activate && claude`;
-            
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '🚀 Launching...';
-            button.style.background = '#45a049';
-            
-            // Copy command to clipboard for now
-            navigator.clipboard.writeText(command).then(() => {
-                setTimeout(() => {
-                    button.textContent = '📋 Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '#4CAF50';
-                    }, 1500);
-                }, 500);
-            }).catch(() => {
-                alert(`Command copied to clipboard: ${command}`);
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '#4CAF50';
-                }, 2000);
-            });
+            runProjectAction('launch-claude', path,
+                `cd "${path}" && source venv/bin/activate && claude`);
         }
 
         function launchClaudeYOLO(path) {
-            const command = `cd "${path}" && source venv/bin/activate && claude --dangerously-skip-permissions`;
-
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '💀 YOLO...';
-            button.style.background = '#d32f2f';
-
-            navigator.clipboard.writeText(command).then(() => {
-                setTimeout(() => {
-                    button.textContent = '📋 Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '#f44336';
-                    }, 1500);
-                }, 500);
-            }).catch(() => {
-                alert(`Command copied to clipboard: ${command}`);
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '#f44336';
-                }, 2000);
-            });
+            runProjectAction('launch-claude-yolo', path,
+                `cd "${path}" && source venv/bin/activate && claude --dangerously-skip-permissions`);
         }
 
         function refreshProject(path) {
@@ -884,36 +874,10 @@
         }
 
         function activateVenv(path) {
-            // For now, show the activation command
-            // In the future, this will integrate with a backend service
-            const commands = [
-                `cd "${path}"`,
-                `source venv/bin/activate`,  // Linux/Mac
-                `# Or on Windows: venv\\Scripts\\activate`
-            ];
-            const command = commands.join(' && ');
-            
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '🔄 Activating...';
-            button.style.background = '#E64A19';
-            
-            // Copy command to clipboard for now
-            navigator.clipboard.writeText(command).then(() => {
-                setTimeout(() => {
-                    button.textContent = '📋 Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '#FF5722';
-                    }, 1500);
-                }, 500);
-            }).catch(() => {
-                alert(`Command copied to clipboard: ${command}`);
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '#FF5722';
-                }, 2000);
-            });
+            // Cannot inject into the user's shell — the bridge returns an
+            // OS-correct command to copy; without the bridge, same fallback.
+            runProjectAction('activate-venv', path,
+                `cd "${path}" && source venv/bin/activate`);
         }
 
         // copyToClipboard now lives in shared/shared.js
@@ -967,16 +931,20 @@
                 
             } catch (error) {
                 console.warn('Failed to load projects from API:', error.message);
-                
-                // Fallback to hardcoded projects
-                projectsData = fallbackProjects;
-                filterProjects();
-                updateStats();
-                
+
+                // Only substitute sample data when nothing has loaded at all;
+                // and be honest that it is sample data, not a cache.
+                if (!projectsData || projectsData.length === 0) {
+                    projectsData = fallbackProjects;
+                    filterProjects();
+                    updateStats();
+                    showNotification(`⚠️ Backend unreachable — showing ${fallbackProjects.length} sample projects`, 'warning');
+                } else {
+                    showNotification('⚠️ Refresh failed — backend unreachable; showing last loaded data', 'warning');
+                }
+
                 // Hide initial loading animation even on error
                 hideInitialLoader();
-                
-                showNotification(`⚠️ Using cached projects (${fallbackProjects.length}) - Backend may be offline`, 'warning');
             }
         }
 
@@ -990,7 +958,10 @@
             setTimeout(() => {
                 hideInitialLoader();
             }, 10000); // Hide after 10 seconds max
-            
+
+            // Load favorites from server (will merge with localStorage)
+            await loadFavoritesFromServer();
+
             // Load projects from API on page load
             await loadProjectsFromAPI();
             // Initialize with all projects
@@ -1014,51 +985,35 @@
 
         async function ignoreDirectory(projectPath) {
             try {
-                // Extract the parent directory from the project path
-                // We need to find which scan directory contains this project
-                const response = await fetch(`${API_BASE_URL}/config`);
-                const configData = await response.json();
-                const scanDirectories = configData.scanDirectories || [];
-                
-                // Find the scan directory that contains this project
-                const parentDirectory = scanDirectories.find(scanDir => 
-                    projectPath.startsWith(scanDir + '/')
-                );
-                
-                if (!parentDirectory) {
-                    showNotification('❌ Could not determine parent directory to ignore', 'error');
-                    return;
-                }
-                
-                const projectName = projectPath.split('/').pop();
-                const confirmMessage = `Are you sure you want to stop scanning "${parentDirectory}"?\n\nThis will remove ALL projects in this directory from the tracker, including "${projectName}".`;
-                
+                const projectName = projectPath.split(/[\\/]/).pop();
+                const confirmMessage = `Hide "${projectName}"?\n\nIt will be excluded from the list (reversible via the main page's "Show hidden" toggle):\n${projectPath}`;
+
                 if (!confirm(confirmMessage)) {
                     return;
                 }
-                
-                // Remove the parent directory from scan list
+
+                // Hide just this project (adds its path to the exclude list)
                 const deleteResponse = await fetch(`${API_BASE_URL}/directories`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ directory: parentDirectory })
+                    body: JSON.stringify({ directory: projectPath })
                 });
-                
+
                 const deleteData = await deleteResponse.json();
-                
+
                 if (deleteData.success) {
-                    showNotification(`✅ Stopped scanning: ${parentDirectory}`, 'success');
+                    showNotification(`🙈 Hidden: ${projectName} (restore via the main page's "Show hidden" toggle)`, 'success');
                     // Refresh projects to update the list
                     setTimeout(() => refreshProjects(), 1000);
                 } else {
                     showNotification(`❌ ${deleteData.error}`, 'error');
                 }
-                
+
             } catch (error) {
-                console.error('Error ignoring directory:', error);
-                showNotification('❌ Failed to ignore directory', 'error');
+                console.error('Error hiding project:', error);
+                showNotification('❌ Failed to hide project', 'error');
             }
         }
 
@@ -1076,54 +1031,13 @@
 
         // Theme and navigation functions are provided by shared.js
 
-        // Tag Management System
-        let allTags = new Set();
+        // Tag management comes from shared.js (real, backed by the tags API);
+        // it lists the currently filtered Claude projects for assignment.
         let activeTagFilter = null;
-        let projectTagChanges = new Map();
         let favorites = JSON.parse(localStorage.getItem('claudeProjectFavorites') || '[]');
 
-        // Claude-specific tag management functions
-        function loadTagManager() {
-            // For Claude projects, we'll create a placeholder system
-            // This can be enhanced to work with actual Claude project tags
-            renderCurrentTags();
-            renderProjectTagAssignment();
-            updateChangesSummary();
-        }
-
-        function renderCurrentTags() {
-            const container = document.getElementById('currentTags');
-            const tagsArray = Array.from(allTags).sort();
-            
-            container.innerHTML = tagsArray.map(tag => `
-                <div class="tag-item">
-                    <span class="tag-name">${escapeHtml(tag)}</span>
-                    <button class="tag-remove" onclick="removeTag('${escapeJsStr(tag)}')" title="Delete tag">&times;</button>
-                </div>
-            `).join('');
-        }
-
-        function renderProjectTagAssignment() {
-            const container = document.getElementById('projectTagAssignment');
-            // For now, we'll show a message about Claude project tag support
-            container.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
-                    <h4>Claude Project Tag System</h4>
-                    <p>Claude project tagging will be available in a future update.</p>
-                    <p>This will allow you to tag Claude projects for better organization and filtering.</p>
-                </div>
-            `;
-        }
-
-        function saveTagChanges() {
-            // Save tags (implementation would depend on backend)
-            alert('Tag changes saved! (Claude project tagging will be available in a future update)');
-            toggleTagManager();
-        }
-
-        function updateChangesSummary() {
-            const summary = document.getElementById('changesSummary');
-            summary.textContent = `${allTags.size} tags available`;
+        function tagManagerItems() {
+            return filteredProjects.map(p => ({ path: p.path, name: p.name }));
         }
     </script>
 </body>

@@ -298,6 +298,17 @@ async function resetToDefaults() {
 }
 
 // --- Tag Management ---
+// Generic tag manager backed by the real tags API. claude-tracker and
+// git-tracker use it as-is, providing tagManagerItems(): [{path, name}] for
+// the assignment list. project-tracker.html declares its own versions of
+// these functions, which override the shared ones on that page.
+
+const sharedTagManager = {
+    allTags: new Set(),    // tag vocabulary (every tag seen across projects)
+    tagsByPath: new Map(), // working copy of each listed item's tags
+    names: new Map(),
+    dirty: new Set(),      // paths with unsaved changes
+};
 
 function toggleTagManager() {
     const modal = document.getElementById('tagModal');
@@ -309,30 +320,168 @@ function toggleTagManager() {
     }
 }
 
+async function loadTagManager() {
+    const state = sharedTagManager;
+    state.allTags = new Set();
+    state.tagsByPath = new Map();
+    state.names = new Map();
+    state.dirty = new Set();
+
+    // The projects cache holds every project's merged (auto + user) tags —
+    // one request instead of one per project.
+    const cachedTags = new Map();
+    try {
+        const res = await fetch(`${API_BASE_URL}/projects/cached`);
+        if (res.ok) {
+            const data = await res.json();
+            (data.projects || []).forEach((p) => {
+                cachedTags.set(p.path, p.tags || []);
+                (p.tags || []).forEach((t) => state.allTags.add(t));
+            });
+        }
+    } catch (e) {
+        showNotification('⚠️ Could not load existing tags from the backend', 'warning');
+    }
+
+    const items = typeof tagManagerItems === 'function' ? tagManagerItems() : [];
+    items.forEach(({ path, name }) => {
+        state.tagsByPath.set(path, [...(cachedTags.get(path) || [])]);
+        state.names.set(path, name);
+    });
+
+    renderCurrentTags();
+    renderProjectTagAssignment();
+}
+
+function renderCurrentTags() {
+    const container = document.getElementById('currentTags');
+    container.innerHTML = Array.from(sharedTagManager.allTags).sort().map((tag) => `
+        <div class="tag-item">
+            <span>${escapeHtml(tag)}</span>
+            <button type="button" class="tag-remove" onclick="removeTag('${escapeJsStr(tag)}')" title="Remove tag">&times;</button>
+        </div>
+    `).join('');
+}
+
+function renderProjectTagAssignment() {
+    const state = sharedTagManager;
+    const container = document.getElementById('projectTagAssignment');
+    const vocabulary = Array.from(state.allTags).sort();
+    container.innerHTML = Array.from(state.tagsByPath.entries()).map(([path, tags]) => {
+        const ePath = escapeJsStr(path);
+        const isDirty = state.dirty.has(path);
+        const tagSpans = vocabulary.map((tag) => {
+            const on = tags.includes(tag);
+            return `<span class="predefined-tag ${on ? 'selected' : ''}"
+                onclick="toggleProjectTag('${ePath}', '${escapeJsStr(tag)}')"
+                style="margin: 2px; ${on ? 'background: var(--button-primary); color: white;' : ''}">${escapeHtml(tag)}</span>`;
+        }).join('');
+        return `
+            <div style="margin-bottom: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-weight: 600; color: var(--text-primary);">${escapeHtml(state.names.get(path) || path)}</div>
+                    <button type="button" class="tag-add-btn" onclick="saveIndividualProject('${ePath}')"
+                        style="padding: 6px 12px; font-size: 12px; ${isDirty ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${isDirty ? '' : 'disabled'}
+                        title="${isDirty ? 'Save changes for this project' : 'No changes to save'}">💾 Save</button>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                    ${escapeHtml(path)}${isDirty ? '<span style="color: var(--button-warning); font-weight: 500;"> • Unsaved changes</span>' : ''}
+                </div>
+                <div style="line-height: 1.6;">${tagSpans}</div>
+            </div>
+        `;
+    }).join('');
+    updateChangesSummary();
+}
+
+function updateChangesSummary() {
+    const summary = document.getElementById('changesSummary');
+    const count = sharedTagManager.dirty.size;
+    if (count === 0) {
+        summary.textContent = 'No unsaved changes';
+        summary.style.color = 'var(--text-secondary)';
+    } else {
+        summary.textContent = `${count} project${count === 1 ? '' : 's'} with unsaved changes`;
+        summary.style.color = 'var(--button-warning)';
+    }
+}
+
 function addNewTag() {
     const input = document.getElementById('newTagInput');
     const tagName = input.value.trim().toLowerCase();
-    if (tagName && !allTags.has(tagName)) {
-        allTags.add(tagName);
-        input.value = '';
-        renderCurrentTags();
-        updateChangesSummary();
-    }
+    if (!tagName) { showNotification('Please enter a tag name', 'error'); return; }
+    if (tagName.length > 20) { showNotification('Tag name too long (max 20 characters)', 'error'); return; }
+    if (sharedTagManager.allTags.has(tagName)) { showNotification('Tag already exists', 'error'); return; }
+    sharedTagManager.allTags.add(tagName);
+    input.value = '';
+    renderCurrentTags();
+    renderProjectTagAssignment();
 }
 
 function addPredefinedTag(tagName) {
-    if (!allTags.has(tagName)) {
-        allTags.add(tagName);
-        renderCurrentTags();
-        updateChangesSummary();
-    }
+    if (sharedTagManager.allTags.has(tagName)) { showNotification('Tag already exists', 'error'); return; }
+    sharedTagManager.allTags.add(tagName);
+    renderCurrentTags();
+    renderProjectTagAssignment();
 }
 
 function removeTag(tagName) {
-    if (confirm(`Remove tag "${tagName}"? This will remove it from all projects.`)) {
-        allTags.delete(tagName);
-        renderCurrentTags();
-        updateChangesSummary();
+    if (!confirm(`Remove tag "${tagName}" from all listed projects?`)) return;
+    const state = sharedTagManager;
+    state.allTags.delete(tagName);
+    state.tagsByPath.forEach((tags, path) => {
+        if (tags.includes(tagName)) {
+            state.tagsByPath.set(path, tags.filter((t) => t !== tagName));
+            state.dirty.add(path);
+        }
+    });
+    renderCurrentTags();
+    renderProjectTagAssignment();
+}
+
+function toggleProjectTag(path, tagName) {
+    const state = sharedTagManager;
+    const tags = state.tagsByPath.get(path);
+    if (!tags) return;
+    state.tagsByPath.set(
+        path,
+        tags.includes(tagName) ? tags.filter((t) => t !== tagName) : [...tags, tagName]
+    );
+    state.dirty.add(path);
+    renderProjectTagAssignment();
+}
+
+function saveProjectTags(path) {
+    return fetch(`${API_BASE_URL}/projects/${encodeURIComponent(path)}/tags`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tags: sharedTagManager.tagsByPath.get(path) || [] }),
+    }).then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    });
+}
+
+async function saveIndividualProject(path) {
+    try {
+        await saveProjectTags(path);
+        sharedTagManager.dirty.delete(path);
+        renderProjectTagAssignment();
+        showNotification(`✅ Saved tags for ${sharedTagManager.names.get(path) || path}`, 'success');
+    } catch (error) {
+        showNotification(`❌ Failed to save tags: ${error.message}`, 'error');
+    }
+}
+
+async function saveTagChanges() {
+    const paths = Array.from(sharedTagManager.dirty);
+    if (paths.length === 0) { showNotification('No changes to save', 'info'); return; }
+    try {
+        await Promise.all(paths.map(saveProjectTags));
+        paths.forEach((p) => sharedTagManager.dirty.delete(p));
+        showNotification(`Saved tag changes for ${paths.length} project(s)`, 'success');
+        toggleTagManager();
+    } catch (error) {
+        showNotification(`❌ Failed to save some tags: ${error.message}`, 'error');
     }
 }
 
